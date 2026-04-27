@@ -1,0 +1,31 @@
+{
+  "name": "peek",
+  "version": "0.0.1",
+  "description": "A minimal GUI HTTP client",
+  "keywords": [
+    "gui",
+    "http client",
+    "neutralinojs",
+    "vuejs",
+    "vuetify"
+  ],
+  "homepage": "https://github.com/thecodingjames/peek#readme",
+  "bugs": {
+    "url": "https://github.com/thecodingjames/peek/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thecodingjames/peek.git"
+  },
+  "license": "MIT",
+  "author": "James Hoffman",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx neu run",
+    "release": "npx neu build --release --embed-resources"
+  },
+  "dependencies": {
+    "@neutralinojs/neu": "^11.7.1"
+  }
+}
