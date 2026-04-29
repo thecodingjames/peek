@@ -8,31 +8,21 @@
 
     <script src="/vendor/vuetify-4.0.6.js"></script>
     <link rel="stylesheet" href="/vendor/vuetify-4.0.6.css" />
-  </head>
-  <body>
-    <div id="app">
-      <v-app>
-        <v-container>
-          <v-banner
-            color="success"
-            icon="$vuetify"
-            text="Peek!"
-            :stacked="false"
-          ></v-banner>
-        </v-container>
-      </v-app>
-    </div>
-    <script>
-      const { createApp } = Vue
-      const { createVuetify } = Vuetify
-      const vuetify = createVuetify()
-      const app = createApp()
-      app.use(vuetify).mount('#app')
-    </script>
+    <link rel="stylesheet" href="/vendor/mdi-5.min.css" />
 
     <script src="/vendor/neutralino.js"></script>
-    <!-- Your app's source files -->
-    <script src="/app/main.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <script type="module">
+      import App from '/app/app.js'
+
+      const app = Vue.createApp(App)
+      app.use(Vuetify.createVuetify())
+
+      app.mount('#app')
+    </script>
   </body>
 </html>
 

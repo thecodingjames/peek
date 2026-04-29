@@ -22,7 +22,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "npx neu run",
+    "dev": "DEV=true npx neu run",
     "release": "npx neu build --release --embed-resources"
   },
   "dependencies": {
