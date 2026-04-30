@@ -1,0 +1,6 @@
+*:not(.v-list *) {
+    text-align: center;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
