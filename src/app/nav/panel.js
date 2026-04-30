@@ -1,4 +1,12 @@
+import History from '/app/nav/drawers/history.js'
+import Settings from '/app/nav/drawers/settings.js'
+
 export default {
+  components: {
+    History,
+    Settings
+  },
+
   data() {
     return {
       selected: [],
@@ -7,16 +15,16 @@ export default {
 
   computed: {
     options() {
-      return [ 
-        {
-          component: 'History',
+      return {
+        'History': {
+          component: History,
           icon: 'mdi-history',
         },
-        {
-          component: 'Settings',
+        'Settings': {
+          component: Settings,
           icon: 'mdi-cog',
         },
-      ]
+      }
     },
 
     current() {
@@ -36,12 +44,12 @@ export default {
         density="compact"
       >
         <v-list-item
-          v-for="option in options"
+          v-for="(option, name) in options"
 
-          :active="current == option.component"
+          :active="current == name"
           :prepend-icon="option.icon"
-          :title="option.component"
-          :value="option.component"
+          :title="name"
+          :value="name"
         ></v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -50,7 +58,7 @@ export default {
       :permanent="!!current"
       :mobile="true"
     >
-      <h1>nav drawer</h1>
+      <component v-if="!!current" :is="options[current].component"></component>
     </v-navigation-drawer>
   `
 }
