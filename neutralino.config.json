@@ -21,7 +21,7 @@
   ],
   "modes": {
     "window": {
-      "title": "peek",
+      "title": "Peek",
       "width": 800,
       "height": 500,
       "minWidth": 400,
@@ -30,7 +30,8 @@
       "fullScreen": false,
       "alwaysOnTop": false,
       "icon": "/src/assets/icons/appIcon.png",
-      "enableInspector": true,
+      "enableInspector": false,
+      "openInspectorOnStartup": false,
       "borderless": false,
       "maximize": false,
       "hidden": false,
