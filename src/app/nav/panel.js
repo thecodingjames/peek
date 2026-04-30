@@ -46,7 +46,10 @@ export default {
       </v-list>
     </v-navigation-drawer>
 
-    <v-navigation-drawer :permanent="!!current">
+    <v-navigation-drawer 
+      :permanent="!!current"
+      :mobile="true"
+    >
       <h1>nav drawer</h1>
     </v-navigation-drawer>
   `
