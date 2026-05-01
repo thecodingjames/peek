@@ -8,13 +8,15 @@ export default {
   template: `
     <message-card
       title="response"
+      icon="mdi-format-color-highlight"
+      alt-text="Formatted preview"
     >
       <template #main>
-        response
+        raw
       </template>
 
-      <template #raw>
-        ...raw... 
+      <template #alt>
+        ...preview... 
       </template>
     </message-card>
   `

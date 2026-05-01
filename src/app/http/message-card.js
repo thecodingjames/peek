@@ -1,7 +1,40 @@
 export default {
   props: [
-    'title'
+    'title',
+    'icon',
+    'altText',
   ],
+
+  data() {
+    return {
+      slot: 'main',
+    }
+  },
+
+  methods: {
+    
+    handleTogglePanel() {
+      const toggle = {
+        main: 'alt',
+        alt: 'main',
+      }
+
+      this.slot = toggle[this.slot]
+    }
+
+  },
+
+  computed: {
+
+    tooltipText() {
+      return this.slot == 'main' ? this.altText : `Back to ${this.title}`
+    },
+
+    buttonIcon() {
+      return this.slot == 'main' ? this.icon : 'mdi-arrow-left'
+    }
+
+  },
 
   template: `
     <component is="style">
@@ -19,11 +52,13 @@ export default {
     >
       <template #title>
         {{ title }}
-        <v-btn v-tooltip="{ text: 'raw', openDelay: 1000 }" icon="mdi-text-box-outline" rounded="0" density="compact" variant="text" />
+        <v-btn 
+          @click="handleTogglePanel()"
+          v-tooltip="{ text:  tooltipText, openDelay: 1000 }" :icon="buttonIcon" rounded="0" density="compact" variant="tonal" />
       </template>
 
-      <slot name="main"></slot>
-      <slot name="raw"></slot>
+      <slot name="main" v-if="slot == 'main'"></slot>
+      <slot name="alt" v-if="slot == 'alt'"></slot>
       
     </v-card>
   `

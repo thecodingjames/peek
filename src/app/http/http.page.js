@@ -7,10 +7,6 @@ export default {
     Response,
   },
   template: `
-
-
-    <h1>HTTP Page</h1>
-
     <request />
 
     <response />

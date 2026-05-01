@@ -8,6 +8,8 @@ export default {
   template: `
     <message-card
       title="request"
+      icon="mdi-text"
+      alt-text="Raw HTTP"
     >
       <template #main>
         <v-autocomplete
@@ -28,7 +30,7 @@ export default {
         <v-btn>Send</v-btn>
       </template>
 
-      <template #raw>
+      <template #alt>
         ...raw... 
       </template>
 
