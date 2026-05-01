@@ -7,6 +7,7 @@
   "documentRoot": "/src/",
   "url": "/",
   "enableServer": true,
+  "enableExtensions": true,
   "enableNativeAPI": true,
   "tokenSecurity": "one-time",
   "logging": {
@@ -62,7 +63,7 @@
   "cli": {
     "binaryName": "peek",
     "resourcesPath": "/src/",
-    "extensionsPath": "/src/extensions/",
+    "extensionsPath": "/extensions/",
     "clientLibrary": "/src/vendor/neutralino.js",
     "binaryVersion": "6.7.0",
     "clientVersion": "6.7.0"
