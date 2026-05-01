@@ -1,10 +1,21 @@
+import MessageCard from '/app/http/message-card.js'
+
 export default {
+  components: {
+    MessageCard,
+  },
+
   template: `
-    <v-card
-      subtitle="response"
-      variant="text"
-      class="http-card"
+    <message-card
+      title="response"
     >
-    </v-card>
+      <template #main>
+        response
+      </template>
+
+      <template #raw>
+        ...raw... 
+      </template>
+    </message-card>
   `
 }

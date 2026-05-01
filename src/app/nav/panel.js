@@ -50,7 +50,8 @@ export default {
           :prepend-icon="option.icon"
           :title="name"
           :value="name"
-        ></v-list-item>
+          v-tooltip="{text: name, openDelay: 1000}"
+        />
       </v-list>
     </v-navigation-drawer>
 
