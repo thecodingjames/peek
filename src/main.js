@@ -1,4 +1,6 @@
 const { app, BrowserWindow } = require('electron')
+const path = require('path');
+const fs = require('fs');
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -9,14 +11,13 @@ const createWindow = () => {
   win.loadFile('src/index.html')
 
   const watchPaths = [                                                                                                               
-    path.join(__dirname, 'src')                                                                                                      
+    path.join(__dirname, '')                                                                                                      
   ];                                                                                                                                 
                                                                                                                                      
   watchPaths.forEach(watchPath => {                                                                                                  
     fs.watch(watchPath, { recursive: true }, (eventType, filename) => {                                                              
       if (filename) {                                                                                                                
-        console.log(`[Live Reload] File changed: ${filename}. Reloading...`);                                                        
-        mainWindow.reload();                                                                                                         
+        win.reload();                                                                                                         
       }                                                                                                                              
     });                                                                                                                              
   });

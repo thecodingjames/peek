@@ -13,7 +13,6 @@ export default {
 
   template: `
     <v-app>
-
       <div 
         v-if="!!dev" 
         style="background-color: red; color: white; padding: 4px; text-align: center;"
