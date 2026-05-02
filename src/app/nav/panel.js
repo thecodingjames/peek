@@ -1,5 +1,5 @@
-import History from '/app/nav/drawers/history.js'
-import Settings from '/app/nav/drawers/settings.js'
+import History from './drawers/history.js'
+import Settings from './drawers/settings.js'
 
 export default {
   components: {

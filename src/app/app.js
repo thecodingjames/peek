@@ -1,5 +1,4 @@
-import Panel from '/app/nav/panel.js'
-import { Curl } from '/vendor/curl.js'
+import Panel from './nav/panel.js'
 
 export default {
   components: {
@@ -33,14 +32,7 @@ export default {
   `,
 
   async mounted() {
-    Neutralino.init()
-    const curl = new Curl()
-
-    Neutralino.events.on("windowClose", () => {
-      Neutralino.app.exit()
-    });
-
-    this.dev = await Neutralino.os.getEnv('DEV')
+    this.dev = false // TODO
 
     if (!this.dev) {
       window.addEventListener('contextmenu', (event) => {
@@ -48,11 +40,6 @@ export default {
       })
     }
 
-    let result = await curl.get('https://httpbin.org/base64/SFRUUEJJTiBpcyBhd2Vzb21l');
-    console.log(result)
-    document.addEventListener('curlData', (e) => {
-      alert(e.detail)
-    })
   }
 
 }

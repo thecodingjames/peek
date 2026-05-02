@@ -5,7 +5,7 @@
   "keywords": [
     "gui",
     "http client",
-    "neutralinojs",
+    "electronjs",
     "vuejs",
     "vuetify"
   ],
@@ -19,13 +19,12 @@
   },
   "license": "MIT",
   "author": "James Hoffman",
-  "type": "module",
-  "main": "index.js",
+  "type": "commonjs",
+  "main": "src/main.js",
   "scripts": {
-    "dev": "DEV=true npx neu run -- --window-enable-inspector=true --window-open-inspector-on-startup=true",
-    "release": "npx neu build --release --embed-resources"
+    "dev": "npx electron ."
   },
   "dependencies": {
-    "@neutralinojs/neu": "^11.7.1"
+    "electron": "^41.4.0"
   }
 }

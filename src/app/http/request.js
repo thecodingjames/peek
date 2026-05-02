@@ -1,4 +1,4 @@
-import MessageCard from '/app/http/message-card.js'
+import MessageCard from './message-card.js'
 
 export default {
   components: {

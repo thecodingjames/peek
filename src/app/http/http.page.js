@@ -1,5 +1,5 @@
-import Request from '/app/http/request.js'
-import Response from '/app/http/response.js'
+import Request from './request.js'
+import Response from './response.js'
 
 export default {
   components: {
