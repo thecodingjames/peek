@@ -1,11 +1,3 @@
-# Developer tools' files
-.lite_workspace.lua
-
-# Neutralinojs builds
-/dist
-
-# other files
-.storage
-*.log
-.tmp
 node_modules
+dist
+.tmp
