@@ -1,4 +1,5 @@
 import MessageCard from './message-card.js'
+import Request from './request.model.js'
 
 export default {
   components: {
@@ -11,17 +12,22 @@ export default {
 
   data() {
     return {
-      options: {
-        method: 'GET',
-        url: undefined,
-      }
+      request: new Request(),
     }
   },
 
   methods: {
+
     async handleSend() {
-      this.$emit('send', this.options)
-    }
+      this.$emit('send', this.request)
+    },
+
+  },
+
+  computed: {
+    methods() {
+      return Request.methods
+    },
   },
 
   template: `
@@ -32,9 +38,9 @@ export default {
     >
       <template #main>
         <v-autocomplete
-          v-model="options.method"
-          :items="['GET', 'POST']"
-          item-title="name"
+          v-model="request.method"
+          :items="methods"
+
           label="Method"
           :auto-select-first="true"
           :clearable="true"
@@ -42,7 +48,7 @@ export default {
         />
 
         <v-text-field
-          v-model="options.url"
+          v-model="request.url"
           label="URL"
           required
           variant="outlined"
