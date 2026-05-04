@@ -2,27 +2,37 @@ const { app, BrowserWindow } = require('electron')
 const path = require('path');
 const fs = require('fs');
 
-const createWindow = () => {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600
-  })
-
-  win.loadFile('src/index.html')
-
-  const watchPaths = [                                                                                                               
-    path.join(__dirname, '')                                                                                                      
-  ];                                                                                                                                 
-                                                                                                                                     
-  watchPaths.forEach(watchPath => {                                                                                                  
-    fs.watch(watchPath, { recursive: true }, (eventType, filename) => {                                                              
-      if (filename) {                                                                                                                
-        win.reload();                                                                                                         
-      }                                                                                                                              
-    });                                                                                                                              
-  });
-}
+const DEVELOPMENT = !app.isPackaged
 
 app.whenReady().then(() => {
-  createWindow()
+  const window = createWindow()
+
+  if (DEVELOPMENT) {
+    liveReload(window)
+    window.openDevTools()
+  }
 })
+
+function createWindow() {
+  const window = new BrowserWindow({
+    width: 800,
+    height: 600,
+
+    webPreferences: {
+      additionalArguments: DEVELOPMENT ? ['--dev'] : [],
+      preload: path.join(__dirname, 'preload.js'),
+    }
+  })
+
+  window.loadFile(path.join(__dirname, 'index.html'))
+
+  return window
+}
+
+function liveReload(window) {
+  fs.watch(__dirname, { recursive: true }, (eventType, filename) => {
+    if (filename) {
+      window.reload();
+    }
+  });
+}

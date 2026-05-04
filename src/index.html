@@ -27,8 +27,9 @@
         routes,
       }))
 
-      app.mount('#app')
+      app.config.globalProperties.isDevelopment = electron.development
 
+      app.mount('#app')
     </script>
   </body>
 </html>

@@ -7,14 +7,13 @@ export default {
 
   data() {
     return {
-      dev: false,
     }
   },
 
   template: `
     <v-app>
       <div 
-        v-if="!!dev" 
+        v-if="isDevelopment" 
         style="background-color: red; color: white; padding: 4px; text-align: center;"
       >
         [dev]
@@ -31,14 +30,6 @@ export default {
   `,
 
   async mounted() {
-    this.dev = false // TODO
-
-    if (!this.dev) {
-      window.addEventListener('contextmenu', (event) => {
-        event.preventDefault()
-      })
-    }
-
   }
 
 }
