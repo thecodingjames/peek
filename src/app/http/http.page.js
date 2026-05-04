@@ -6,9 +6,22 @@ export default {
     Request,
     Response,
   },
-  template: `
-    <request />
 
-    <response />
+  data() {
+    return {
+      result: undefined,
+    }
+  },
+
+  methods: {
+    async handleRequest(options) {
+      this.result = await window.electron.http(Vue.toRaw(options))
+    }
+  },
+
+  template: `
+    <request @send="handleRequest" />
+
+    <response :result />
   `
 }

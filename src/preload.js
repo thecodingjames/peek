@@ -4,4 +4,6 @@ const development = process.argv.includes('--dev');
 
 contextBridge.exposeInMainWorld('electron', {
   development,
+  http: (options) => ipcRenderer.invoke('http', options) 
 })
+

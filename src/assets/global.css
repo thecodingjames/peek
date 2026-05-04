@@ -1,5 +1,4 @@
 *:not(.v-list *, .v-expansion-panels *, .v-input *, .v-btn, .v-btn *) {
-    text-align: center;
     -webkit-user-select: none;
     user-select: none;
     cursor: default;

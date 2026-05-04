@@ -5,6 +5,25 @@ export default {
     MessageCard,
   },
 
+  emits: [
+    'send'
+  ],
+
+  data() {
+    return {
+      options: {
+        method: 'GET',
+        url: undefined,
+      }
+    }
+  },
+
+  methods: {
+    async handleSend() {
+      this.$emit('send', this.options)
+    }
+  },
+
   template: `
     <message-card
       title="request"
@@ -13,6 +32,7 @@ export default {
     >
       <template #main>
         <v-autocomplete
+          v-model="options.method"
           :items="['GET', 'POST']"
           item-title="name"
           label="Method"
@@ -22,12 +42,13 @@ export default {
         />
 
         <v-text-field
+          v-model="options.url"
           label="URL"
           required
           variant="outlined"
         />
 
-        <v-btn>Send</v-btn>
+        <v-btn @click="handleSend">Send</v-btn>
       </template>
 
       <template #alt>

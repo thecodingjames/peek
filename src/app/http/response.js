@@ -5,6 +5,10 @@ export default {
     MessageCard,
   },
 
+  props: [
+    'result'
+  ],
+
   template: `
     <message-card
       title="response"
@@ -12,7 +16,7 @@ export default {
       alt-text="Formatted preview"
     >
       <template #main>
-        raw
+        <pre style="user-select: text; cursor: text;">{{ result }}</pre>
       </template>
 
       <template #alt>
