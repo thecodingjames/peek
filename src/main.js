@@ -21,8 +21,11 @@ function createWindow() {
     webPreferences: {
       additionalArguments: DEVELOPMENT ? ['--dev'] : [],
       preload: path.join(__dirname, 'preload.js'),
+      partition: `persist:${app.getName()}`,
     }
   })
+
+  window.setMenuBarVisibility(false)
 
   window.loadFile(path.join(__dirname, 'index.html'))
 
@@ -46,4 +49,3 @@ ipcMain.handle('http', async (_, options) => {
 
   return await response.text()
 })
-
