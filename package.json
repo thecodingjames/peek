@@ -9,6 +9,16 @@
     "vuejs",
     "vuetify"
   ],
+  "build": {
+    "appId": "ca.codingjames.peek",
+    "mac": {
+      "category": "utility"
+    },
+    "asar": true,
+    "win": {
+      "target": "portable"
+    }
+  },
   "homepage": "https://github.com/thecodingjames/peek#readme",
   "bugs": {
     "url": "https://github.com/thecodingjames/peek/issues"
@@ -22,9 +32,11 @@
   "type": "commonjs",
   "main": "src/main.js",
   "scripts": {
-    "dev": "npx electron ."
+    "dev": "npx electron .",
+    "release": "electron-builder"
   },
-  "dependencies": {
-    "electron": "^41.4.0"
+  "devDependencies": {
+    "electron": "^41.4.0",
+    "electron-builder": "^26.8.1"
   }
 }
