@@ -15,7 +15,11 @@ export default {
 
   methods: {
     async handleRequest(options) {
-      this.result = await window.electron.http(Vue.toRaw(options))
+      try {
+        this.result = await window.electron.http(Vue.toRaw(options))
+      } catch (e) {
+        alert(e.message)
+      }
     }
   },
 

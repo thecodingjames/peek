@@ -12,11 +12,18 @@
     <link rel="stylesheet" href="vendor/mdi-5.min.css" />
 
     <link rel="stylesheet" href="assets/global.css" />
+
+    <script type="module">
+      import * as Vest from './vendor/vest-6.3.2.js'
+
+      window.Vest = Vest
+      // Make it global to mirror Vue/VueRouter/Vuetify behavior
+    </script>
   </head>
   <body>
     <div id="app"></div>
 
-    <script type="module">
+    <script type="module"> 
       import App from './app/app.js'
       import { routes } from './app/routes.js'
 

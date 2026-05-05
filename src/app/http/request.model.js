@@ -16,11 +16,22 @@ export default class Request {
     return Object.values(Request.Method)
   }
 
+  get errors() {
+    return validators.run(this);
+  }
+
   constructor() {
     this.method = Request.Method.get
   }
 
-  errors() {
-  }
-
 }
+
+const validators = Vest.create( request => {
+  const { test, enforce } = Vest
+
+  test('url', 'Url is required', () => {
+    enforce(request.url).isNotBlank();
+  })
+
+})
+

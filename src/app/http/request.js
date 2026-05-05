@@ -19,7 +19,7 @@ export default {
   methods: {
 
     async handleSend() {
-      this.$emit('send', this.request)
+      this.$emit('send', Vue.toRaw(this.request))
     },
 
   },
@@ -52,7 +52,10 @@ export default {
           label="URL"
           required
           variant="outlined"
+          :rules="[ request.errors.getError('url') ?? true]"
         />
+
+        {{ this.request.errors.hasErrors() }}
 
         <v-btn @click="handleSend">Send</v-btn>
       </template>
