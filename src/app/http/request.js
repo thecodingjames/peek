@@ -19,7 +19,7 @@ export default {
   methods: {
 
     async handleSend() {
-      this.$emit('send', Vue.toRaw(this.request))
+      this.$emit('send', this.request)
     },
 
   },
@@ -40,6 +40,7 @@ export default {
         <v-autocomplete
           v-model="request.method"
           :items="methods"
+          :rules="request.rules('method')"
 
           label="Method"
           :auto-select-first="true"
@@ -52,16 +53,14 @@ export default {
           label="URL"
           required
           variant="outlined"
-          :rules="[ request.errors.getError('url') ?? true]"
+          :rules="request.rules('url')"
         />
 
-        {{ this.request.errors.hasErrors() }}
-
-        <v-btn @click="handleSend">Send</v-btn>
+        <v-btn @click="handleSend" :disabled="request.hasErrors()">Send</v-btn>
       </template>
 
       <template #alt>
-        ...raw... 
+        <pre>{{ request.text }}</pre>
       </template>
 
     </message-card>

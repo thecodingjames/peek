@@ -16,7 +16,7 @@ export default {
   methods: {
     async handleRequest(options) {
       try {
-        this.result = await window.electron.http(Vue.toRaw(options))
+        this.result = await window.electron.http({ method: options.method, url: options.url })
       } catch (e) {
         alert(e.message)
       }
