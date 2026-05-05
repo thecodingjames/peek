@@ -37,26 +37,28 @@ export default {
       alt-text="Raw HTTP"
     >
       <template #main>
-        <v-autocomplete
-          v-model="request.method"
-          :items="methods"
-          :rules="request.rules('method')"
+        <v-form @submit.prevent="handleSend">
+          <v-autocomplete
+            v-model="request.method"
+            :items="methods"
+            :rules="request.rules('method')"
 
-          label="Method"
-          :auto-select-first="true"
-          :clearable="true"
-          variant="outlined"
-        />
+            label="Method"
+            :auto-select-first="true"
+            :clearable="true"
+            variant="outlined"
+          />
 
-        <v-text-field
-          v-model="request.url"
-          label="URL"
-          required
-          variant="outlined"
-          :rules="request.rules('url')"
-        />
+          <v-text-field
+            v-model="request.url"
+            label="URL"
+            required
+            variant="outlined"
+            :rules="request.rules('url')"
+          />
 
-        <v-btn @click="handleSend" :disabled="request.hasErrors()">Send</v-btn>
+          <v-btn type="submit" :disabled="request.hasErrors()">Send</v-btn>
+        </v-form>
       </template>
 
       <template #alt>
