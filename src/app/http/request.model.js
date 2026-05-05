@@ -18,14 +18,32 @@ export default class Request extends VestModel {
     return Object.values(Request.Method)
   }
 
+  get fullUrl() {
+    let url = this.url ?? ''
+
+    if (! url.match(/^https?:\/\/.+/) ) {
+      url = `http://${url}`
+    }
+
+    try {
+      return new URL(url)
+    } catch {
+      return {
+        pathname: '{ INVALID PATH }',
+        hostname: '{ INVALID HOST }',
+      }
+    }
+  }
+
   get text() {
     let text = ''
 
-    const url = new URL(this.url)
+    const url = this.fullUrl
+    const port = url.port ? `:${url.port}` : ''
 
     text += `${this.method} ${url.pathname ?? '???'}`
-
-    text += `Host: ${url.hostname}`
+    text += '\n'
+    text += `Host: ${url.hostname}${port}`
 
     return text
   }
