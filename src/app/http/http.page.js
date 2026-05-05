@@ -10,15 +10,20 @@ export default {
   data() {
     return {
       result: undefined,
+      options: undefined,
     }
   },
 
   methods: {
-    async handleRequest(options) {
+    async handleRequest(request) {
+      const options = { method: request.method, url: request.fullUrl.toString() }
       try {
-        this.result = await window.electron.http({ method: options.method, url: options.url })
+        const result = await window.electron.http(options)
+
+        this.result = result
+        this.options = options
       } catch (e) {
-        alert(e.message)
+        console.log(e.message)
       }
     }
   },
@@ -26,6 +31,6 @@ export default {
   template: `
     <request @send="handleRequest" />
 
-    <response :result />
+    <response :options :result />
   `
 }
