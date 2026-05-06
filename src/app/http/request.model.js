@@ -48,6 +48,13 @@ export default class Request extends VestModel {
     return text
   }
 
+  get fetchInit() {
+    return {
+      url: this.fullUrl.toString(),
+      method: this.method, 
+    }
+  }
+
   constructor() {
     super()
 

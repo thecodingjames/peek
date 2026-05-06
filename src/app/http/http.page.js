@@ -16,7 +16,8 @@ export default {
 
   methods: {
     async handleRequest(request) {
-      const options = { method: request.method, url: request.fullUrl.toString() }
+      const options = { ...request.fetchInit }
+
       try {
         const result = await window.electron.http(options)
 
