@@ -32,8 +32,7 @@ export default {
 
     buttonIcon() {
       return this.slot == 'main' ? this.icon : 'mdi-arrow-left'
-    }
-
+    },
   },
 
   template: `
@@ -53,11 +52,13 @@ export default {
       <template #title>
         {{ title }}
         <v-btn 
+          v-if="icon"
           @click="handleTogglePanel()"
           v-tooltip="{ text:  tooltipText, openDelay: 1000 }" :icon="buttonIcon" rounded="0" density="compact" variant="tonal" />
       </template>
 
-      <slot name="main" v-if="slot == 'main'"></slot>
+      <slot v-if="$slots.main && slot == 'main'" name="main"></slot>
+      <slot v-else></slot>
       <slot name="alt" v-if="slot == 'alt'"></slot>
       
     </v-card>
