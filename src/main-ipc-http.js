@@ -5,11 +5,16 @@ function registerHttp() {
   ipcMain.handle('http', async (_, { url, ...options }) => {
     const response = await fetch(url, options)
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
+    const blob = await response.text()
 
-    return await response.text()
+    return {
+      url: response.url,
+      code: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers),
+      redirected: response.redirected,
+      blob,
+    }
   })
 }
 

@@ -6,17 +6,16 @@ export default {
   },
 
   props: [
-    'options',
-    'result',
+    'response',
   ],
 
   computed: {
     html() {
       // TODO add more content types detection
-      return this.result?.replace('<head>', `<head><base href="${this.options?.url}">`);
+      return this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}">`);
     },
   },
-
+    
   template: `
     <message-card
       title="response"
@@ -24,12 +23,12 @@ export default {
       alt-text="Formatted preview"
     >
       <template #main>
-        <pre style="user-select: text; cursor: text;">{{ result ?? 'nothing to show...' }}</pre>
+        <pre style="user-select: text; cursor: text;">{{ response?.blob ?? 'nothing to show...' }}</pre>
       </template>
 
       <template #alt>
         <iframe 
-          v-if="result" 
+          v-if="response" 
           :srcdoc="html" frameborder="0"
           style="width: 100%; height: 100dvh;"
         ></iframe>

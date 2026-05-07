@@ -1,5 +1,6 @@
 import Request from './request.js'
 import Response from './response.js'
+import ResponseModel from './response.model.js'
 
 export default {
   components: {
@@ -9,20 +10,16 @@ export default {
 
   data() {
     return {
-      result: undefined,
-      options: undefined,
+      response: undefined,
     }
   },
 
   methods: {
     async handleRequest(request) {
-      const options = { ...request.fetchInit }
-
       try {
-        const result = await window.electron.http(options)
+        const result = await window.electron.http({ ...request.fetchInit })
 
-        this.result = result
-        this.options = options
+        this.response = ResponseModel.instantiate(result)
       } catch (e) {
         console.log(e.message)
       }
@@ -32,6 +29,6 @@ export default {
   template: `
     <request @send="handleRequest" />
 
-    <response :options :result />
+    <response :response />
   `
 }
