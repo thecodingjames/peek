@@ -1,10 +1,24 @@
-export default Vue.reactive({
+const KEY = 'settings'
 
+const defaultSettings = {
   http: {
     followRedirect: true,
-    setFollowRedirect(value) {
-      this.followRedirect = !!value
-    },
   }
+}
 
+const loadedSettings = JSON.parse(localStorage.getItem(KEY))
+
+const mergedSettings = Object.assign(defaultSettings, loadedSettings)
+
+const settings = Vue.reactive({
+  ...mergedSettings
 })
+
+Vue.watch(
+  settings,
+  (value, _) => {
+    localStorage.setItem(KEY, JSON.stringify(value))
+  }
+)
+
+export default settings
