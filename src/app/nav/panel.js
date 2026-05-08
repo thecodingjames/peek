@@ -16,11 +16,11 @@ export default {
   computed: {
     options() {
       return {
-        'History': {
+        history: {
           component: History,
           icon: 'mdi-history',
         },
-        'Settings': {
+        settings: {
           component: Settings,
           icon: 'mdi-cog',
         },
@@ -48,9 +48,9 @@ export default {
 
           :active="current == name"
           :prepend-icon="option.icon"
-          :title="name"
+          :title="t.nav[name]"
           :value="name"
-          v-tooltip="{text: name, openDelay: 1000}"
+          v-tooltip="{text: t.nav[name], openDelay: 1000}"
         />
       </v-list>
     </v-navigation-drawer>

@@ -27,9 +27,10 @@ export default {
       label="Theme"
     ></v-select>
 
-    <v-switch 
-      label="Default to preview"
-      color="primary"
-    ></v-switch>
+    <v-select
+      v-model="SettingsService.ui.language"
+      :items="['fr', 'en']"
+      label="Language"
+    ></v-select>
   `
 }

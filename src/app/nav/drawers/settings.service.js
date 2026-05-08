@@ -7,6 +7,7 @@ const defaultSettings = {
 
   ui: {
     theme: 'system',
+    language: 'fr',
   },
 
 }
