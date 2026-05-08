@@ -6,7 +6,6 @@ export default class Response extends VestModel {
     super()
 
     Object.assign(this, props)
-    this.url = props.url
   }
 
   static instantiate(data) {

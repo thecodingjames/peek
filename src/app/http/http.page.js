@@ -1,5 +1,6 @@
 import Request from './request.js'
 import Response from './response.js'
+import http from './http.service.js'
 import ResponseModel from './response.model.js'
 
 export default {
@@ -17,9 +18,7 @@ export default {
   methods: {
     async handleRequest(request) {
       try {
-        const result = await window.electron.http({ ...request.fetchInit })
-
-        this.response = ResponseModel.instantiate(result)
+        this.response = ResponseModel.instantiate(await http(request))
       } catch (e) {
         console.log(e.message)
       }

@@ -57,7 +57,7 @@ export default {
             :rules="request.rules('url')"
           />
 
-          <v-btn type="submit" :disabled="request.hasErrors()">Send</v-btn>
+          <v-btn :disabled="request.hasErrors()" type="submit">Send</v-btn>
         </v-form>
       </template>
 

@@ -23,7 +23,7 @@ export default class VestModel {
         target._validate()
 
         return value
-      }
+      },
 
     });
 
