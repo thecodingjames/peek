@@ -18,8 +18,18 @@ export default {
 
   methods: {
 
-    async handleSend() {
+    send() {
       this.$emit('send', this.request)
+    },
+
+    async handleSend() {
+      this.send()
+    },
+
+    handleMethodChange(method) {
+      this.request.method = method
+
+      this.send()
     },
 
   },
@@ -30,6 +40,10 @@ export default {
     },
   },
 
+  mounted() {
+    this.request.url = 'perdu.com'
+  },
+
   template: `
     <message-card
       title="request"
@@ -38,17 +52,6 @@ export default {
     >
       <template #main>
         <v-form @submit.prevent="handleSend">
-          <v-autocomplete
-            v-model="request.method"
-            :items="methods"
-            :rules="request.rules('method')"
-
-            label="Method"
-            :auto-select-first="true"
-            :clearable="true"
-            variant="outlined"
-          />
-
           <v-text-field
             v-model="request.url"
             label="URL"
@@ -57,7 +60,27 @@ export default {
             :rules="request.rules('url')"
           />
 
-          <v-btn :disabled="request.hasErrors()" type="submit">Send</v-btn>
+          <v-btn-group variant="outlined" divided>
+            <v-btn :disabled="request.hasErrors()" type="submit">{{ request.method }}</v-btn>
+
+            <v-menu location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn :disabled="request.hasErrors()" v-bind="props" icon="mdi-chevron-down"></v-btn>
+              </template>
+
+              <v-list>
+                <v-list-item
+                  v-for="(method) in methods"
+                  :key="method"
+                  :value="method"
+                  @click="handleMethodChange(method)"
+                >
+                  <v-list-item-title>{{ method }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
+          </v-btn-group>
         </v-form>
       </template>
 
