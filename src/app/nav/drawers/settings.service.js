@@ -3,7 +3,12 @@ const KEY = 'settings'
 const defaultSettings = {
   http: {
     followRedirect: true,
-  }
+  },
+
+  ui: {
+    theme: 'system',
+  },
+
 }
 
 const loadedSettings = JSON.parse(localStorage.getItem(KEY))

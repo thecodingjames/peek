@@ -21,7 +21,11 @@ export default {
 
     <h2>UI</h2>
 
-    <p> theme...  </p>
+    <v-select
+      v-model="SettingsService.ui.theme"
+      :items="['system', 'light', 'dark']"
+      label="Theme"
+    ></v-select>
 
     <v-switch 
       label="Default to preview"

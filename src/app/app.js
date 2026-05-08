@@ -1,4 +1,5 @@
 import Panel from './nav/panel.js'
+import SettingsService from './nav/drawers/settings.service.js'
 
 export default {
   components: {
@@ -7,11 +8,12 @@ export default {
 
   data() {
     return {
+      SettingsService,
     }
   },
 
   template: `
-    <v-app>
+    <v-app :theme="SettingsService.ui.theme">
       <div 
         v-if="isDevelopment" 
         style="background-color: red; color: white; padding: 4px; text-align: center;"
@@ -28,8 +30,5 @@ export default {
       </v-layout>
     </v-app>
   `,
-
-  async mounted() {
-  }
 
 }
