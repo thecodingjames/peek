@@ -25,7 +25,9 @@ export default {
         <panel />
 
         <v-main>
-          <router-view />
+          <div style="padding: 1rem;">
+            <router-view />
+          </div>
         </v-main>
       </v-layout>
     </v-app>

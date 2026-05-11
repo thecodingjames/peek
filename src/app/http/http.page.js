@@ -26,8 +26,18 @@ export default {
   },
 
   template: `
-    <request @send="handleRequest" />
+    <component is="style">
+      .http_http-page {
+        display: flex;
+        gap: 2rem;
+        flex-direction: column;
+      }
+    </component>
 
-    <response :response />
+    <div class="http_http-page">
+      <request @send="handleRequest" />
+
+      <response :response />
+    </div>
   `
 }

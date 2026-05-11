@@ -51,13 +51,14 @@ export default {
       alt-text="Raw HTTP"
     >
       <template #main>
-        <v-form @submit.prevent="handleSend">
+        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
           <v-text-field
             v-model="request.url"
             label="URL"
             required
             variant="outlined"
             :rules="request.rules('url')"
+            density="comfortable"
           />
 
           <v-btn-group variant="outlined" divided>

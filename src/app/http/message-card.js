@@ -37,30 +37,28 @@ export default {
 
   template: `
     <component is="style">
-      .http_message-card .v-card-title {
+      .http_message-card .title {
         font-weight: bold !important;
         text-align: start;
         text-transform: uppercase;
         font-size: 0.8rem;
+        margin-bottom: 1rem;
       }
     </component>
 
-    <v-card
-      variant="text"
-      class="http_message-card"
-    >
-      <template #title>
+    <div class="http_message-card">
+      <div class="title">
         {{ title }}
         <v-btn 
           v-if="icon"
           @click="handleTogglePanel()"
           v-tooltip="{ text:  tooltipText, openDelay: 1000 }" :icon="buttonIcon" rounded="0" density="compact" variant="tonal" />
-      </template>
+      </div>
 
       <slot v-if="$slots.main && slot == 'main'" name="main"></slot>
       <slot v-else></slot>
       <slot name="alt" v-if="slot == 'alt'"></slot>
       
-    </v-card>
+    </div>
   `
 }
