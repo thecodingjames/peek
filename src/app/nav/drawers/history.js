@@ -1,5 +1,12 @@
+import Drawer from './drawer.js'
+
 export default {
+  components: {
+    Drawer,
+  },
+
   template: `
-    <h1>History</h1>
+    <drawer title="History">
+    </drawer>
   `
 }

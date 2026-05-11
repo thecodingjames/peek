@@ -56,12 +56,10 @@ export default {
             v-model="request.url"
             label="URL"
             required
-            variant="outlined"
             :rules="request.rules('url')"
-            density="comfortable"
           />
 
-          <v-btn-group variant="outlined" divided>
+          <v-btn-group divided>
             <v-btn :disabled="request.hasErrors()" type="submit">{{ request.method }}</v-btn>
 
             <v-menu location="bottom">

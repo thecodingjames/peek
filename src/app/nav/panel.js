@@ -41,7 +41,6 @@ export default {
         v-model:selected="selected"
         selectable
         nav
-        density="compact"
       >
         <v-list-item
           v-for="(option, name) in options"
