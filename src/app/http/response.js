@@ -69,7 +69,17 @@ export default {
           </v-tabs-window-item>
 
           <v-tabs-window-item value="headers">
-            {{ JSON.stringify(response.headers) }}
+            <v-table striped="odd" style="user-select: text;">
+              <tbody>
+                <tr
+                  v-for="(value, name) in response.headers"
+                  :key="name"
+                >
+                  <td style="user-select: text; cursor: text; white-space: nowrap;">{{ name }}</td>
+                  <td style="user-select: text; cursor: text;">{{ value }}</td>
+                </tr>
+              </tbody>
+            </v-table>
           </v-tabs-window-item>
 
           <v-tabs-window-item value="preview">
