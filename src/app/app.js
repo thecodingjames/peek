@@ -1,9 +1,11 @@
 import Panel from './nav/panel.js'
+import Tabs from './nav/tabs.js'
 import SettingsService from './nav/drawers/settings.service.js'
 
 export default {
   components: {
-    Panel
+    Panel,
+    Tabs,
   },
 
   data() {
@@ -54,9 +56,7 @@ export default {
           <panel />
 
           <v-main>
-            <div style="padding: 1rem;">
-              <router-view />
-            </div>
+            <tabs />
           </v-main>
         </v-layout>
       </v-app>

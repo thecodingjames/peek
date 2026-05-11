@@ -9,7 +9,7 @@ export default {
 
   data() {
     return {
-      selected: [],
+      current: undefined,
     }
   },
 
@@ -27,9 +27,26 @@ export default {
       }
     },
 
-    current() {
-      return this.selected[0]
-    }
+    drawer() {
+      return this.options[this.current]?.component
+    },
+
+  },
+
+  methods: {
+
+    handleNewRequest(event) {
+      console.log('a')
+    },
+
+    handleDrawerItem(name) {
+      if (name == this.current) {
+        this.current = undefined
+      } else {
+        this.current = name
+      }
+    },
+
   },
 
   template: `
@@ -37,14 +54,20 @@ export default {
       :rail="true"
       permanent
     >
-      <v-list 
-        v-model:selected="selected"
-        selectable
-        nav
-      >
+      <v-list nav>
+        <v-list-item
+          @click="handleNewRequest" 
+          prepend-icon="mdi-plus"
+          title="New request"
+          value="new"
+          :active="false"
+          v-tooltip="{text: 'New request', openDelay: 1000}"
+        />
+
         <v-list-item
           v-for="(option, name) in options"
 
+          @click="handleDrawerItem(name)" 
           :active="current == name"
           :prepend-icon="option.icon"
           :title="t.nav[name]"
@@ -55,10 +78,10 @@ export default {
     </v-navigation-drawer>
 
     <v-navigation-drawer 
-      :permanent="!!current"
+      :permanent="!!drawer"
       :mobile="true"
     >
-      <component v-if="!!current" :is="options[current].component"></component>
+      <component v-if="!!drawer" :is="drawer"></component>
     </v-navigation-drawer>
   `
 }
