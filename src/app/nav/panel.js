@@ -1,3 +1,4 @@
+import TabsService from './tabs.service.js'
 import History from './drawers/history.js'
 import Settings from './drawers/settings.js'
 
@@ -36,7 +37,7 @@ export default {
   methods: {
 
     handleNewRequest(event) {
-      console.log('a')
+      TabsService.new()
     },
 
     handleDrawerItem(name) {

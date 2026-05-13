@@ -1,8 +1,27 @@
+import TabsService from './tabs.service.js'
 import HttpPage from '../http/http.page.js'
 
 export default {
   components: {
     HttpPage
+  },
+
+  data() {
+    return {
+      tabs: TabsService.tabs,
+    }
+  },
+
+  methods: {
+
+    handleRename(id) {
+      
+    },
+
+    handleClose(id) {
+      TabsService.remove(id)
+    },
+
   },
 
   template: `
@@ -19,17 +38,19 @@ export default {
     <v-tabs 
       show-arrows
       hide-slider
-      :items="[1, 2, 3]"
+      :items="tabs"
     >
       <template v-slot:tab="{ item }">
         <v-tab
-          @dblclick="console.log('a')"
-          :key="item.text"
-          :text="item.text"
-          :value="item.text"
+          @dblclick="handleRename(id)"
+          :key="item.id"
+          :text="item.title"
+          :value="item.id"
         >
           <template v-slot:append>
             <v-btn
+              v-if="tabs.length > 1"
+              @click.prevent="handleClose(item.id)"
               color="error"
               icon="mdi-close"
               size="small"
@@ -40,7 +61,7 @@ export default {
       </template>
 
       <template v-slot:item="{ item }">
-        <v-tabs-window-item :value="item.value" class="pa-4">
+        <v-tabs-window-item :value="item.id" class="pa-4">
           <http-page />
         </v-tabs-window-item>
       </template>
