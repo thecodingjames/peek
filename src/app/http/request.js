@@ -40,10 +40,6 @@ export default {
     },
   },
 
-  mounted() {
-    this.request.url = 'perdu.com'
-  },
-
   template: `
     <message-card
       title="request"

@@ -37,12 +37,12 @@ export default {
 
   template: `
     <component is="style">
-      .v-tabs {
+      .nav_tabs.v-tabs {
         border-bottom: 1px solid gray;
-      }
 
-      .v-tab--selected {
-        background-color: lightgray;
+        .v-tab--selected {
+          background-color: lightgray;
+        }
       }
     </component>
 
@@ -53,26 +53,28 @@ export default {
 
       :model-value="current"
       @update:model-value="handleSelect"
+
+      class="nav_tabs"
     >
-        <v-tab
-          v-for="item in tabs"
-          :key="item.id"
+      <v-tab
+        v-for="item in tabs"
+        :key="item.id"
 
-          :text="item.title"
-          :value="item.id"
+        :text="item.title"
+        :value="item.id"
 
-          @dblclick="handleRename($event, item.id)"
-        >
-          <template v-slot:append>
-            <v-btn
-              @click.prevent="handleClose(item.id)"
-              color="error"
-              icon="mdi-close"
-              size="small"
-              variant="plain"
-            ></v-btn>
-          </template>
-        </v-tab>
+        @dblclick="handleRename($event, item.id)"
+      >
+        <template v-slot:append>
+          <v-btn
+            @click.prevent="handleClose(item.id)"
+            color="error"
+            icon="mdi-close"
+            size="small"
+            variant="plain"
+          ></v-btn>
+        </template>
+      </v-tab>
     </v-tabs>
 
     <v-window v-model="current">

@@ -3,3 +3,7 @@
     user-select: none;
     cursor: default;
 }
+
+.v-window-item {
+  transition: none !important;
+}
