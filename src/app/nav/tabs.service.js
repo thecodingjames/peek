@@ -1,7 +1,9 @@
 const defaultTab = {
-  id: 0,
+  id: 'default',
   title: 'Request',
 }
+
+let count = 0
 
 export default {
   current: Vue.ref(0),
@@ -11,25 +13,34 @@ export default {
   ]),
 
   new() {
-    const ids = this.tabs.map( t => {
-      const match  = t.title.match(/^New request (\d+)$/)
-      
-      return Number(match?.[1] ?? 0)
-    })
-
-    const next = Math.max(...ids) + 1
+    count = count + Number(this.tabs.length > 1 || count > 0)
     const id = crypto.randomUUID()
 
     this.tabs.unshift({
       id,
-      title: `New request ${next}`,
+      title: ['New request', (count > 0 ? count: '')].join(' '),
     })
 
     this.current.value = id
   },
 
+  select(id) {
+    if (id) {
+      this.current.value = id
+    }
+  },
+
+  get(id) {
+    return this.tabs.find( t => t.id == id )
+  },
+
   remove(id) {
     const index = this.tabs.findIndex( t => t.id == id )
     this.tabs.splice(index, 1)
+
+    if (id == this.current.value) {
+      const substituteIndex = Math.min(Math.max(index, 0), this.tabs.length - 1)
+      this.current.value = this.tabs[substituteIndex].id
+    }
   },
 }
