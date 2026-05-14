@@ -3,12 +3,12 @@ const defaultTab = {
   title: 'Request',
 }
 
-const tabs = Vue.reactive([
-  defaultTab,
-])
-
 export default {
-  tabs,
+  current: Vue.ref(0),
+
+  tabs: Vue.reactive([
+    defaultTab,
+  ]),
 
   new() {
     const ids = this.tabs.map( t => {
@@ -18,11 +18,14 @@ export default {
     })
 
     const next = Math.max(...ids) + 1
+    const id = crypto.randomUUID()
 
     this.tabs.unshift({
-      id: crypto.randomUUID(),
+      id,
       title: `New request ${next}`,
     })
+
+    this.current.value = id
   },
 
   remove(id) {

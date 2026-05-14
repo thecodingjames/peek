@@ -8,6 +8,7 @@ export default {
 
   data() {
     return {
+      current: TabsService.current,
       tabs: TabsService.tabs,
     }
   },
@@ -35,9 +36,11 @@ export default {
       }
     </component>
 
+    {{ current }}
     <v-tabs 
       show-arrows
       hide-slider
+      v-model="current"
       :items="tabs"
     >
       <template v-slot:tab="{ item }">
@@ -61,7 +64,8 @@ export default {
       </template>
 
       <template v-slot:item="{ item }">
-        <v-tabs-window-item :value="item.id" class="pa-4">
+          
+        <v-tabs-window-item :key="item.id" :value="item.id" class="pa-4">
           <http-page />
         </v-tabs-window-item>
       </template>
