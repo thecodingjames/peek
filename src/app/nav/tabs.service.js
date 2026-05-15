@@ -16,9 +16,15 @@ export default {
     count = count + Number(this.tabs.length > 1 || count > 0)
     const id = crypto.randomUUID()
 
+    let titleParts = ['New request']
+
+    if (count > 0) {
+      titleParts.push(count)
+    }
+
     this.tabs.unshift({
       id,
-      title: ['New request', (count > 0 ? count: '')].join(' '),
+      title: titleParts.join(' '),
     })
 
     this.current.value = id
@@ -32,6 +38,11 @@ export default {
 
   get(id) {
     return this.tabs.find( t => t.id == id )
+  },
+
+  rename(id, title) {
+    const tab = this.get(id)
+    tab.title = title
   },
 
   remove(id) {

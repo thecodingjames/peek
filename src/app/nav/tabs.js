@@ -11,8 +11,8 @@ export default {
       current: TabsService.current,
       tabs: TabsService.tabs,
 
-      renamingTab: null,
-      showDialog: false,
+      renaming: null,
+      showRenamingPopup: false,
     }
   },
 
@@ -22,17 +22,41 @@ export default {
       TabsService.select(id)
     },
 
-    handleRename(event, id) {
-      event.preventDefault()
+    handleRenamePopup(event, tabId) {
+      const {id, title} = TabsService.get(tabId)
 
-      this.renamingTab = TabsService.get(id)
-      this.showDialog = true
+      this.renaming = {
+        element: event.currentTarget,
+        id,
+        title,
+      }
+
+      this.showRenamingPopup = true
+
+      Vue.nextTick(() => {
+        setTimeout(() => {
+          this.$refs.renameInput.controlRef.focus()
+        }, 200)
+      })
+    },
+
+    handleRenameSubmit() {
+      this.showRenamingPopup = false
+      const { id, title } = this.renaming
+
+      TabsService.rename(id, title)
     },
 
     handleClose(id) {
       TabsService.remove(id)
     },
 
+  },
+
+  mounted() {
+    this.$refs.renamePopup.animateClick = () => {
+      this.renaming = null
+    }
   },
 
   template: `
@@ -44,13 +68,18 @@ export default {
           --opacity: calc(var(--v-activated-opacity) * var(--v-high-emphasis-opacity));
           background-color: color-mix(in srgb, currentColor calc(var(--opacity) * 100%), transparent);
         }
+
+      }
+
+      .nav_tabs .v-field__input {
+        padding: 0 0 0 0.5rem;
       }
     </component>
 
     <v-tabs 
       v-if="tabs.length > 1"
       show-arrows
-      hide-slider
+      hide-slide
 
       :model-value="current"
       @update:model-value="handleSelect"
@@ -64,17 +93,19 @@ export default {
         :text="item.title"
         :value="item.id"
 
-        @dblclick="handleRename($event, item.id)"
+        @dblclick="handleRenamePopup($event, item.id)"
       >
+
         <template v-slot:append>
           <v-btn
             @click.prevent="handleClose(item.id)"
             color="error"
-            icon="mdi-close"
-            size="small"
-            variant="plain"
-          ></v-btn>
+            size="x-small"
+            variant="outlined"
+            style="min-width: 0; aspect-ratio: 1;"
+          >ㄨ</v-btn>
         </template>
+
       </v-tab>
     </v-tabs>
 
@@ -89,126 +120,43 @@ export default {
       </v-tabs-window-item>
     </v-window>
 
-   <v-dialog v-model="showDialog">
-      <v-card>
-        <v-card-text>
-          <v-row density="comfortable">
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                label="First name*"
-                required
-              ></v-text-field>
-            </v-col>
+    <v-menu
+      ref="renamePopup"
 
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                hint="example of helper text only on focus"
-                label="Middle name"
-              ></v-text-field>
-            </v-col>
+      :model-value="showRenamingPopup"
+      @update:model-value="showRenamingPopup = false"
 
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                hint="example of persistent helper text"
-                label="Last name*"
-                persistent-hint
-                required
-              ></v-text-field>
-            </v-col>
+      :target="renaming?.element"
+      :close-on-content-click="false"
+      location="bottom"
+    >
+      <v-card class="nav_tabs" min-width="300">
+        <form 
+          @submit.prevent="handleRenameSubmit()"
+          style="display: flex; align-items: center;"
+        >
+          <v-text-field
+            ref="renameInput"
 
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                label="Email*"
-                required
-              ></v-text-field>
-            </v-col>
+            :model-value="renaming?.title"
+            @update:model-value="renaming ? (renaming.title = $event) : 'no-op'"
 
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                label="Password*"
-                type="password"
-                required
-              ></v-text-field>
-            </v-col>
+            placeholder="Title"
 
-            <v-col
-              cols="12"
-              md="4"
-              sm="6"
-            >
-              <v-text-field
-                label="Confirm Password*"
-                type="password"
-                required
-              ></v-text-field>
-            </v-col>
-
-            <v-col
-              cols="12"
-              sm="6"
-            >
-              <v-select
-                :items="['0-17', '18-29', '30-54', '54+']"
-                label="Age*"
-                required
-              ></v-select>
-            </v-col>
-
-            <v-col
-              cols="12"
-              sm="6"
-            >
-              <v-autocomplete
-                :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
-                label="Interests"
-                auto-select-first
-                multiple
-              ></v-autocomplete>
-            </v-col>
-          </v-row>
-
-          <small class="text-body-small text-medium-emphasis">*indicates required field</small>
-        </v-card-text>
-
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn
-            text="Close"
+            :hide-details="true"
+            density="comfortable"
             variant="plain"
-            @click="dialog = false"
-          ></v-btn>
+            tile
+          />
 
           <v-btn
+            type="submit"
             color="primary"
+            variant="text"
             text="Save"
-            variant="tonal"
-            @click="dialog = false"
-          ></v-btn>
-        </v-card-actions>
+          />
+        </form>
       </v-card>
-    </v-dialog>
+    </v-menu>
   `
 }
