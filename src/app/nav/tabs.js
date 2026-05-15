@@ -38,10 +38,11 @@ export default {
   template: `
     <component is="style">
       .nav_tabs.v-tabs {
-        border-bottom: 1px solid gray;
+        border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 
         .v-tab--selected {
-          background-color: lightgray;
+          --opacity: calc(var(--v-activated-opacity) * var(--v-high-emphasis-opacity));
+          background-color: color-mix(in srgb, currentColor calc(var(--opacity) * 100%), transparent);
         }
       }
     </component>
