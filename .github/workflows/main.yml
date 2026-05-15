@@ -11,7 +11,11 @@ jobs:
       - name: get version
         run: echo "tag=${EPOCHSECONDS}" >> $GITHUB_ENV
       - name: build
-        run: sudo apt-get install -y winehq-stable nodejs; cd $GITHUB_WORKSPACE && npm i && npm run build
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
+          sudo apt-get install -y winehq-stable nodejs
+          cd $GITHUB_WORKSPACE && npm i && npm run build
       - name: release
         uses: softprops/action-gh-release@v2
         with:
