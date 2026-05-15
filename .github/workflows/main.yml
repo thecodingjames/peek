@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+    - main
+jobs:
+  release:
+    name: publish release
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: get version
+        run: echo "tag=${EPOCHSECONDS}" >> $GITHUB_ENV
+      - name: build
+        run: apt install -y wine64 nodejs; cd $GITHUB_WORKSPACE && npm i && npm run build
+      - name: release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.tag }}
+          working_directory: dist
+          files: |
+            *.exe
+            *.AppImage
