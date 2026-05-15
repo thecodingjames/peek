@@ -16,6 +16,8 @@ jobs:
           sudo mkdir -pm755 /etc/apt/keyrings
           wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
           sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
+          sudo apt-get install -y curl
+          wget -qO- https://deb.nodesource.com/setup_24.x | sudo -E bash -
           sudo apt update
           sudo apt-get install -y winehq-stable nodejs
           cd $GITHUB_WORKSPACE && npm i && npm run build
