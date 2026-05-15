@@ -11,12 +11,22 @@
   ],
   "build": {
     "appId": "ca.codingjames.peek",
-    "mac": {
-      "category": "utility"
-    },
     "asar": true,
     "win": {
-      "target": "portable"
+      "icon": "build/icon.png",
+      "target": [
+        "portable"
+      ]
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": [
+        "AppImage"
+      ]
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "utility"
     }
   },
   "homepage": "https://github.com/thecodingjames/peek#readme",
@@ -33,7 +43,7 @@
   "main": "src/main.js",
   "scripts": {
     "dev": "npx electron .",
-    "release": "electron-builder"
+    "build": "electron-builder -lw"
   },
   "devDependencies": {
     "electron": "^41.4.0",
