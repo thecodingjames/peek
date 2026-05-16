@@ -6,6 +6,8 @@ jobs:
   release:
     name: publish release
     runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v6
       - name: get version
