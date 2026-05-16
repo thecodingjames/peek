@@ -30,6 +30,7 @@
       app.use(Vuetify.createVuetify())
 
       app.config.globalProperties.isDevelopment = electron.development
+      app.config.globalProperties.appVersion = await electron.appVersion()
       app.config.globalProperties.t = translate
 
       app.mount('#app')

@@ -1,4 +1,4 @@
-const { ipcMain } = require('electron')
+const { app, ipcMain } = require('electron')
 const { lookup } = require('dns/promises');
 
 function registerHttp() {
@@ -18,4 +18,13 @@ function registerHttp() {
   })
 }
 
-module.exports = registerHttp
+function registerAppVersion() {
+  ipcMain.handle('appVersion', () => {
+    return app.getVersion()
+  })
+}
+
+module.exports = function() {
+  registerHttp()
+  registerAppVersion()
+}

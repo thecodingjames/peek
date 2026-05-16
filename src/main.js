@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 
-const registerHttp = require('./main-ipc-http.js')
-registerHttp()
+const registerIPC = require('./ipc.js')
+registerIPC()
 
 const path = require('path');
 const fs = require('fs');

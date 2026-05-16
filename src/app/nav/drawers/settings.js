@@ -35,6 +35,8 @@ export default {
         :items="['fr', 'en']"
         label="Language"
       ></v-select>
+
+      {{ appVersion }}
     </drawer>
   `
 }
