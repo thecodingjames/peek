@@ -12,6 +12,7 @@
   "build": {
     "appId": "ca.codingjames.peek",
     "asar": true,
+    "publish": null,
     "win": {
       "icon": "build/icon.png",
       "target": [
