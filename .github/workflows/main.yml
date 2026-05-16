@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install -y winehq-stable nodejs
           cd $GITHUB_WORKSPACE && npm i && npm run build
       - name: release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.tag }}
           working_directory: dist
