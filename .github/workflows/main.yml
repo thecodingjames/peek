@@ -10,19 +10,18 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
-      - name: get version
-        run: echo "tag=${EPOCHSECONDS}" >> $GITHUB_ENV
       - name: build
         run: |
           sudo dpkg --add-architecture i386
           sudo mkdir -pm755 /etc/apt/keyrings
           wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
           sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
-          sudo apt-get install -y curl
           wget -qO- https://deb.nodesource.com/setup_24.x | sudo -E bash -
           sudo apt update
-          sudo apt-get install -y winehq-stable nodejs
+          sudo apt-get install -y winehq-stable nodejs jq
           cd $GITHUB_WORKSPACE && npm i && npm run build
+      - name: get version
+        run: echo "tag=v$(jq -r '.version' package.json)" >> $GITHUB_ENV
       - name: release
         uses: softprops/action-gh-release@v3
         with:
