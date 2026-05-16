@@ -43,7 +43,7 @@
   "main": "src/main.js",
   "scripts": {
     "dev": "npx electron .",
-    "build": "electron-builder -lw"
+    "build": "electron-builder build -lw"
   },
   "devDependencies": {
     "electron": "^41.4.0",
