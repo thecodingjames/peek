@@ -1,4 +1,4 @@
-const { app, ipcMain } = require('electron')
+const { app, shell, ipcMain } = require('electron')
 const { lookup } = require('dns/promises');
 
 function registerHttp() {
@@ -18,13 +18,31 @@ function registerHttp() {
   })
 }
 
-function registerAppVersion() {
-  ipcMain.handle('appVersion', () => {
-    return app.getVersion()
+function registerApp() {
+
+  ipcMain.handle('app', (_) => {
+    const version = app.getVersion()
+
+    return {
+      version,
+      repoUrl: 'https://github.com/thecodingjames/peek'
+    }
   })
+
+}
+
+function registerOpenBrowser() {
+
+  ipcMain.handle('openBrowser', (_, url) => {
+    const version = app.getVersion()
+
+    shell.openExternal(url)
+  })
+
 }
 
 module.exports = function() {
   registerHttp()
-  registerAppVersion()
+  registerApp()
+  registerOpenBrowser()
 }

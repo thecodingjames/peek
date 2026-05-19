@@ -12,6 +12,12 @@ export default {
     }
   },
 
+  methods: {
+    openBrowser(url) {
+      electron.openBrowser(url)
+    }
+  },
+
   template: `
     <drawer title="Settings">
       <h2>HTTP</h2>
@@ -36,7 +42,25 @@ export default {
         label="Language"
       ></v-select>
 
-      {{ appVersion }}
+
+      <div style="display: flex; justify-content: space-evenly;">
+        <v-btn
+          @click="openBrowser(app.repoUrl + '/releases')"
+          prepend-icon="mdi-download"
+          variant="text"
+        >
+          {{ app.version }}
+        </v-btn>
+
+        <v-btn
+          @click="openBrowser(app.repoUrl)"
+          prepend-icon="mdi-source-branch"
+          variant="text"
+        >
+          Source
+        </v-btn>
+      </div>
+
     </drawer>
   `
 }

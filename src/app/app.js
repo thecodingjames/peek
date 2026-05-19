@@ -46,7 +46,7 @@ export default {
     <v-defaults-provider :defaults >
       <v-app :theme="SettingsService.ui.theme">
         <div 
-          v-if="isDevelopment" 
+          v-if="app.development"
           style="background-color: red; color: white; padding: 4px; text-align: center;"
         >
           [dev]
