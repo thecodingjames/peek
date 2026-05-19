@@ -59,10 +59,9 @@ export default {
         <v-list-item
           @click="handleNewRequest" 
           prepend-icon="mdi-plus"
-          title="New request"
           value="new"
           :active="false"
-          v-tooltip="{text: 'New request', openDelay: 1000}"
+          v-tooltip="{text: t.panels.newRequest.title, openDelay: 1000}"
         />
 
         <v-list-item
@@ -71,9 +70,9 @@ export default {
           @click="handleDrawerItem(name)" 
           :active="current == name"
           :prepend-icon="option.icon"
-          :title="t.nav[name]"
+          :title="t.panels[name].title"
           :value="name"
-          v-tooltip="{text: t.nav[name], openDelay: 1000}"
+          v-tooltip="{text: t.panels[name].title, openDelay: 1000}"
         />
       </v-list>
     </v-navigation-drawer>

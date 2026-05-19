@@ -1,4 +1,5 @@
 import VestModel from '../core/vest.model.js'
+import t from '../translate/translate.service.js'
 
 export default class Request extends VestModel {
 
@@ -29,8 +30,8 @@ export default class Request extends VestModel {
       return new URL(url)
     } catch {
       return {
-        pathname: '{ INVALID PATH }',
-        hostname: '{ INVALID HOST }',
+        pathname: `{ ${t.request.model.invalidPath} }`,
+        hostname: `{ ${t.request.model.invalidHost}  }`,
       }
     }
   }
@@ -65,11 +66,11 @@ export default class Request extends VestModel {
     return Vest.create( request => {
       const { test, enforce } = Vest
 
-      test('method', `Method must be one of: ${Request.methods.join(', ')}`, () => {
+      test('method', `${t.request.model.validations.method}: ${Request.methods.join(', ')}`, () => {
         enforce(request.method).isValueOf(Request.Method);
       })
 
-      test('url', 'Url is required', () => {
+      test('url', t.request.model.validations.url, () => {
         enforce(request.url).isNotBlank();
       })
 

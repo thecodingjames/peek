@@ -22,7 +22,7 @@ export default {
     },
 
     tooltipText() {
-      const redirectText = this.response.redirected ? ' [redirected]' : ''
+      const redirectText = this.response.redirected ? ` [${this.t.response.tabs.raw.redirected}]` : ''
 
       return `${this.response.statusText}${redirectText}`
     },
@@ -45,7 +45,7 @@ export default {
 
   template: `
     <message-card
-      title="response"
+      :title="t.response.title"
     >
       <div v-if="response">
         <v-tabs v-model="tab">
@@ -57,8 +57,8 @@ export default {
 
             <v-icon v-if="response.redirected" icon="mdi-chevron-double-right"></v-icon>
           </v-tab>
-          <v-tab value="headers">Headers</v-tab>
-          <v-tab value="preview">Preview</v-tab>
+          <v-tab value="headers">{{ t.response.tabs.headers.title }}</v-tab>
+          <v-tab value="preview">{{ t.response.tabs.preview.title }}</v-tab>
         </v-tabs>
 
         <v-divider></v-divider>
@@ -93,7 +93,7 @@ export default {
         </v-tabs-window>
       </div>
 
-      <p v-else>Nothing to show...</p>
+      <p v-else style="font-style: italic;">{{ t.response.pending }}</p>
     </message-card>
   `
 }

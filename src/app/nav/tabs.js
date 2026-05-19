@@ -153,7 +153,7 @@ export default {
             type="submit"
             color="primary"
             variant="text"
-            text="Save"
+            :text="t.save"
           />
         </form>
       </v-card>

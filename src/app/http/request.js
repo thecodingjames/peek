@@ -42,9 +42,9 @@ export default {
 
   template: `
     <message-card
-      title="request"
+      :title="t.request.title"
+      :alt-text="t.request.rawHttp"
       icon="mdi-text"
-      alt-text="Raw HTTP"
     >
       <template #main>
         <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">

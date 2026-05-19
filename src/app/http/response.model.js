@@ -1,4 +1,5 @@
 import VestModel from '../core/vest.model.js'
+import t from '../translate/translate.service.js'
 
 export default class Response extends VestModel {
   
@@ -22,26 +23,26 @@ export default class Response extends VestModel {
     return Vest.create( response => {
       const { test, enforce, compose } = Vest
 
-      test('url', 'Url is required', () => {
+      test('url', t.response.model.validations.url, () => {
         enforce(response.url).isNotBlank()
       })
 
-      test('code', 'Code must be a number between 100 and 500', () => {
+      test('code', t.response.model.validations.code, () => {
         enforce(response.code).isBetween(100, 599)
       })
 
-      test('statusText', 'Status text is required', () => {
+      test('statusText', t.response.model.validations.status, () => {
         enforce(response.statusText).isNotBlank()
       })
 
-      test('headers', 'Headers must be an object', () => {
+      test('headers', t.response.model.validations.headers, () => {
         enforce(response.headers).allOf(
           enforce.isNotEmpty(),
           enforce.condition(headers => (headers instanceof Object))
         )
       })
 
-      test('redirected', 'Redirected must be a boolean', () => {
+      test('redirected', t.response.model.validations.redirected, () => {
         enforce(response.redirected).isBoolean()
       })
     })

@@ -6,7 +6,7 @@ export default {
   },
 
   template: `
-    <drawer title="History">
+    <drawer :title="t.panels.history.title">
     </drawer>
   `
 }

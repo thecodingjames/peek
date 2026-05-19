@@ -1,6 +1,8 @@
+import t from '../translate/translate.service.js'
+
 const defaultTab = {
   id: 'default',
-  title: 'Request',
+  title: t.tabs.defaultRequestName,
 }
 
 let count = 0
@@ -16,7 +18,7 @@ export default {
     count = count + Number(this.tabs.length > 1 || count > 0)
     const id = crypto.randomUUID()
 
-    let titleParts = ['New request']
+    let titleParts = [t.tabs.newRequest]
 
     if (count > 0) {
       titleParts.push(count)

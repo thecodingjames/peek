@@ -12,7 +12,6 @@ const translations = Vue.reactive(currentLanguage)
 Vue.watch(
   () => SettingsService.ui.language,
   (value) => {
-    console.log(value)
     Object.assign(currentLanguage, language(value))
   }
 )
