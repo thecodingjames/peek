@@ -20,6 +20,7 @@ export default {
       light: 'Clair',
       dark: 'Sombre',
       language: 'Langue',
+      keyBindings: 'Raccourcis clavier',
     },
   },
 

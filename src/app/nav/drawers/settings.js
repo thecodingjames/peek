@@ -25,9 +25,15 @@ export default {
   },
 
   methods: {
+    
+    handleKeyBindings() {
+      console.log('a')
+    },
+
     openBrowser(url) {
       electron.openBrowser(url)
     }
+
   },
 
   template: `
@@ -38,6 +44,7 @@ export default {
         v-model="SettingsService.http.followRedirect" 
         :label="t.panels.settings.followRedirect"
         color="primary"
+        :hide-details="true"
       ></v-switch>
 
       <h2>{{ t.panels.settings.appearance }}</h2>
@@ -53,6 +60,14 @@ export default {
         :items="['fr', 'en']"
         :label="t.panels.settings.language"
       ></v-select>
+
+      <v-btn
+        @click="handleKeyBindings()"
+        prepend-icon="mdi-keyboard-outline"
+        style="width: 100%;"
+      >
+        {{ t.panels.settings.keyBindings }}
+      </v-btn>
 
       <h2>Application</h2>
 
