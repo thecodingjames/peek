@@ -1,4 +1,4 @@
-import SettingsService from '../nav/drawers/settings.service.js'
+import SettingsService from '../core/settings.service.js'
 import ResponseModel from './response.model.js'
 
 export default async function http(request) {

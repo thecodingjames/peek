@@ -2,15 +2,32 @@ import TabsService from './tabs.service.js'
 import History from './drawers/history.js'
 import Settings from './drawers/settings.js'
 
+import HotkeysService from '../core/hotkeys.service.js'
+import s from '../core/settings.service.js'
+
 export default {
   components: {
     History,
     Settings
   },
 
+
+  mounted() {
+
+    HotkeysService.on('drawersHistory', () => {
+      this.handleDrawerItem('history')
+    })
+
+    HotkeysService.on('drawersSettings', () => {
+      this.handleDrawerItem('settings')
+    })
+
+  },
+
   data() {
     return {
       current: undefined,
+      s,
     }
   },
 

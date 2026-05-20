@@ -10,6 +10,11 @@ const defaultSettings = {
     language: 'fr',
   },
 
+  hotkeys: {
+    drawersHistory: 'cmd+/',
+    drawersSettings: 'ctrl+.',
+  },
+
 }
 
 const loadedSettings = JSON.parse(localStorage.getItem(KEY))
@@ -20,7 +25,7 @@ const settings = Vue.reactive(mergedSettings)
 
 Vue.watch(
   settings,
-  (value, _) => {
+  (value) => {
     localStorage.setItem(KEY, JSON.stringify(value))
   }
 )

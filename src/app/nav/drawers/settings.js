@@ -1,5 +1,5 @@
 import Drawer from './drawer.js'
-import SettingsService from './settings.service.js'
+import SettingsService from '../../core/settings.service.js'
 
 export default {
   components: {
