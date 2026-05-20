@@ -1,10 +1,15 @@
 export default {
+
+  model: {
+    prop: 'visible',
+  },
+
   emits: [
     'update:modelValue'
   ],
 
   props: [
-    'modelValue'
+    'visible'
   ],
 
   methods: {
@@ -17,7 +22,7 @@ export default {
 
   template: `
     <v-dialog
-      :model-value="modelValue"
+      :model-value="visible"
       @update:model-value="handle($event)"
       width="auto"
     >
