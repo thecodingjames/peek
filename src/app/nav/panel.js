@@ -2,15 +2,13 @@ import TabsService from './tabs.service.js'
 import History from './drawers/history.js'
 import Settings from './drawers/settings.js'
 
-import HotkeysService from '../core/hotkeys.service.js'
-import s from '../core/settings.service.js'
+import HotkeysService from '../hotkeys/hotkeys.service.js'
 
 export default {
   components: {
     History,
     Settings
   },
-
 
   mounted() {
 
@@ -27,7 +25,6 @@ export default {
   data() {
     return {
       current: undefined,
-      s,
     }
   },
 

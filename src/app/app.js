@@ -1,6 +1,6 @@
 import Panel from './nav/panel.js'
 import Tabs from './nav/tabs.js'
-import SettingsService from './core/settings.service.js'
+import SettingsService from './nav/drawers/settings.service.js'
 
 export default {
   components: {

@@ -1,4 +1,4 @@
-import SettingsService from './settings.service.js'
+import SettingsService from '../nav/drawers/settings.service.js'
 
 class HotkeysService {
 
