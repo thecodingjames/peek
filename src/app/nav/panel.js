@@ -14,15 +14,15 @@ export default {
 
   mounted() {
 
-    HotkeysService.on('drawersHistory', () => {
+    HotkeysService.on('nav.history', () => {
       this.handleDrawerItem('history')
     })
 
-    HotkeysService.on('drawersSettings', () => {
+    HotkeysService.on('nav.settings', () => {
       this.handleDrawerItem('settings')
     })
 
-    HotkeysService.on('hotkeysDialog', () => {
+    HotkeysService.on('nav.hotkeys', () => {
       this.hotkeysDialogOpened = true
     })
 

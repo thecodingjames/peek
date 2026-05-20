@@ -13,6 +13,23 @@ class HotkeysService {
     })
   }
 
+  get all() {
+    
+    return Object.entries(SettingsService.hotkeys).reduce( (result, [id, binding]) => {
+      const parts = id.split('.')
+
+      const category = parts[0]
+      const name = parts[1]
+
+      result[category] = {
+        ...result[category],
+        [name]: binding
+      }
+
+      return result
+    }, {})
+  }
+
   set(name, callback) {
     const hotkey = SettingsService.hotkeys[name]
 
