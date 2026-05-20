@@ -34,7 +34,7 @@ export default {
         return 'text-green'
       } else if (code >= 400 && code < 500) {
         return 'text-orange'
-      } else if (code > 500) {
+      } else if (code >= 500) {
         return 'text-red'
       } else {
         return 'text-grey'
