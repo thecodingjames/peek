@@ -79,7 +79,7 @@ export default {
     <v-tabs 
       v-if="tabs.length > 1"
       show-arrows
-      hide-slide
+      hide-slider
 
       :model-value="current"
       @update:model-value="handleSelect"

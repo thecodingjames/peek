@@ -14,6 +14,12 @@ export default {
     'visible'
   ],
 
+  data() {
+    return {
+      editing: null,
+    }
+  },
+
   computed: {
 
     hotkeys() {
@@ -24,7 +30,7 @@ export default {
 
   methods: {
     
-    handle(visible) {
+    handleVisibility(visible) {
       this.$emit('update:modelValue', visible)
     },
 
@@ -34,20 +40,53 @@ export default {
       return binding.replace('meta', meta).split('+')
     },
 
+    handleEditBinding(category, name) {
+      this.editing = this.currentId(category, name)
+    },
+
+    currentId(category, name) {
+      return category + '.' + name
+    },
+
+    currentEdit(category, name) {
+      return this.editing == this.currentId(category, name)
+    },
+
   },
 
   template: `
     <v-dialog
       :model-value="visible"
-      @update:model-value="handle($event)"
+      @update:model-value="handleVisibility($event)"
+
     >
-      <v-card>
+
+      <component is="style">
+        .hotkeys_hotkeys-dialog-card {
+          tr:hover {
+            --opacity: calc(var(--v-activated-opacity) * var(--v-high-emphasis-opacity));
+            background-color: color-mix(in srgb, currentColor calc(var(--opacity) * 100%), transparent);
+          }
+
+          .binding {
+            display: flex;
+            justify-self: end;
+            padding: 8px;
+          }
+
+          .binding,.binding:hover * {
+            cursor: pointer;
+          }
+        }
+      </component>
+
+      <v-card class="hotkeys_hotkeys-dialog-card">
         <template v-slot:title>
           <div style="display: flex; justify-content: space-between;">
             <div class="text-headline-large">Hotkeys</div>
 
             <v-btn
-              @click="handle(false)"
+              @click="handleVisibility(false)"
               icon="mdi-close"
               variant="outlined"
               size="small"
@@ -70,17 +109,25 @@ export default {
                   :key="name"
                 >
                   <td>{{ name }}</td>
-                  <td style="width: 192px">
-                    <template 
-                      v-for="(key, index) in prepareForKbd(binding)"
+                  <td style="text-align: right; width: 0; white-space: nowrap;" >
+                    <span 
+                      @click="handleEditBinding(category, name)"
+                      class="binding"
                     >
-                      <span 
-                        v-if="index > 0" 
-                        style="padding: 0 4px;"
-                        v-text="'+'"
-                      />
-                      <v-kbd>{{ key }}</v-kbd>
-                    </template>
+                      <template 
+                        v-for="(key, index) in prepareForKbd(binding)"
+                      >
+                        <span 
+                          v-if="index > 0" 
+                          style="padding: 0 4px;"
+                          v-text="'+'"
+                        />
+                        <v-kbd>{{ key }}</v-kbd>
+                      </template>
+                      <span v-if="currentEdit(category, name)">
+                        {{ JSON.stringify(editing) }}
+                      </span>
+                    </span>
                   </td>
                 </tr>
               </tbody>
