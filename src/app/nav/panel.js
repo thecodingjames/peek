@@ -1,13 +1,15 @@
-import TabsService from './tabs.service.js'
 import History from './drawers/history.js'
 import Settings from './drawers/settings.js'
+import HotkeysDialog from '../hotkeys/hotkeys-dialog.js'
 
+import TabsService from './tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 
 export default {
   components: {
     History,
-    Settings
+    Settings,
+    HotkeysDialog,
   },
 
   mounted() {
@@ -20,11 +22,17 @@ export default {
       this.handleDrawerItem('settings')
     })
 
+    HotkeysService.on('hotkeysDialog', () => {
+      this.hotkeysDialogOpened = true
+    })
+
   },
 
   data() {
     return {
       current: undefined,
+
+      hotkeysDialogOpened: false,
     }
   },
 
@@ -62,6 +70,10 @@ export default {
       }
     },
 
+    handleHotkeysClick() {
+      this.hotkeysDialogOpened = true
+    },
+
   },
 
   template: `
@@ -95,7 +107,14 @@ export default {
       :permanent="!!drawer"
       :mobile="true"
     >
-      <component v-if="!!drawer" :is="drawer"></component>
+      <component 
+        v-if="!!drawer" 
+        :is="drawer"
+
+        @hotkeysClick="handleHotkeysClick()"
+      />
     </v-navigation-drawer>
+
+    <hotkeys-dialog v-model="hotkeysDialogOpened" />
   `
 }

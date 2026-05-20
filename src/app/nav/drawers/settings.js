@@ -1,10 +1,17 @@
 import Drawer from './drawer.js'
+import HotkeysDialog from '../../hotkeys/hotkeys-dialog.js'
+
 import SettingsService from './settings.service.js'
 
 export default {
   components: {
     Drawer,
+    HotkeysDialog,
   },
+
+  emits: [
+    'hotkeysClick',
+  ],
   
   data() {
     return {
@@ -26,8 +33,8 @@ export default {
 
   methods: {
     
-    handleKeyBindings() {
-      console.log('a')
+    handleHotkeys() {
+      this.$emit('hotkeysClick')
     },
 
     openBrowser(url) {
@@ -62,7 +69,7 @@ export default {
       ></v-select>
 
       <v-btn
-        @click="handleKeyBindings()"
+        @click="handleHotkeys()"
         prepend-icon="mdi-keyboard-outline"
         style="width: 100%;"
       >

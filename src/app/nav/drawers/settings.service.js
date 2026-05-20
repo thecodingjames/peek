@@ -11,8 +11,9 @@ const defaultSettings = {
   },
 
   hotkeys: {
-    drawersHistory: 'cmd+/',
-    drawersSettings: 'ctrl+.',
+    hotkeysDialog: 'cmd+/',
+    drawersHistory: 'cmd+h',
+    drawersSettings: 'cmd+.',
   },
 
 }
