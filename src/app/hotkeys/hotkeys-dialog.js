@@ -1,19 +1,24 @@
 export default {
-  model: {
-    prop: 'visible',
-  },
+  emits: [
+    'update:modelValue'
+  ],
 
-  props: {
-    visible: {
-      type: [Boolean],
-      default: false
-    }
+  props: [
+    'modelValue'
+  ],
+
+  methods: {
+    
+    handle(visible) {
+      this.$emit('update:modelValue', visible)
+    },
+
   },
 
   template: `
     <v-dialog
-      :model-value="visible"
-      @update:model-value="$emit('update:visible', $event)"
+      :model-value="modelValue"
+      @update:model-value="handle($event)"
       width="auto"
     >
       <v-card
@@ -23,9 +28,8 @@ export default {
       >
         <template v-slot:actions>
           <v-btn
-            class="ms-auto"
             text="Ok"
-            @click="$emit('update:visible', false)"
+            @click="handle(false)"
           ></v-btn>
         </template>
       </v-card>
