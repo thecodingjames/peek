@@ -151,9 +151,11 @@ export default {
 
           <v-btn
             type="submit"
-            color="primary"
-            variant="text"
-            :text="t.save"
+            icon="mdi-check"
+            color="green"
+            variant="tonal"
+            density="compact"
+            style="margin-right: 0.5rem;"
           />
         </form>
       </v-card>

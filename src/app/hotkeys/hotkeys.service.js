@@ -2,6 +2,8 @@ import SettingsService from '../nav/drawers/settings.service.js'
 
 class HotkeysService {
 
+  #callbacks = { }
+
   constructor() {
     Object.keys(SettingsService.hotkeys).forEach(hotkey => {
       Vue.watch(
@@ -33,15 +35,33 @@ class HotkeysService {
   set(name, callback) {
     const hotkey = SettingsService.hotkeys[name]
 
-    Vuetify.useHotkey(hotkey, callback, { preventDefault: true })
+    const remove = Vuetify.useHotkey(hotkey, callback, { preventDefault: true, inputs: true })
+
+    this.#callbacks[name] = {
+      hotkey,
+      callback,
+      remove,
+    }
   }
 
-  on(name, callback) {
-    this.set(name, callback)
+  update(name, binding) {
+    SettingsService.hotkeys[name] = binding
+
+    const previous = this.#callbacks[name]
+
+    if (previous) {
+      // prevent updating hotkey never registered
+      previous.remove()
+      this.set(name, previous.callback)
+    }
   }
 
-  off(name) {
-    this.set(name, null)
+  remove(name) {
+    this.#callbacks[name].remove()
+  }
+
+  binding(name) {
+    return SettingsService.hotkeys[name]
   }
 
 }

@@ -20,7 +20,8 @@ const defaultSettings = {
     'tabs.next': 'meta+tab',
     'tabs.previous': 'meta+shift+tab',
 
-    'request.url': 'meta+l'
+    'request.url': 'meta+l',
+    'request.method': 'meta+enter',
   },
 
 }
