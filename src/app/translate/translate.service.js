@@ -9,15 +9,9 @@ function language(value) {
 function missingProxy(_path) {
   return new Proxy({}, {
     get(target, prop) {
-      if (prop === Symbol.toPrimitive || prop == 'toString' || prop == Symbol.toStringTag) {
+      if (prop === Symbol.toPrimitive || prop == 'toString') {
         return () => _path
       }
-
-      if( prop == '__v_raw') {
-        return _path
-      }
-
-      console.log({missing: true, ...arguments})
 
       return missingProxy(`${_path}.${prop}`)
     }
@@ -27,8 +21,6 @@ function missingProxy(_path) {
 function nestedProxy(source, _path) {
   return new Proxy(source, {
     get(target, prop, receiver) {
-
-      console.log({ nested: true, target, prop, receiver })
       const path = _path ? `${_path}.${prop}` : prop
 
       if (prop in target) {
@@ -37,7 +29,6 @@ function nestedProxy(source, _path) {
         if (value instanceof Object) {
           return nestedProxy(value, path)
         } else {
-          console.log({ value })
           return value
         }
       } else {
@@ -47,36 +38,13 @@ function nestedProxy(source, _path) {
   })
 }
 
-class Translations {
-  constructor(lang) {
-    this.setLanguage(lang)
-
-    return nestedProxy(this)
-  }
-
-  setLanguage(lang) {
-    const current = language(lang)
-
-    Object.assign(this, current)
-
-    Object.keys(current).forEach( key => {
-      if (current[key] instanceof Object) {
-        this[key] = nestedProxy(current[key])
-      } else {
-        this[key] = current[key]
-      }
-    })
-  }
-
-}
+const translations = Vue.reactive(language(SettingsService.ui.language))
 
 Vue.watch(
   () => SettingsService.ui.language,
-  (lang) => {
-    translations.setLanguage(lang)
+  (current) => {
+    Object.assign(translations, language(current))
   }
 )
 
-const translations = new Translations(SettingsService.ui.language)
-
-export default Vue.reactive(translations)
+export default nestedProxy(translations)
