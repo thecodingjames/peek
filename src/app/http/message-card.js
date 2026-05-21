@@ -27,7 +27,7 @@ export default {
   computed: {
 
     tooltipText() {
-      return this.slot == 'main' ? this.altText : `Back to ${this.title}`
+      return this.slot == 'main' ? this.altText : this.title
     },
 
     buttonIcon() {

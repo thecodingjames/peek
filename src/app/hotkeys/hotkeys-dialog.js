@@ -103,7 +103,7 @@ export default {
       <v-card class="hotkeys_hotkeys-dialog-card">
         <template v-slot:title>
           <div style="display: flex; justify-content: space-between;">
-            <div class="text-headline-large">Hotkeys</div>
+            <div class="text-headline-large">{{ t.a.b }}</div>
 
             <v-btn
               @click="handleVisibility(false)"
