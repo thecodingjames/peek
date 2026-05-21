@@ -4,17 +4,6 @@ class HotkeysService {
 
   #callbacks = { }
 
-  constructor() {
-    Object.keys(SettingsService.hotkeys).forEach(hotkey => {
-      Vue.watch(
-        () => SettingsService.hotkeys[hotkey],
-        (hotkey) => {
-          console.log({ hotkey })
-        }
-      )
-    })
-  }
-
   get all() {
     
     return Object.entries(SettingsService.hotkeys).reduce( (result, [id, binding]) => {
