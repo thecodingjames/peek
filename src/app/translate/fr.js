@@ -1,7 +1,5 @@
 export default {
 
-  save: 'Sauvegarder',
-
   panels: {
     newRequest: {
       title: 'Nouvelle requête',
@@ -27,6 +25,12 @@ export default {
   tabs: {
     defaultRequestName: 'Requête',
     newRequest: 'Nouvelle requête',
+  },
+
+  hotkeys: {
+    dialog: {
+      title: 'Raccourcis clavier',
+    }
   },
 
   request: {

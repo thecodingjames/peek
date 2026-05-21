@@ -48,31 +48,35 @@ function nestedProxy(source, _path) {
 }
 
 class Translations {
-  constructor() {
-    Vue.watch(
-      () => SettingsService.ui.language,
-      (lang) => {
-        debugger
-        this.a = {
-          b: 'allo'
-          }
-        const current = language(SettingsService.ui.language)
+  constructor(lang) {
+    this.setLanguage(lang)
 
-        Object.keys(current).forEach( key => {
-          if (current[key] instanceof Object) {
-            this[key] = nestedProxy(current[key])
-          } else {
-            this[key] = current[key]
-          }
-        })
+    return nestedProxy(this)
+  }
+
+  setLanguage(lang) {
+    const current = language(lang)
+
+    Object.assign(this, current)
+
+    Object.keys(current).forEach( key => {
+      if (current[key] instanceof Object) {
+        this[key] = nestedProxy(current[key])
+      } else {
+        this[key] = current[key]
       }
-    )
-
-    return nestedProxy(language(SettingsService.ui.language))
+    })
   }
 
 }
 
-const translations = new Translations()
+Vue.watch(
+  () => SettingsService.ui.language,
+  (lang) => {
+    translations.setLanguage(lang)
+  }
+)
+
+const translations = new Translations(SettingsService.ui.language)
 
 export default Vue.reactive(translations)
