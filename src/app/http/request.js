@@ -51,14 +51,6 @@ export default {
     handleOpenMethodMenu() {
       if (this.isActiveTab) {
         this.methodMenuOpened = !this.request.hasErrors()
-
-        document.activeElement.blur()
-
-        Vue.nextTick(() => {
-          setTimeout(() => {
-            this.$refs.methodMenuList.$el.focus()
-          }, 1)
-        })
       }
     }
 
@@ -77,6 +69,18 @@ export default {
     methodMenuOpened(opened) {
       if (opened) {
         this.methodPickerNavIndex = this.methods.findIndex( m => m == this.request.method)
+
+        // focus hack :(
+        Vue.nextTick(() => {
+          const interval = setInterval(() => {
+              
+            if (this.methodMenuOpened) {
+              this.$refs.methodMenuList.$el.focus()
+            }
+
+            clearInterval(interval)
+          }, 1)
+        })
       }
     },
 
@@ -131,8 +135,6 @@ export default {
             <v-btn
               ref="methodChevron"
               :disabled="request.hasErrors()"
-
-              @click="handleOpenMethodMenu()"
 
               icon="mdi-chevron-down"
             />
