@@ -27,7 +27,7 @@ export default {
   computed: {
 
     tooltipText() {
-      return this.slot == 'main' ? this.altText : this.title
+      return this.slot == 'main' ? this.altText : undefined
     },
 
     buttonIcon() {
@@ -51,8 +51,17 @@ export default {
         {{ title }}
         <v-btn 
           v-if="icon"
+          ref="altButton"
           @click="handleTogglePanel()"
-          v-tooltip="{ text:  tooltipText, openDelay: 1000 }" :icon="buttonIcon" rounded="0" density="compact" variant="tonal" />
+          :icon="buttonIcon" rounded="0" density="compact" variant="tonal" 
+        />
+
+        <v-tooltip 
+          v-if="slot == 'main'"
+          :text="altText"
+          :activator="$refs.altButton"
+          open-delay="1000"
+        />
       </div>
 
       <slot v-if="$slots.main && slot == 'main'" name="main"></slot>

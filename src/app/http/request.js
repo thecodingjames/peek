@@ -52,6 +52,8 @@ export default {
       if (this.isActiveTab) {
         this.methodMenuOpened = !this.request.hasErrors()
 
+        document.activeElement.blur()
+
         Vue.nextTick(() => {
           setTimeout(() => {
             this.$refs.methodMenuList.$el.focus()

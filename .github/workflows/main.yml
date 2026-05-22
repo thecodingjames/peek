@@ -30,3 +30,6 @@ jobs:
           files: |
             *.exe
             *.AppImage
+            *.zip
+            *.tar.gz
+            *.snap

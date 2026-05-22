@@ -1,6 +1,6 @@
 {
   "name": "peek",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A minimal GUI HTTP client",
   "keywords": [
     "gui",
@@ -22,7 +22,10 @@
     "linux": {
       "icon": "build/icon.png",
       "target": [
-        "AppImage"
+        "AppImage",
+        "zip",
+        "tar.gz",
+        "snap"
       ]
     }
   },
