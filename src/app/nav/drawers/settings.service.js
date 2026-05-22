@@ -10,6 +10,20 @@ const defaultSettings = {
     language: 'fr',
   },
 
+  hotkeys: {
+    'nav.hotkeys': 'meta+/',
+    'nav.history': 'meta+h',
+    'nav.settings': 'meta+.',
+
+    'tabs.new': 'meta+t',
+    'tabs.close': 'meta+w',
+    'tabs.next': 'meta+tab',
+    'tabs.previous': 'meta+shift+tab',
+
+    'request.url': 'meta+l',
+    'request.method': 'meta+enter',
+  },
+
 }
 
 const loadedSettings = JSON.parse(localStorage.getItem(KEY))
@@ -20,7 +34,7 @@ const settings = Vue.reactive(mergedSettings)
 
 Vue.watch(
   settings,
-  (value, _) => {
+  (value) => {
     localStorage.setItem(KEY, JSON.stringify(value))
   }
 )

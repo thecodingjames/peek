@@ -23,7 +23,14 @@ export default {
     },
 
     handleRenamePopup(event, tabId) {
-      const {id, title} = TabsService.get(tabId)
+      const tab = TabsService.get(tabId)
+
+      if (!tab) {
+        // double clicked on X to delete
+        return
+      }
+
+      const {id, title} = tab
 
       this.renaming = {
         element: event.currentTarget,
@@ -79,7 +86,7 @@ export default {
     <v-tabs 
       v-if="tabs.length > 1"
       show-arrows
-      hide-slide
+      hide-slider
 
       :model-value="current"
       @update:model-value="handleSelect"
@@ -151,9 +158,11 @@ export default {
 
           <v-btn
             type="submit"
-            color="primary"
-            variant="text"
-            :text="t.save"
+            icon="mdi-check"
+            color="green"
+            variant="tonal"
+            density="compact"
+            style="margin-right: 0.5rem;"
           />
         </form>
       </v-card>
