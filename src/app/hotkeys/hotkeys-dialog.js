@@ -103,7 +103,7 @@ export default {
       <v-card class="hotkeys_hotkeys-dialog-card">
         <template v-slot:title>
           <div style="display: flex; justify-content: space-between;">
-            <div class="text-headline-large">{{ t.tabs.b }}</div>
+            <div class="text-headline-large">{{ t.hotkeys.dialog.title }}</div>
 
             <v-btn
               @click="handleVisibility(false)"
@@ -119,7 +119,7 @@ export default {
               <thead>
                 <tr>
                   <th colspan="2" style="font-weight: bold;">
-                    {{ category }}
+                    {{ t.hotkeys[category].title }}
                   </th>
                 </tr>
               </thead>
@@ -128,7 +128,7 @@ export default {
                   v-for="(binding, name) in items"
                   :key="name"
                 >
-                  <td>{{ name }}</td>
+                  <td>{{ t.hotkeys[category][name].title }}</td>
                   <td style="text-align: right; width: 0; white-space: nowrap;" >
 
                     <form

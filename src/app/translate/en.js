@@ -30,7 +30,58 @@ export default {
   hotkeys: {
     dialog: {
       title: 'Key-bindings',
-    }
+    },
+
+    nav: {
+      title: 'Navigation',
+
+      hotkeys: {
+        title: 'Key-bindings',
+      },
+
+      history: {
+        title: 'History',
+      },
+
+      settings: {
+        title: 'Settings',
+      },
+    },
+
+    tabs: {
+      title: 'Tabs',
+
+      new: {
+        title: 'New tab'
+      },
+
+      close: {
+        title: 'Close current tab'
+      },
+
+      next: {
+        title: 'Go to next tab'
+      },
+
+      previous: {
+        title: 'Go to previous tab'
+      },
+
+    },
+
+    request: {
+      title: 'Request',
+
+      url: {
+        title: 'Focus URL input'
+      },
+
+      method: {
+        title: 'Customize HTTP verb'
+      },
+
+    },
+
   },
 
   request: {

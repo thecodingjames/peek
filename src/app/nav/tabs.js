@@ -23,7 +23,14 @@ export default {
     },
 
     handleRenamePopup(event, tabId) {
-      const {id, title} = TabsService.get(tabId)
+      const tab = TabsService.get(tabId)
+
+      if (!tab) {
+        // double clicked on X to delete
+        return
+      }
+
+      const {id, title} = tab
 
       this.renaming = {
         element: event.currentTarget,

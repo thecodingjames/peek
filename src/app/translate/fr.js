@@ -30,7 +30,58 @@ export default {
   hotkeys: {
     dialog: {
       title: 'Raccourcis clavier',
-    }
+    },
+
+    nav: {
+      title: 'Navigation',
+
+      hotkeys: {
+        title: 'Raccourcis clavier',
+      },
+
+      history: {
+        title: 'Historique',
+      },
+
+      settings: {
+        title: 'Configuration',
+      },
+    },
+
+    tabs: {
+      title: 'Onglets',
+
+      new: {
+        title: 'Nouvel onglet'
+      },
+
+      close: {
+        title: 'Fermer l\'onglet courant'
+      },
+
+      next: {
+        title: 'Naviguer à l\'onglet suivant'
+      },
+
+      previous: {
+        title: 'Naviguer à l\'onglet précédant'
+      },
+
+    },
+
+    request: {
+      title: 'Requête',
+
+      url: {
+        title: 'Accéder au champs URL'
+      },
+
+      method: {
+        title: 'Personnaliser le verbe HTTP'
+      },
+
+    },
+
   },
 
   request: {
