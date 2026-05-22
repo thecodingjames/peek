@@ -1,5 +1,7 @@
-import TabsService from './tabs.service.js'
 import HttpPage from '../http/http.page.js'
+
+import TabsService from './tabs.service.js'
+import HotkeysService from '../hotkeys/hotkeys.service.js'
 
 export default {
   components: {
@@ -61,6 +63,23 @@ export default {
   },
 
   mounted() {
+
+    HotkeysService.set('tabs.new', () => {
+      TabsService.new()
+    })
+
+    HotkeysService.set('tabs.close', () => {
+      TabsService.remove(this.current)
+    })
+
+    HotkeysService.set('tabs.next', () => {
+      TabsService.goNext()
+    })
+
+    HotkeysService.set('tabs.previous', () => {
+      TabsService.goPrevious()
+    })
+
     this.$refs.renamePopup.animateClick = () => {
       this.renaming = null
     }
@@ -123,7 +142,7 @@ export default {
         :value="item.id"
         style="padding: 1rem;"
       >
-        <http-page />
+        <http-page :tabId="item.id"/>
       </v-tabs-window-item>
     </v-window>
 

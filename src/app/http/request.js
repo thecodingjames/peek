@@ -1,18 +1,29 @@
 import MessageCard from './message-card.js'
 import Request from './request.model.js'
 
+import TabMixin from '../nav/tab.mixin.js'
+
+import HotkeysService from '../hotkeys/hotkeys.service.js'
+
 export default {
+  mixins: [
+    TabMixin,
+  ],
+
   components: {
     MessageCard,
   },
 
   emits: [
-    'send'
+    'send',
   ],
 
   data() {
     return {
       request: new Request(),
+
+      methodMenuOpened: false,
+      methodPickerNavIndex: 0,
     }
   },
 
@@ -28,16 +39,63 @@ export default {
 
     handleMethodChange(method) {
       this.request.method = method
+      this.methodMenuOpened = false
 
       this.send()
     },
 
+    handleMenuEnter() {
+      this.handleMethodChange(this.methods[this.methodPickerNavIndex])
+    },
+
+    handleOpenMethodMenu() {
+      if (this.isActiveTab) {
+        this.methodMenuOpened = !this.request.hasErrors()
+
+        Vue.nextTick(() => {
+          setTimeout(() => {
+            this.$refs.methodMenuList.$el.focus()
+          }, 1)
+        })
+      }
+    }
+
   },
 
   computed: {
+
     methods() {
       return Request.methods
     },
+
+  },
+
+  watch: {
+
+    methodMenuOpened(opened) {
+      if (opened) {
+        this.methodPickerNavIndex = this.methods.findIndex( m => m == this.request.method)
+      }
+    },
+
+    isActiveTab(active) {
+      if (!active) {
+        this.methodMenuOpened = false
+      }
+    }
+
+  },
+
+  mounted() {
+
+    HotkeysService.set('request.url', () => {
+      this.$refs.url.focus()
+    })
+
+    HotkeysService.set('request.method', () => {
+      this.handleOpenMethodMenu()
+    })
+
   },
 
   template: `
@@ -50,29 +108,48 @@ export default {
         <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
           <v-text-field
             v-model="request.url"
+            ref="url"
+
             label="URL"
             required
             :rules="request.rules('url')"
           />
 
-          <v-btn-group divided>
-            <v-btn :disabled="request.hasErrors()" type="submit">{{ request.method }}</v-btn>
+          <v-btn-group
+            ref="methodGroup"
+            divided
+          >
+            <v-btn
+              :text="request.method"
+              :disabled="request.hasErrors()"
+              type="submit"
+              width="96"
+            />
 
-            <v-menu location="bottom">
-              <template v-slot:activator="{ props }">
-                <v-btn :disabled="request.hasErrors()" v-bind="props" icon="mdi-chevron-down"></v-btn>
-              </template>
+            <v-btn
+              ref="methodChevron"
+              :disabled="request.hasErrors()"
 
-              <v-list>
-                <v-list-item
-                  v-for="(method) in methods"
-                  :key="method"
-                  :value="method"
-                  @click="handleMethodChange(method)"
-                >
-                  <v-list-item-title>{{ method }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
+              @click="handleOpenMethodMenu()"
+
+              icon="mdi-chevron-down"
+            />
+
+            <v-menu
+              v-model="methodMenuOpened"
+              :activator="$refs.methodChevron"
+              :target="$refs.methodGroup"
+              location="bottom"
+            >
+              <v-list
+                :items="methods"
+                ref="methodMenuList"
+
+                v-model:navigation-index="methodPickerNavIndex"
+                navigationStrategy="track"
+                @update:selected="handleMethodChange($event[0])"
+                @keydown.enter.exact="handleMenuEnter()"
+              />
             </v-menu>
 
           </v-btn-group>

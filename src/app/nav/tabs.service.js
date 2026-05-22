@@ -10,7 +10,7 @@ const defaultTab = {
 let count = 0
 
 export default {
-  current: Vue.ref(0),
+  current: Vue.ref(defaultTab.id),
 
   tabs: Vue.reactive([
     defaultTab,
@@ -57,5 +57,21 @@ export default {
       const substituteIndex = Math.min(Math.max(index, 0), this.tabs.length - 1)
       this.current.value = this.tabs[substituteIndex].id
     }
+  },
+
+  step(direction) {
+    const currentIndex = this.tabs.findIndex( t => t.id == this.current.value )
+    const length = this.tabs.length
+    const destinationIndex = Math.max(currentIndex + direction, 0) % length
+
+    this.current.value = this.tabs[destinationIndex].id
+  },
+
+  goNext() {
+    this.step(1)
+  },
+
+  goPrevious() {
+    this.step(-1)
   },
 }

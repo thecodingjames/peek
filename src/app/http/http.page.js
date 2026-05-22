@@ -3,7 +3,13 @@ import Response from './response.js'
 import http from './http.service.js'
 import ResponseModel from './response.model.js'
 
+import TabMixin from '../nav/tab.mixin.js'
+
 export default {
+  mixins: [
+    TabMixin,
+  ],
+
   components: {
     Request,
     Response,
@@ -35,9 +41,9 @@ export default {
     </component>
 
     <div class="http_http-page">
-      <request @send="handleRequest" />
+      <request @send="handleRequest" :tabId />
 
-      <response :response />
+      <response :response :tabId />
     </div>
   `
 }
