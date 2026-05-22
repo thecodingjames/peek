@@ -23,7 +23,6 @@
       "icon": "build/icon.png",
       "target": [
         "AppImage",
-        "zip",
         "tar.gz",
         "snap"
       ]
