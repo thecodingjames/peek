@@ -9,15 +9,16 @@ const defaultTab = {
 
 let count = 0
 
-export default {
-  current: Vue.ref(defaultTab.id),
+const tabs = Vue.reactive([ defaultTab ])
+const current = Vue.ref(defaultTab.id)
 
-  tabs: Vue.reactive([
-    defaultTab,
-  ]),
+export default {
+  current: Vue.readonly(current),
+
+  tabs: Vue.readonly(tabs),
 
   new() {
-    count = count + Number(this.tabs.length > 1 || count > 0)
+    count = count + Number(tabs.length > 1 || count > 0)
     const id = crypto.randomUUID()
 
     let titleParts = [t.tabs.newRequest]
@@ -26,22 +27,22 @@ export default {
       titleParts.push(count)
     }
 
-    this.tabs.unshift({
+    tabs.unshift({
       id,
       title: titleParts.join(' '),
     })
 
-    this.current.value = id
+    current.value = id
+  },
+
+  get(id) {
+    return tabs.find( t => t.id == id )
   },
 
   select(id) {
     if (id) {
-      this.current.value = id
+      current.value = id
     }
-  },
-
-  get(id) {
-    return this.tabs.find( t => t.id == id )
   },
 
   rename(id, title) {
@@ -50,25 +51,25 @@ export default {
   },
 
   remove(id) {
-    if (this.tabs.length == 1) {
+    if (tabs.length == 1) {
       return
     }
 
-    const index = this.tabs.findIndex( t => t.id == id )
-    this.tabs.splice(index, 1)
+    const index = tabs.findIndex( t => t.id == id )
+    tabs.splice(index, 1)
 
-    if (id == this.current.value) {
-      const substituteIndex = Math.min(Math.max(index, 0), this.tabs.length - 1)
-      this.current.value = this.tabs[substituteIndex].id
+    if (id == current.value) {
+      const substituteIndex = Math.min(Math.max(index, 0), tabs.length - 1)
+      current.value = tabs[substituteIndex].id
     }
   },
 
   step(direction) {
-    const currentIndex = this.tabs.findIndex( t => t.id == this.current.value )
-    const length = this.tabs.length
+    const currentIndex = tabs.findIndex( t => t.id == current.value )
+    const length = tabs.length
     const destinationIndex = Math.max(currentIndex + direction, 0) % length
 
-    this.current.value = this.tabs[destinationIndex].id
+    current.value = tabs[destinationIndex].id
   },
 
   goNext() {

@@ -36,30 +36,34 @@ export default class Request extends VestModel {
     }
   }
 
+  get host() {
+    const url = this.fullUrl
+
+    const port = url.port ? `:${url.port}` : ''
+
+    return `${url.hostname}${port}`
+  }
+
+  get path() {
+    return `${this.fullUrl.pathname ?? '???'}`
+  }
+
   get text() {
     let text = ''
 
-    const url = this.fullUrl
-    const port = url.port ? `:${url.port}` : ''
-
-    text += `${this.method} ${url.pathname ?? '???'}`
+    text += `${this.method} ${this.path}`
     text += '\n'
-    text += `Host: ${url.hostname}${port}`
+    text += `Host: ${this.host}`
 
     return text
   }
 
-  get fetchInit() {
-    return {
-      url: this.fullUrl.toString(),
-      method: this.method, 
-    }
-  }
-
-  constructor() {
+  constructor(props) {
     super()
 
     this.method = Request.Method.get
+
+    Object.assign(this, props)
   }
 
   vestSuite() {
@@ -75,6 +79,15 @@ export default class Request extends VestModel {
       })
 
     })
+  }
+
+  toJSON() {
+    return {
+      ...super.toJSON(),
+
+      url: this.fullUrl.toString(),
+      method: this.method, 
+    }
   }
 
 }
