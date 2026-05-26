@@ -3,7 +3,7 @@ import Response from './response.js'
 import http from './http.service.js'
 import ResponseModel from './response.model.js'
 
-import TabMixin from '../nav/tab.mixin.js'
+import TabMixin from '../tabs/tab.mixin.js'
 
 export default {
   mixins: [

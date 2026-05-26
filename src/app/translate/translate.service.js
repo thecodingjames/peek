@@ -1,4 +1,4 @@
-import SettingsService from '../nav/drawers/settings.service.js'
+import SettingsService from '../drawers/settings/settings.service.js'
 import fr from './fr.js'
 import en from './en.js'
 

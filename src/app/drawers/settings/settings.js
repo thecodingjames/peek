@@ -1,4 +1,4 @@
-import Drawer from './drawer.js'
+import Drawer from '../drawer.js'
 import HotkeysDialog from '../../hotkeys/hotkeys-dialog.js'
 
 import SettingsService from './settings.service.js'

@@ -1,6 +1,6 @@
 import MessageCard from './message-card.js'
 
-import TabMixin from '../nav/tab.mixin.js'
+import TabMixin from '../tabs/tab.mixin.js'
 
 export default {
   mixins: [

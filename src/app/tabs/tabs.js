@@ -2,7 +2,7 @@ import HttpPage from '../http/http.page.js'
 
 import TabsService from './tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
-import SettingsService from './drawers/settings.service.js'
+import SettingsService from '../drawers/settings/settings.service.js'
 
 export default {
   components: {

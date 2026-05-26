@@ -1,4 +1,4 @@
-import Drawer from './drawer.js'
+import Drawer from '../drawer.js'
 
 export default {
   components: {

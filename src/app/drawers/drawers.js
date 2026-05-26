@@ -1,8 +1,8 @@
-import History from './drawers/history.js'
-import Settings from './drawers/settings.js'
+import History from './history/history.js'
+import Settings from './settings/settings.js'
 import HotkeysDialog from '../hotkeys/hotkeys-dialog.js'
 
-import TabsService from './tabs.service.js'
+import TabsService from '../tabs/tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 
 export default {

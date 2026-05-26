@@ -1,6 +1,6 @@
 import t from '../translate/translate.service.js'
 
-import SettingsService from '../nav/drawers/settings.service.js'
+import SettingsService from '../drawers/settings/settings.service.js'
 
 const defaultTab = {
   id: 'default',

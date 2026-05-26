@@ -1,10 +1,11 @@
-import Panel from './nav/panel.js'
-import Tabs from './nav/tabs.js'
-import SettingsService from './nav/drawers/settings.service.js'
+import Drawers from './drawers/drawers.js'
+import Tabs from './tabs/tabs.js'
+
+import SettingsService from './drawers/settings/settings.service.js'
 
 export default {
   components: {
-    Panel,
+    Drawers,
     Tabs,
   },
 
@@ -54,7 +55,7 @@ export default {
         </div>
 
         <v-layout>
-          <panel />
+          <drawers />
 
           <v-main>
             <tabs />

@@ -1,7 +1,7 @@
 import MessageCard from './message-card.js'
 import Request from './request.model.js'
 
-import TabMixin from '../nav/tab.mixin.js'
+import TabMixin from '../tabs/tab.mixin.js'
 
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 
