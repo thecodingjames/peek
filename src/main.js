@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
 
 const registerIPC = require('./ipc.js')
 registerIPC()
@@ -15,6 +15,7 @@ app.whenReady().then(() => {
     liveReload(window)
     window.openDevTools()
   }
+
 })
 
 function createWindow() {

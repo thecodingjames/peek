@@ -12,6 +12,7 @@ export default {
     settings: {
       title: 'Settings',
       followRedirect: 'Follow redirects',
+      alwaysShowTabs: 'Always show tabs',
       appearance: 'Appearance',
       theme: 'Theme',
       system: 'System',

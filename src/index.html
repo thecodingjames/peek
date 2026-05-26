@@ -29,10 +29,18 @@
       const app = Vue.createApp(App)
       app.use(Vuetify.createVuetify())
 
-      app.config.globalProperties.app = await electron.app()
+      const electronApp = await electron.app()
+      app.config.globalProperties.app = electronApp
       app.config.globalProperties.t = translate
 
       app.mount('#app')
+
+      if (!electronApp.development) {
+        window.addEventListener("beforeunload", (event) => {
+          // Disable refresh
+          event.preventDefault()
+        })
+      }
     </script>
   </body>
 </html>

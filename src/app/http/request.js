@@ -30,7 +30,9 @@ export default {
   methods: {
 
     send() {
-      this.$emit('send', this.request)
+      if (!this.request.hasErrors()) {
+        this.$emit('send', this.request)
+      }
     },
 
     async handleSend() {
@@ -127,15 +129,12 @@ export default {
           >
             <v-btn
               :text="request.method"
-              :disabled="request.hasErrors()"
               type="submit"
               width="96"
             />
 
             <v-btn
               ref="methodChevron"
-              :disabled="request.hasErrors()"
-
               icon="mdi-chevron-down"
             />
 

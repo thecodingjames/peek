@@ -2,6 +2,7 @@ import HttpPage from '../http/http.page.js'
 
 import TabsService from './tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
+import SettingsService from './drawers/settings.service.js'
 
 export default {
   components: {
@@ -16,6 +17,14 @@ export default {
       renaming: null,
       showRenamingPopup: false,
     }
+  },
+
+  computed: {
+
+    showTabs() {
+      return SettingsService.ui.alwaysShowTabs || this.tabs.length > 1
+    },
+
   },
 
   methods: {
@@ -103,7 +112,7 @@ export default {
     </component>
 
     <v-tabs 
-      v-if="tabs.length > 1"
+      v-if="showTabs"
       show-arrows
       hide-slider
 
@@ -124,6 +133,7 @@ export default {
 
         <template v-slot:append>
           <v-btn
+            v-if="tabs.length > 1"
             @click.prevent="handleClose(item.id)"
             color="error"
             size="x-small"

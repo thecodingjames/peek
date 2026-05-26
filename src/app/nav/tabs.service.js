@@ -50,6 +50,10 @@ export default {
   },
 
   remove(id) {
+    if (this.tabs.length == 1) {
+      return
+    }
+
     const index = this.tabs.findIndex( t => t.id == id )
     this.tabs.splice(index, 1)
 

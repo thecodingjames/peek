@@ -20,6 +20,7 @@ export default {
   },
 
   computed: {
+
     themeItems() {
       return ['system', 'light', 'dark'].map( theme => {
         return {
@@ -45,53 +46,76 @@ export default {
 
   template: `
     <drawer :title="t.panels.settings.title">
-      <h2>HTTP</h2>
+      <component is="style">
+        .nav_drawers_settings {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
 
-      <v-switch 
-        v-model="SettingsService.http.followRedirect" 
-        :label="t.panels.settings.followRedirect"
-        color="primary"
-        :hide-details="true"
-      ></v-switch>
+        .nav_drawers_settings>* {
+          margin: 0;
+        }
+      </component>
 
-      <h2>{{ t.panels.settings.appearance }}</h2>
+      <div class="nav_drawers_settings">
+        <h2>HTTP</h2>
 
-      <v-select
-        v-model="SettingsService.ui.theme"
-        :items="themeItems"
-        :label="t.panels.settings.theme"
-      ></v-select>
+        <v-switch
+          v-model="SettingsService.http.followRedirect"
+          :label="t.panels.settings.followRedirect"
+          color="primary"
+          :hide-details="true"
+        ></v-switch>
 
-      <v-select
-        v-model="SettingsService.ui.language"
-        :items="['fr', 'en']"
-        :label="t.panels.settings.language"
-      ></v-select>
+        <h2>{{ t.panels.settings.appearance }}</h2>
 
-      <v-btn
-        @click="handleHotkeys()"
-        prepend-icon="mdi-keyboard-outline"
-        style="width: 100%;"
-      >
-        {{ t.panels.settings.keyBindings }}
-      </v-btn>
+        <v-switch
+          v-model="SettingsService.ui.alwaysShowTabs"
+          :label="t.panels.settings.alwaysShowTabs"
+          color="primary"
+          :hide-details="true"
+        ></v-switch>
 
-      <h2>Application</h2>
+        <v-select
+          v-model="SettingsService.ui.theme"
+          :items="themeItems"
+          :label="t.panels.settings.theme"
+          hide-details
+        ></v-select>
 
-      <div style="display: flex; justify-content: space-between;">
+        <v-select
+          v-model="SettingsService.ui.language"
+          :items="['fr', 'en']"
+          :label="t.panels.settings.language"
+          hide-details
+        ></v-select>
+
         <v-btn
-          @click="openBrowser(app.repoUrl + '/releases')"
-          prepend-icon="mdi-download"
+          @click="handleHotkeys()"
+          prepend-icon="mdi-keyboard-outline"
+          style="width: 100%;"
         >
-          {{ app.version }}
+          {{ t.panels.settings.keyBindings }}
         </v-btn>
 
-        <v-btn
-          @click="openBrowser(app.repoUrl)"
-          prepend-icon="mdi-source-branch"
-        >
-          Source
-        </v-btn>
+        <h2>Application</h2>
+
+        <div style="display: flex; justify-content: space-between;">
+          <v-btn
+            @click="openBrowser(app.repoUrl + '/releases')"
+            prepend-icon="mdi-download"
+          >
+            {{ app.version }}
+          </v-btn>
+
+          <v-btn
+            @click="openBrowser(app.repoUrl)"
+            prepend-icon="mdi-source-branch"
+          >
+            Source
+          </v-btn>
+        </div>
       </div>
 
     </drawer>

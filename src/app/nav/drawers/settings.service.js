@@ -6,6 +6,7 @@ const defaultSettings = {
   },
 
   ui: {
+    alwaysShowTabs: false,
     theme: 'system',
     language: 'fr',
   },

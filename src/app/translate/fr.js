@@ -13,6 +13,7 @@ export default {
       title: 'Configuration',
       followRedirect: 'Suivre les redirections',
       appearance: 'Visuel',
+      alwaysShowTabs: 'Toujours afficher les onglets',
       theme: 'Thème',
       system: 'Système',
       light: 'Clair',
