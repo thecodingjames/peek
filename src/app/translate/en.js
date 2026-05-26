@@ -1,12 +1,13 @@
 export default {
 
-  panels: {
+  drawers: {
     newRequest: {
       title: 'New request',
     },
 
     history: {
       title: 'History',
+      empty: 'No requests...',
     },
 
     settings: {

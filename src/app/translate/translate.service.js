@@ -9,8 +9,12 @@ function language(value) {
 function missingProxy(_path) {
   return new Proxy({}, {
     get(target, prop) {
-      if (prop === Symbol.toPrimitive || prop == 'toString') {
+      if (prop === Symbol.toPrimitive || prop == 'toString' || prop == Symbol.toStringTag) {
         return () => _path
+      }
+
+      if (prop == '__v_raw') {
+        return _path
       }
 
       return missingProxy(`${_path}.${prop}`)
