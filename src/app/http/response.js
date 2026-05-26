@@ -22,6 +22,7 @@ export default {
   },
 
   computed: {
+
     html() {
       // TODO add more content types detection
       return this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}">`);
@@ -99,7 +100,9 @@ export default {
         </v-tabs-window>
       </div>
 
-      <p v-else style="font-style: italic;">{{ t.response.pending }}</p>
+      <p v-else-if="response === undefined" style="font-style: italic;">{{ t.response.pending }}</p>
+
+      <p v-else-if="response === null" class="text-red">{{ t.response.error }}</p>
     </message-card>
   `
 }

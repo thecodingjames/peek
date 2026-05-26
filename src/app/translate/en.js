@@ -103,6 +103,7 @@ export default {
   response: {
     title: 'Response',
     pending: 'Waiting for request...',
+    error: 'Remote host unavailable',
 
     tabs: {
       raw: {

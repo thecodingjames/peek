@@ -26,7 +26,11 @@ export default {
       try {
         this.response = ResponseModel.instantiate(await http(request))
       } catch (e) {
-        console.log(e.message)
+        this.response = null
+
+        if (this.app.development) {
+          console.error(e)
+        }
       }
     }
   },

@@ -4,10 +4,14 @@ import ResponseModel from './response.model.js'
 export default async function http(request) {
   const redirect = SettingsService.http.followRedirect ? 'follow' : 'manual'
 
-  const result = await window.electron.http({ 
+  const { error, ...result } = await window.electron.http({
     ...request.fetchInit,
     redirect
   })
 
-  return result
+  if (error) {
+    throw new Error(error)
+  } else {
+    return result
+  }
 }

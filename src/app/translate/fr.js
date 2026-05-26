@@ -103,6 +103,7 @@ export default {
   response: {
     title: 'Réponse',
     pending: 'En attente d\'une requête...',
+    error: 'Hôte distant inaccessible',
 
     tabs: {
       raw: {
