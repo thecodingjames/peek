@@ -51,9 +51,7 @@ export default {
     },
 
     handleOpenMethodMenu() {
-      if (this.isActiveTab) {
-        this.methodMenuOpened = !this.request.hasErrors()
-      }
+      this.methodMenuOpened = this.isActiveTab
     }
 
   },
@@ -69,18 +67,21 @@ export default {
   watch: {
 
     methodMenuOpened(opened) {
+      let interval = null
+
       if (opened) {
         this.methodPickerNavIndex = this.methods.findIndex( m => m == this.request.method)
 
         // focus hack :(
         Vue.nextTick(() => {
-          const interval = setInterval(() => {
-              
+          interval = setInterval(() => {
             if (this.methodMenuOpened) {
               this.$refs.methodMenuList.$el.focus()
             }
 
-            clearInterval(interval)
+            if (this.$refs.methodMenuList.$el == document.activeElement) {
+              clearInterval(interval)
+            }
           }, 1)
         })
       }
