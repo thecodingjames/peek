@@ -1,11 +1,9 @@
-import Drawer from '../drawer.js'
 import HotkeysDialog from '../../hotkeys/hotkeys-dialog.js'
 
 import SettingsService from './settings.service.js'
 
 export default {
   components: {
-    Drawer,
     HotkeysDialog,
   },
 
@@ -45,7 +43,7 @@ export default {
   },
 
   template: `
-    <drawer :title="t.drawers.settings.title">
+    <div>
       <component is="style">
         .nav_drawers_settings {
           display: flex;
@@ -118,6 +116,6 @@ export default {
         </div>
       </div>
 
-    </drawer>
+    </div>
   `
 }

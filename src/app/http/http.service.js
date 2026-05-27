@@ -6,12 +6,20 @@ import HistoryService from '../drawers/history/history.service.js'
 export default async function http(request) {
   const redirect = SettingsService.http.followRedirect ? 'follow' : 'manual'
 
+  const start = Date.now()
+
   const { error, ...result } = await window.electron.http({
     ...request.toJSON(),
-    redirect
+    redirect,
   })
 
-  HistoryService.add(request, result)
+  HistoryService.add(
+    request, 
+    { 
+      ...result, 
+      duration: (Date.now() - start),
+    }
+  )
 
   if (error) {
     throw new Error(error)

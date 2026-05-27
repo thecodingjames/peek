@@ -11,13 +11,18 @@ export default class HistoryModel extends RequestModel {
       // Http error, no response
       this.response = null
     } else {
-      const { code, redirected } = result
+      const { code, redirected, duration } = result
 
       this.response = {
         code,
-        redirected
+        redirected, 
+        duration,
       }
     }
+  }
+
+  get formattedDuration() {
+    return `${this.response?.duration ?? 'N/A'}ms`
   }
 
   toJSON() {

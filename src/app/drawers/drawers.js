@@ -77,44 +77,60 @@ export default {
   },
 
   template: `
-    <v-navigation-drawer
-      :rail="true"
-      permanent
-    >
-      <v-list nav>
-        <v-list-item
-          @click="handleNewRequest" 
-          prepend-icon="mdi-plus"
-          value="new"
-          :active="false"
-          v-tooltip="{text: t.drawers.newRequest.title, openDelay: 1000}"
-        />
+    <div>
+      <v-navigation-drawer
+        :rail="true"
+        permanent
+      >
+        <v-list nav>
+          <v-list-item
+            @click="handleNewRequest" 
+            prepend-icon="mdi-plus"
+            value="new"
+            :active="false"
+            v-tooltip="{text: t.drawers.newRequest.title, openDelay: 1000}"
+          />
 
-        <v-list-item
-          v-for="(option, name) in options"
+          <v-list-item
+            v-for="(option, name) in options"
 
-          @click="handleDrawerItem(name)" 
-          :active="current == name"
-          :prepend-icon="option.icon"
-          :title="t.drawers[name].title"
-          :value="name"
-          v-tooltip="{text: t.drawers[name].title, openDelay: 1000}"
-        />
-      </v-list>
-    </v-navigation-drawer>
+            @click="handleDrawerItem(name)" 
+            :active="current == name"
+            :prepend-icon="option.icon"
+            :title="t.drawers[name].title"
+            :value="name"
+            v-tooltip="{text: t.drawers[name].title, openDelay: 1000}"
+          />
+        </v-list>
+      </v-navigation-drawer>
 
-    <v-navigation-drawer 
-      :permanent="!!drawer"
-      :mobile="true"
-    >
-      <component 
-        v-if="!!drawer" 
-        :is="drawer"
+      <v-navigation-drawer 
+        :permanent="!!drawer"
+        :mobile="true"
+        :width="384"
+      >
+        <div 
+          v-if="!!drawer"
+          style="height: 100dvh; display: flex; flex-direction: row;"
+        >
+          <div style="flex-grow: 1;">
+            <h1 style="margin: 4px 1rem;">{{ t.drawers[current].title }}</h1>
 
-        @hotkeysClick="handleHotkeysClick()"
-      />
-    </v-navigation-drawer>
+            <div style="flex-grow: 1; overflow-y: auto;">
+              <component 
+                :is="drawer"
+                @hotkeysClick="handleHotkeysClick()"
+                style="overflow-y: auto; flex-grow: 1;"
+              />
 
-    <hotkeys-dialog v-model="hotkeysDialogOpened" />
+            </div>
+          </div>
+
+          <div style="flex-shrink: 1; width: 4px; height: 100%; background-color: gray;"></div>
+        </div>
+      </v-navigation-drawer>
+
+      <hotkeys-dialog v-model="hotkeysDialogOpened" />
+    </div>
   `
 }
