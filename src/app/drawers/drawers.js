@@ -4,6 +4,7 @@ import HotkeysDialog from '../hotkeys/hotkeys-dialog.js'
 
 import TabsService from '../tabs/tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
+import SettingsService from './settings/settings.service.js'
 
 export default {
   components: {
@@ -12,30 +13,14 @@ export default {
     HotkeysDialog,
   },
 
-  mounted() {
-
-    HotkeysService.set('nav.history', () => {
-      this.handleDrawerItem('history')
-    })
-
-    HotkeysService.set('nav.settings', () => {
-      this.handleDrawerItem('settings')
-    })
-
-    HotkeysService.set('nav.hotkeys', () => {
-      this.hotkeysDialogOpened = true
-    })
-
-  },
-
   data() {
     return {
       current: undefined,
 
       hotkeysDialogOpened: false,
 
-      width: 256,
-      originX: null,
+      width: SettingsService.ui.drawerWidth,
+      origin: null,
     }
   },
 
@@ -78,27 +63,58 @@ export default {
     },
 
     handleMouseDown(e) {
-      this.originX = e.clientX
+      if (e.target == this.$refs.resizeHandle) {
+        this.origin = {
+          width: this.width,
+          x: e.clientX,
+        }
+      }
     },
 
     handleMouseUp() {
-      this.originX = null
+      this.origin = null
     },
 
     handleMouseMove(e) {
-      if (this.originX) {
+      if (this.origin) {
         const currentX = e.clientX
-        console.log({currentX})
+        const newWidth = this.origin.width + (currentX - this.origin.x) 
 
-        this.width = this.originX + (currentX - this.originX)
+        const min = 256
+        const max = document.body.getBoundingClientRect().width * 0.5
+
+        this.width = Math.min(Math.max(min, newWidth), max)
       }
     },
 
   },
 
+  watch: {
+    
+    width(value) {
+      SettingsService.ui.drawerWidth = value
+    },
+
+  },
+
   mounted() {
+
+    HotkeysService.set('nav.history', () => {
+      this.handleDrawerItem('history')
+    })
+
+    HotkeysService.set('nav.settings', () => {
+      this.handleDrawerItem('settings')
+    })
+
+    HotkeysService.set('nav.hotkeys', () => {
+      this.hotkeysDialogOpened = !this.hotkeysDialogOpened
+    })
+
+    document.addEventListener('mousedown', this.handleMouseDown)
     document.addEventListener('mouseup', this.handleMouseUp)
     document.addEventListener('mousemove', this.handleMouseMove)
+
   },
 
   beforeUnmount() {
@@ -117,7 +133,11 @@ export default {
         }
 
         .resize-handle:hover {
-          cursor: col-resize;
+          cursor: grab;
+        }
+
+        * {
+          cursor: {{ origin ? 'col-resize !important' : 'inherit' }};
         }
       </component>
       <v-navigation-drawer
@@ -171,7 +191,6 @@ export default {
           <div 
             ref="resizeHandle"
             class="resize-handle"
-            @mousedown="handleMouseDown"
           ></div>
         </div>
       </v-navigation-drawer>

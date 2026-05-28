@@ -22,6 +22,7 @@ const defaultSettings = {
     alwaysShowTabs: false,
     theme: 'system',
     language: 'fr',
+    drawerWidth: 256,
   },
 
   hotkeys: {
