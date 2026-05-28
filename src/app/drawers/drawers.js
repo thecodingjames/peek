@@ -33,6 +33,9 @@ export default {
       current: undefined,
 
       hotkeysDialogOpened: false,
+
+      width: 256,
+      originX: null,
     }
   },
 
@@ -74,10 +77,49 @@ export default {
       this.hotkeysDialogOpened = true
     },
 
+    handleMouseDown(e) {
+      this.originX = e.clientX
+    },
+
+    handleMouseUp() {
+      this.originX = null
+    },
+
+    handleMouseMove(e) {
+      if (this.originX) {
+        const currentX = e.clientX
+        console.log({currentX})
+
+        this.width = this.originX + (currentX - this.originX)
+      }
+    },
+
+  },
+
+  mounted() {
+    document.addEventListener('mouseup', this.handleMouseUp)
+    document.addEventListener('mousemove', this.handleMouseMove)
+  },
+
+  beforeUnmount() {
+    document.removeEventListener('mouseup', this.handleMouseUp)
+    document.removeEventListener('mousemove', this.handleMouseMove)
   },
 
   template: `
     <div>
+      <component is="style">
+        .resize-handle {
+          flex-shrink: 1;
+          width: 4px;
+          height: 100%;
+          background-color: gray;
+        }
+
+        .resize-handle:hover {
+          cursor: col-resize;
+        }
+      </component>
       <v-navigation-drawer
         :rail="true"
         permanent
@@ -107,7 +149,7 @@ export default {
       <v-navigation-drawer 
         :permanent="!!drawer"
         :mobile="true"
-        :width="384"
+        :width
       >
         <div 
           v-if="!!drawer"
@@ -126,7 +168,11 @@ export default {
             </div>
           </div>
 
-          <div style="flex-shrink: 1; width: 4px; height: 100%; background-color: gray;"></div>
+          <div 
+            ref="resizeHandle"
+            class="resize-handle"
+            @mousedown="handleMouseDown"
+          ></div>
         </div>
       </v-navigation-drawer>
 
