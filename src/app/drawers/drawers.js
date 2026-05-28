@@ -63,11 +63,9 @@ export default {
     },
 
     handleMouseDown(e) {
-      if (e.target == this.$refs.resizeHandle) {
-        this.origin = {
-          width: this.width,
-          x: e.clientX,
-        }
+      this.origin = {
+        width: this.width,
+        x: e.clientX,
       }
     },
 
@@ -95,6 +93,10 @@ export default {
       SettingsService.ui.drawerWidth = value
     },
 
+    origin(value) {
+      document.querySelector('.v-application').classList.toggle('resizing', !!value)
+    },
+
   },
 
   mounted() {
@@ -111,7 +113,6 @@ export default {
       this.hotkeysDialogOpened = !this.hotkeysDialogOpened
     })
 
-    document.addEventListener('mousedown', this.handleMouseDown)
     document.addEventListener('mouseup', this.handleMouseUp)
     document.addEventListener('mousemove', this.handleMouseMove)
 
@@ -125,21 +126,36 @@ export default {
   template: `
     <div>
       <component is="style">
+        .resizing {
+          * {
+            cursor: col-resize !important;
+          }
+
+          .v-navigation-drawer, .v-main {
+            transition: none !important;
+          }
+
+          .resize-handle:hover,.resize-handle:hover * {
+            cursor: col-resize !important;
+          }
+        }
+
+        .resize-handle:hover,.resize-handle:hover * {
+          cursor: grab !important;
+        }
+
         .resize-handle {
           flex-shrink: 1;
-          width: 4px;
           height: 100%;
-          background-color: gray;
+          background-color: rgba(var(--v-border-color), var(--v-border-opacity));
+;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
 
-        .resize-handle:hover {
-          cursor: grab;
-        }
-
-        * {
-          cursor: {{ origin ? 'col-resize !important' : 'inherit' }};
-        }
       </component>
+
       <v-navigation-drawer
         :rail="true"
         permanent
@@ -173,7 +189,7 @@ export default {
       >
         <div 
           v-if="!!drawer"
-          style="height: 100dvh; display: flex; flex-direction: row;"
+          style="height: 100%; display: flex; flex-direction: row;"
         >
           <div style="flex-grow: 1;">
             <h1 style="margin: 4px 1rem;">{{ t.drawers[current].title }}</h1>
@@ -191,7 +207,14 @@ export default {
           <div 
             ref="resizeHandle"
             class="resize-handle"
-          ></div>
+
+            @mousedown="handleMouseDown"
+          >
+            <v-icon
+              icon="mdi-drag-vertical-variant"
+              size="x-small"
+            />
+          </div>
         </div>
       </v-navigation-drawer>
 
