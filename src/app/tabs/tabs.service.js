@@ -2,22 +2,59 @@ import t from '../translate/translate.service.js'
 
 import SettingsService from '../drawers/settings/settings.service.js'
 
-const defaultTab = {
-  id: 'default',
-  title: t.tabs.defaultRequestName,
+import RequestModel from '../http/request.model.js'
+
+const KEY = 'tabs'
+
+function Tab(id, title, request = new RequestModel()) {
+  return {
+    id,
+    title,
+    request,
+  }
 }
 
-let count = 0
+const defaultTab = Tab('default', t.tabs.defaultRequestName)
 
-const tabs = Vue.reactive([ defaultTab ])
-const current = Vue.ref(defaultTab.id)
+const loadedTabs = JSON.parse(localStorage.getItem(KEY) ?? '{}')
+if (loadedTabs.tabs) {
+  loadedTabs.tabs = loadedTabs.tabs.map( item => {
+    return {
+      ...item,
+      request: new RequestModel(item.request),
+    }
+  })
+} else {
+  loadedTabs.tabs = [
+    defaultTab,
+  ]
+}
+
+// TODO !!! :(
+let count = loadedTabs.tabs?.length ?? 0
+
+const tabs = Vue.reactive(loadedTabs.tabs)
+const current = Vue.ref(loadedTabs.current ?? defaultTab.id)
+
+Vue.watch(
+  () => [tabs, current.value],
+  ([tabs, current]) => {
+    localStorage.setItem(KEY, JSON.stringify({
+      tabs,
+      current
+    }))
+  },
+  {
+    deep: true,
+  }
+)
 
 export default {
   current: Vue.readonly(current),
 
   tabs: Vue.readonly(tabs),
 
-  new() {
+  new(request = new RequestModel()) {
     count = count + Number(tabs.length > 1 || count > 0)
     const id = crypto.randomUUID()
 
@@ -27,11 +64,7 @@ export default {
       titleParts.push(count)
     }
 
-    tabs.unshift({
-      id,
-      title: titleParts.join(' '),
-    })
-
+    tabs.unshift(Tab(id, titleParts.join(' '), request))
     current.value = id
   },
 

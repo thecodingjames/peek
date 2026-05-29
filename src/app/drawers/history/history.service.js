@@ -1,3 +1,7 @@
+import TabsService from '../../tabs/tabs.service.js'
+
+import RequestModel from '../../http/request.model.js'
+
 import HistoryModel from './history.model.js'
 
 const KEY = 'history'
@@ -20,5 +24,9 @@ export default {
 
   add(request, result) {
     requests.splice(0, 0, new HistoryModel(request, result))
-  }
+  },
+
+  openTab(request) {
+    TabsService.new(new RequestModel(request))
+  },
 }

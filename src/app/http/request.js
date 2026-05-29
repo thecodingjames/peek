@@ -1,6 +1,7 @@
 import MessageCard from './message-card.js'
 import Request from './request.model.js'
 
+import TabsService from '../tabs/tabs.service.js'
 import TabMixin from '../tabs/tab.mixin.js'
 
 import HotkeysService from '../hotkeys/hotkeys.service.js'
@@ -20,7 +21,7 @@ export default {
 
   data() {
     return {
-      request: new Request(),
+      request: TabsService.get(this.tabId).request,
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,

@@ -27,6 +27,10 @@ export default {
       }
     },
 
+    handleItemClick(request) {
+      HistoryService.openTab(request)
+    }
+
   },
 
   template: `
@@ -39,6 +43,7 @@ export default {
           <v-list-item 
             link
             :appendIcon="alertIcon(request)"
+            @click="handleItemClick(request)"
           >
             <v-list-item-title style="display: flex; gap: 0.5rem; align-items: baseline;">
               <span class="text-label-large">{{ request.method }}</span>
@@ -51,7 +56,7 @@ export default {
 
             <div 
               v-if="request.response.code"
-              style="margin-top: 0.25rem; display: flex; justify-content: space-evenly;"
+              style="margin-top: 0.25rem; display: flex; gap: 1rem;"
             >
               <v-chip 
                 :append-icon="request.response.redirected ? 'mdi-chevron-double-right' : null"

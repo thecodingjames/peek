@@ -85,7 +85,7 @@ export default class Request extends VestModel {
     return {
       ...super.toJSON(),
 
-      url: this.fullUrl.toString(),
+      url: this. url ? this.fullUrl.toString(): '',
       method: this.method, 
     }
   }
