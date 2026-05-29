@@ -18,7 +18,7 @@ export default {
     },
 
     alertIcon(request) {
-      if (!request.response) {
+      if (!request.response.code) {
         return Vue.h(Vuetify.components.VIcon, {
           icon: 'mdi-alert',
           color: 'red',
@@ -49,7 +49,10 @@ export default {
 
             <v-list-item-subtitle>{{ request.host }}</v-list-item-subtitle>
 
-            <div v-if="request.response">
+            <div 
+              v-if="request.response.code"
+              style="margin-top: 0.25rem; display: flex; justify-content: space-evenly;"
+            >
               <v-chip 
                 :append-icon="request.response.redirected ? 'mdi-chevron-double-right' : null"
                 :text="request.response.code"

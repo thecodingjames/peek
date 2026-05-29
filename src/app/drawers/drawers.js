@@ -191,7 +191,7 @@ export default {
           v-if="!!drawer"
           style="height: 100%; display: flex; flex-direction: row;"
         >
-          <div style="flex-grow: 1;">
+          <div style="flex-grow: 1; display: flex; flex-direction: column;">
             <h1 style="margin: 4px 1rem;">{{ t.drawers[current].title }}</h1>
 
             <div style="flex-grow: 1; overflow-y: auto;">
@@ -199,8 +199,8 @@ export default {
                 :is="drawer"
                 @hotkeysClick="handleHotkeysClick()"
                 style="overflow-y: auto; flex-grow: 1;"
+                :style="{ padding: current != 'history' ? '1rem' : 0 }"
               />
-
             </div>
           </div>
 
