@@ -1,7 +1,8 @@
 import MessageCard from './message-card.js'
 import Request from './request.model.js'
 
-import TabMixin from '../nav/tab.mixin.js'
+import TabsService from '../tabs/tabs.service.js'
+import TabMixin from '../tabs/tab.mixin.js'
 
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 
@@ -20,7 +21,7 @@ export default {
 
   data() {
     return {
-      request: new Request(),
+      request: TabsService.get(this.tabId).request,
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
@@ -51,9 +52,7 @@ export default {
     },
 
     handleOpenMethodMenu() {
-      if (this.isActiveTab) {
-        this.methodMenuOpened = !this.request.hasErrors()
-      }
+      this.methodMenuOpened = this.isActiveTab
     }
 
   },
@@ -69,18 +68,21 @@ export default {
   watch: {
 
     methodMenuOpened(opened) {
+      let interval = null
+
       if (opened) {
         this.methodPickerNavIndex = this.methods.findIndex( m => m == this.request.method)
 
         // focus hack :(
         Vue.nextTick(() => {
-          const interval = setInterval(() => {
-              
+          interval = setInterval(() => {
             if (this.methodMenuOpened) {
               this.$refs.methodMenuList.$el.focus()
             }
 
-            clearInterval(interval)
+            if (this.$refs.methodMenuList.$el == document.activeElement) {
+              clearInterval(interval)
+            }
           }, 1)
         })
       }

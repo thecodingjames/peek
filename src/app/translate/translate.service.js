@@ -1,4 +1,4 @@
-import SettingsService from '../nav/drawers/settings.service.js'
+import SettingsService from '../drawers/settings/settings.service.js'
 import fr from './fr.js'
 import en from './en.js'
 
@@ -9,8 +9,12 @@ function language(value) {
 function missingProxy(_path) {
   return new Proxy({}, {
     get(target, prop) {
-      if (prop === Symbol.toPrimitive || prop == 'toString') {
+      if (prop === Symbol.toPrimitive || prop == 'toString' || prop == Symbol.toStringTag) {
         return () => _path
+      }
+
+      if (prop == '__v_raw') {
+        return _path
       }
 
       return missingProxy(`${_path}.${prop}`)

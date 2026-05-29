@@ -61,4 +61,9 @@ export default class VestModel {
     })
     */
   }
+
+  toJSON() {
+    return {}
+  }
+
 }

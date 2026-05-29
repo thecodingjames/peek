@@ -1,11 +1,9 @@
-import Drawer from './drawer.js'
 import HotkeysDialog from '../../hotkeys/hotkeys-dialog.js'
 
 import SettingsService from './settings.service.js'
 
 export default {
   components: {
-    Drawer,
     HotkeysDialog,
   },
 
@@ -25,7 +23,7 @@ export default {
       return ['system', 'light', 'dark'].map( theme => {
         return {
           value: theme,
-          title: this.t.panels.settings[theme],
+          title: this.t.drawers.settings[theme],
         }
       })
     },
@@ -45,7 +43,7 @@ export default {
   },
 
   template: `
-    <drawer :title="t.panels.settings.title">
+    <div>
       <component is="style">
         .nav_drawers_settings {
           display: flex;
@@ -63,16 +61,16 @@ export default {
 
         <v-switch
           v-model="SettingsService.http.followRedirect"
-          :label="t.panels.settings.followRedirect"
+          :label="t.drawers.settings.followRedirect"
           color="primary"
           :hide-details="true"
         ></v-switch>
 
-        <h2>{{ t.panels.settings.appearance }}</h2>
+        <h2>{{ t.drawers.settings.appearance }}</h2>
 
         <v-switch
           v-model="SettingsService.ui.alwaysShowTabs"
-          :label="t.panels.settings.alwaysShowTabs"
+          :label="t.drawers.settings.alwaysShowTabs"
           color="primary"
           :hide-details="true"
         ></v-switch>
@@ -80,14 +78,14 @@ export default {
         <v-select
           v-model="SettingsService.ui.theme"
           :items="themeItems"
-          :label="t.panels.settings.theme"
+          :label="t.drawers.settings.theme"
           hide-details
         ></v-select>
 
         <v-select
           v-model="SettingsService.ui.language"
           :items="['fr', 'en']"
-          :label="t.panels.settings.language"
+          :label="t.drawers.settings.language"
           hide-details
         ></v-select>
 
@@ -96,7 +94,7 @@ export default {
           prepend-icon="mdi-keyboard-outline"
           style="width: 100%;"
         >
-          {{ t.panels.settings.keyBindings }}
+          {{ t.drawers.settings.keyBindings }}
         </v-btn>
 
         <h2>Application</h2>
@@ -118,6 +116,6 @@ export default {
         </div>
       </div>
 
-    </drawer>
+    </div>
   `
 }

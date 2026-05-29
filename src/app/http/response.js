@@ -1,6 +1,8 @@
 import MessageCard from './message-card.js'
 
-import TabMixin from '../nav/tab.mixin.js'
+import ResponseModel from './response.model.js'
+
+import TabMixin from '../tabs/tab.mixin.js'
 
 export default {
   mixins: [
@@ -35,17 +37,7 @@ export default {
     },
 
     statusColor() {
-      const code = this.response.code
-
-      if (code >= 200 && code < 300) {
-        return 'text-green'
-      } else if (code >= 400 && code < 500) {
-        return 'text-orange'
-      } else if (code >= 500) {
-        return 'text-red'
-      } else {
-        return 'text-grey'
-      }
+      return `text-${ResponseModel.statusColor(this.response.code)}`
     }
 
   },
