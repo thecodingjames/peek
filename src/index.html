@@ -34,13 +34,6 @@
       app.config.globalProperties.t = translate
 
       app.mount('#app')
-
-      if (!electronApp.development) {
-        window.addEventListener("beforeunload", (event) => {
-          // Disable refresh
-          event.preventDefault()
-        })
-      }
     </script>
   </body>
 </html>
