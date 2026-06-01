@@ -1,5 +1,3 @@
-import MessageCard from './message-card.js'
-
 import ResponseModel from './response.model.js'
 
 import TabMixin from '../tabs/tab.mixin.js'
@@ -8,10 +6,6 @@ export default {
   mixins: [
     TabMixin,
   ],
-
-  components: {
-    MessageCard,
-  },
 
   props: [
     'response',
@@ -43,9 +37,25 @@ export default {
   },
 
   template: `
-    <message-card
-      :title="t.response.title"
-    >
+    <div>
+
+      <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+        <div class="section-title">
+          {{ t.response.title }}
+        </div>
+
+        <v-chip
+          v-if="response"
+          color="gray"
+          label
+          variant="tonal"
+          size="small"
+          density="comfortable"
+        >
+          {{ response.formattedDuration }}
+        </v-chip>
+      </div>
+
       <div v-if="response">
         <v-tabs v-model="tab">
           <v-tab 
@@ -92,9 +102,9 @@ export default {
         </v-tabs-window>
       </div>
 
-      <p v-else-if="response === undefined" style="font-style: italic;">{{ t.response.pending }}</p>
+      <span v-else-if="response === undefined" style="font-style: italic;">{{ t.response.pending }}</span>
 
-      <p v-else-if="response === null" class="text-red">{{ t.response.error }}</p>
-    </message-card>
+      <span v-else-if="response === null" class="text-red">{{ t.response.error }}</span>
+    </div>
   `
 }

@@ -35,7 +35,7 @@ export default {
 
   template: `
     <div>
-      <p v-if="requests.length == 0" style="font-style: italic;">{{ t.drawers.history.empty }}</p>
+      <p v-if="requests.length == 0" style="font-style: italic; padding-left: 1rem;">{{ t.drawers.history.empty }}</p>
 
       <v-list v-else>
 

@@ -41,6 +41,14 @@ export default {
         display: flex;
         gap: 2rem;
         flex-direction: column;
+
+        .section-title {
+          font-weight: bold !important;
+          text-align: start;
+          text-transform: uppercase;
+          font-size: 0.8rem;
+          margin-bottom: 1rem;
+        }
       }
     </component>
 

@@ -13,17 +13,22 @@ export default async function http(request) {
     redirect,
   })
 
-  HistoryService.add(
-    request, 
-    { 
+  let response = null
+  if (result) {
+    response = {
       ...result, 
       duration: (Date.now() - start),
     }
+  }
+
+  HistoryService.add(
+    request,
+    response
   )
 
   if (error) {
     throw new Error(error)
   } else {
-    return result
+    return response
   }
 }

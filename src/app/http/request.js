@@ -1,4 +1,3 @@
-import MessageCard from './message-card.js'
 import Request from './request.model.js'
 
 import TabsService from '../tabs/tabs.service.js'
@@ -11,10 +10,6 @@ export default {
     TabMixin,
   ],
 
-  components: {
-    MessageCard,
-  },
-
   emits: [
     'send',
   ],
@@ -22,6 +17,7 @@ export default {
   data() {
     return {
       request: TabsService.get(this.tabId).request,
+      rawVisible: false,
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
@@ -29,6 +25,10 @@ export default {
   },
 
   methods: {
+
+    handleTogglePanel() {
+      this.rawVisible = !this.rawVisible
+    },
 
     send() {
       if (!this.request.hasErrors()) {
@@ -109,12 +109,29 @@ export default {
   },
 
   template: `
-    <message-card
-      :title="t.request.title"
-      :alt-text="t.request.rawHttp"
-      icon="mdi-text"
-    >
-      <template #main>
+    <div>
+
+      <div class="section-title">
+        {{ t.request.title }}
+        <v-btn
+          ref="altButton"
+          @click="handleTogglePanel()"
+          :icon="rawVisible ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
+        />
+
+        <v-tooltip
+          v-if="!rawVisible"
+          :text="t.request.rawHttp"
+          :activator="$refs.altButton"
+          open-delay="1000"
+        />
+      </div>
+
+      <div v-if="rawVisible">
+        <pre>{{ request.text }}</pre>
+      </div>
+
+      <div v-else>
         <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
           <v-text-field
             v-model="request.url"
@@ -159,12 +176,7 @@ export default {
 
           </v-btn-group>
         </v-form>
-      </template>
-
-      <template #alt>
-        <pre>{{ request.text }}</pre>
-      </template>
-
-    </message-card>
+      </div>
+    </div>
   `
 }

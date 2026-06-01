@@ -31,6 +31,14 @@ export default class Response extends VestModel {
     }
   }
 
+  static formattedDuration(duration) {
+    return `${duration ?? 'N/A'}ms`
+  }
+
+  get formattedDuration() {
+    return Response.formattedDuration(this.duration)
+  }
+
   vestSuite() {
     return Vest.create( response => {
       const { test, enforce, compose } = Vest
