@@ -38,9 +38,10 @@ export default {
   template: `
     <component is="style">
       .http_http-page {
-        display: flex;
+        display: grid;
         gap: 2rem;
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(2, 1fr);
 
         .section-title {
           font-weight: bold !important;
@@ -48,6 +49,13 @@ export default {
           text-transform: uppercase;
           font-size: 0.8rem;
           margin-bottom: 1rem;
+        }
+      }
+
+      @media (min-width: 960px) {
+        .http_http-page {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-rows: 1fr;
         }
       }
     </component>

@@ -78,7 +78,7 @@ export default {
           </v-tabs-window-item>
 
           <v-tabs-window-item value="headers">
-            <v-table striped="odd" style="user-select: text;">
+            <v-table striped="even" style="user-select: text;">
               <tbody>
                 <tr
                   v-for="(value, name) in response.headers"

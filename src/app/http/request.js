@@ -1,4 +1,6 @@
 import Request from './request.model.js'
+import EditableKeyValue from './request-details/editable-key-value.js'
+import Body from './request-details/body.js'
 
 import TabsService from '../tabs/tabs.service.js'
 import TabMixin from '../tabs/tab.mixin.js'
@@ -9,6 +11,11 @@ export default {
   mixins: [
     TabMixin,
   ],
+
+  components: {
+    EditableKeyValue,
+    Body,
+  },
 
   emits: [
     'send',
@@ -22,8 +29,44 @@ export default {
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
 
-      tab: null,
+      detailsTab: null,
+      detailsPanels: [],
     }
+  },
+
+  computed: {
+
+    methods() {
+      return Request.methods
+    },
+
+    details() {
+      return {
+        query: () => Vue.h(EditableKeyValue, {
+          modelValue: this.request.query,
+          'onUpdate:modelValue': (value) => this.request.query = value
+        }),
+
+        body: () => Vue.h(Body, {
+        }),
+
+        headers: () => Vue.h(EditableKeyValue, {
+          modelValue: this.request.headers,
+          'onUpdate:modelValue': (value) => this.request.headers = value
+        }),
+      }
+    },
+
+    openedPanels() {
+      let panels = [ ...this.detailsPanels ]
+
+      if (!panels.includes(this.detailsTab)) {
+        panels.push(this.detailsTab)
+      }
+
+      return panels
+    },
+
   },
 
   methods: {
@@ -57,20 +100,16 @@ export default {
       this.methodMenuOpened = this.isActiveTab
     },
 
-    handleDetailsTabClick(tab) {
-      if (this.tab == tab) {
-        this.tab = null
+    handleTabClick(tab) {
+      if (this.detailsTab == tab) {
+        this.detailsTab = null
       } else {
-        this.tab = tab
+        this.detailsTab = tab
       }
     },
 
-  },
-
-  computed: {
-
-    methods() {
-      return Request.methods
+    handlePanelClick(panels) {
+      this.detailsPanels = panels
     },
 
   },
@@ -102,7 +141,15 @@ export default {
       if (!active) {
         this.methodMenuOpened = false
       }
-    }
+    },
+
+    detailsPanels(panels, previous) {
+      const deleted = previous.filter( i => !panels.includes(i) )
+
+      if (this.detailsTab == deleted) {
+        this.detailsTab = panels.at(-1)
+      }
+    },
 
   },
 
@@ -119,7 +166,39 @@ export default {
   },
 
   template: `
-    <div>
+    <div class="_http_request">
+      <component is="style">
+        ._http_request {
+            --opacity: calc(var(--v-activated-opacity) * var(--v-high-emphasis-opacity));
+            --bg: color-mix(in srgb, currentColor calc(var(--opacity) * 100%), transparent);
+
+          .v-tabs {
+            background-color: var(--bg);
+          }
+
+          .horizontal-tabs {
+            display: block;
+          }
+
+          .vertical-panels {
+            display: nnone;
+          }
+
+          .v-expansion-panel-text__wrapper {
+            padding: 0;
+          }
+
+          @media (min-width: 960px) {
+            .horizontal-tabs {
+              display: nnone;
+            }
+
+            .vertical-panels {
+              display: block;
+            }
+          }
+        }
+      </component>
       <div class="section-title">
         {{ t.request.title }}
         <v-btn
@@ -186,46 +265,65 @@ export default {
           </v-btn-group>
         </v-form>
 
-        <v-tabs
-          :model-value="tab"
-          bg-color="grey-lighten-4"
+        <div class="horizontal-tabs">
+          <v-tabs
+            :model-value="detailsTab"
+            :class="{ rounded: !detailsTab, 'rounded-t': detailsTab }"
+            density="compact"
+            grow
+          >
+            <v-tab
+              v-for="(componentFn, name) of details"
+
+              :value="name"
+
+              @click="handleTabClick(name)"
+              :selected-class="detailsTab ? 'v-tab--selected' : ''"
+            >
+              {{ name }}
+            </v-tab>
+          </v-tabs>
+
+          <v-tabs-window
+            v-if="detailsTab"
+            v-model="detailsTab"
+          >
+            <v-tabs-window-item
+              v-for="(componentFn, name) of details"
+              :value="name"
+              class="rounded-b"
+            >
+              <component :is="componentFn"></component>
+            </v-tabs-window-item>
+          </v-tabs-window>
+        </div>
+
+        <v-expansion-panels
+          multiple
+          variant="accordion"
+          static
+          elevation="0"
+          class="vertical-panels"
+
+          :model-value="openedPanels"
+          @update:modelValue="handlePanelClick"
         >
-          <v-tab
-            value="query"
-            @click="handleDetailsTabClick('query')"
-            :selected-class=" tab ? 'v-tab--selected' : ''"
+          <v-expansion-panel
+            v-for="(componentFn, name) of details"
+            :value="name"
           >
-            Query
-          </v-tab>
-          <v-tab
-            value="body"
-            @click="handleDetailsTabClick('body')"
-            :selected-class=" tab ? 'v-tab--selected' : ''"
-          >
-            Body
-          </v-tab>
-          <v-tab
-            value="headers"
-            @click="handleDetailsTabClick('headers')"
-            :selected-class=" tab ? 'v-tab--selected' : ''"
-          >
-            Headers
-          </v-tab>
-        </v-tabs>
-
-        <v-tabs-window v-if="tab" v-model="tab">
-          <v-tabs-window-item value="query" class="bg-grey-lighten-5">
-            Query
-          </v-tabs-window-item>
-
-          <v-tabs-window-item value="body" class="bg-grey-lighten-5">
-            Body
-          </v-tabs-window-item>
-
-          <v-tabs-window-item value="headers" class="bg-grey-lighten-5">
-            Headers
-          </v-tabs-window-item>
-        </v-tabs-window>
+            <v-expansion-panel-title 
+              style="background-color: var(--bg); min-height: 2.5rem; padding-top: 0; padding-bottom: 0;"
+              density="compact"
+              class="text-label-large"
+            >
+              {{ name }}
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <component :is="componentFn"></component>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
 
       </div>
     </div>

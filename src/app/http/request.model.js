@@ -48,6 +48,36 @@ export default class Request extends VestModel {
     return `${this.fullUrl.pathname ?? '???'}`
   }
 
+  get query() {
+    // TODO
+    return this.q ?? {
+      a: 'value',
+      b: 2,
+      c: 3,
+    }
+  }
+
+  set query(v) {
+    // TODO
+    this.q = v
+    console.log({ query: v})
+  }
+
+  get headers() {
+    // TODO
+    return this.q ?? {
+      a: 'value',
+      b: 2,
+      c: 3,
+    }
+  }
+
+  set headers(v) {
+    // TODO
+    this.q = v
+    console.log({ headers: v})
+  }
+
   get text() {
     let text = ''
 
