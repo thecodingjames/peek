@@ -21,6 +21,8 @@ export default {
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
+
+      tab: null,
     }
   },
 
@@ -53,7 +55,15 @@ export default {
 
     handleOpenMethodMenu() {
       this.methodMenuOpened = this.isActiveTab
-    }
+    },
+
+    handleDetailsTabClick(tab) {
+      if (this.tab == tab) {
+        this.tab = null
+      } else {
+        this.tab = tab
+      }
+    },
 
   },
 
@@ -110,7 +120,6 @@ export default {
 
   template: `
     <div>
-
       <div class="section-title">
         {{ t.request.title }}
         <v-btn
@@ -176,6 +185,48 @@ export default {
 
           </v-btn-group>
         </v-form>
+
+        <v-tabs
+          :model-value="tab"
+          bg-color="grey-lighten-4"
+        >
+          <v-tab
+            value="query"
+            @click="handleDetailsTabClick('query')"
+            :selected-class=" tab ? 'v-tab--selected' : ''"
+          >
+            Query
+          </v-tab>
+          <v-tab
+            value="body"
+            @click="handleDetailsTabClick('body')"
+            :selected-class=" tab ? 'v-tab--selected' : ''"
+          >
+            Body
+          </v-tab>
+          <v-tab
+            value="headers"
+            @click="handleDetailsTabClick('headers')"
+            :selected-class=" tab ? 'v-tab--selected' : ''"
+          >
+            Headers
+          </v-tab>
+        </v-tabs>
+
+        <v-tabs-window v-if="tab" v-model="tab">
+          <v-tabs-window-item value="query" class="bg-grey-lighten-5">
+            Query
+          </v-tabs-window-item>
+
+          <v-tabs-window-item value="body" class="bg-grey-lighten-5">
+            Body
+          </v-tabs-window-item>
+
+          <v-tabs-window-item value="headers" class="bg-grey-lighten-5">
+            Headers
+          </v-tabs-window-item>
+        </v-tabs-window>
+
       </div>
     </div>
   `
