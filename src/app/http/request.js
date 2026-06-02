@@ -57,6 +57,10 @@ export default {
       }
     },
 
+    openedTab() {
+      return this.detailsTab ?? this.detailsPanels.at(-1)
+    },
+
     openedPanels() {
       let panels = [ ...this.detailsPanels ]
 
@@ -64,7 +68,7 @@ export default {
         panels.push(this.detailsTab)
       }
 
-      return panels
+      return panels.filter( p => p )
     },
 
   },
@@ -101,8 +105,9 @@ export default {
     },
 
     handleTabClick(tab) {
-      if (this.detailsTab == tab) {
+      if (this.openedTab == tab) {
         this.detailsTab = null
+        this.detailsPanels = this.detailsPanels.filter( p => p != tab )
       } else {
         this.detailsTab = tab
       }
@@ -143,10 +148,15 @@ export default {
       }
     },
 
-    detailsPanels(panels, previous) {
-      const deleted = previous.filter( i => !panels.includes(i) )
+    detailsPanels(panels) {
+      const deleted = this.openedPanels.filter( i => !panels.includes(i) )[0]
+      const added = panels.filter( i => !this.openedPanels.includes(i) )[0]
 
-      if (this.detailsTab == deleted) {
+      const notOpened = !this.openedPanels.includes(added)
+
+      if (added && notOpened) {
+        this.detailsTab = added
+      } else if (this.detailsTab && this.detailsTab == deleted) {
         this.detailsTab = panels.at(-1)
       }
     },
@@ -181,7 +191,7 @@ export default {
           }
 
           .vertical-panels {
-            display: nnone;
+            display: none;
           }
 
           .v-expansion-panel-text__wrapper {
@@ -190,7 +200,7 @@ export default {
 
           @media (min-width: 960px) {
             .horizontal-tabs {
-              display: nnone;
+              display: none;
             }
 
             .vertical-panels {
@@ -267,8 +277,8 @@ export default {
 
         <div class="horizontal-tabs">
           <v-tabs
-            :model-value="detailsTab"
-            :class="{ rounded: !detailsTab, 'rounded-t': detailsTab }"
+            :model-value="openedTab"
+            :class="{ rounded: !openedTab, 'rounded-t': openedTab }"
             density="compact"
             grow
           >
@@ -278,15 +288,15 @@ export default {
               :value="name"
 
               @click="handleTabClick(name)"
-              :selected-class="detailsTab ? 'v-tab--selected' : ''"
+              :selected-class="openedTab ? 'v-tab--selected' : ''"
             >
               {{ name }}
             </v-tab>
           </v-tabs>
 
           <v-tabs-window
-            v-if="detailsTab"
-            v-model="detailsTab"
+            v-if="openedTab"
+            :model-value="openedTab"
           >
             <v-tabs-window-item
               v-for="(componentFn, name) of details"
