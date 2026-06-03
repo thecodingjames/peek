@@ -7,12 +7,65 @@ import TabMixin from '../tabs/tab.mixin.js'
 
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 
+const DetailTitle = {
+
+  props: [
+    'visible',
+    'create',
+    'modes',
+    'mode',
+  ],
+
+  emits: [
+    'create',
+    'update:mode',
+  ],
+
+  methods: {
+    handleToggle() {
+      const currentMode = this.modes.findIndex( mode => mode == this.mode) 
+      const newIndex = (currentMode + 1) % this.modes.length
+
+      this.$emit('update:mode', this.modes[newIndex])
+    }
+  },
+
+  template: `
+    <template
+      v-if="visible"
+    >
+      <v-btn
+        v-if="modes"
+
+        @click.stop="handleToggle"
+
+        size="x-small"
+        variant="outlined"
+        style="margin-right: 1rem; min-width: 0; aspect-ratio: 1;"
+      >
+      ⇄
+      </v-btn>
+
+      <v-btn
+        v-if="create"
+        @click.stop="$emit('create')"
+
+        color="success"
+        size="x-small"
+        variant="outlined"
+        style="min-width: 0; aspect-ratio: 1; rotate: 45deg; border-radius: 99px; line-height: 1rem;"
+      >ㄨ</v-btn>
+    </template>
+  `
+}
+
 export default {
   mixins: [
     TabMixin,
   ],
 
   components: {
+    DetailTitle,
     EditableKeyValue,
     Body,
   },
@@ -31,6 +84,8 @@ export default {
 
       detailsTab: null,
       detailsPanels: [],
+
+      bodyMode: 'raw',
     }
   },
 
@@ -42,18 +97,40 @@ export default {
 
     details() {
       return {
-        query: () => Vue.h(EditableKeyValue, {
-          modelValue: this.request.query,
-          'onUpdate:modelValue': (value) => this.request.query = value
-        }),
+        query: {
+          component: () => Vue.h(EditableKeyValue, {
+            modelValue: this.request.query,
+            'onUpdate:modelValue': (value) => this.request.query = value
+          }),
 
-        body: () => Vue.h(Body, {
-        }),
+          handleCreate: () => {
+            console.log('query create')
+          },
+        },
 
-        headers: () => Vue.h(EditableKeyValue, {
-          modelValue: this.request.headers,
-          'onUpdate:modelValue': (value) => this.request.headers = value
-        }),
+        body: {
+          component: () => Vue.h(Body, {
+          }),
+          modes: ['raw', 'form'],
+
+          create: this.bodyMode == 'form',
+
+          handleCreate: () => {
+            console.log('body create')
+          },
+
+        },
+
+        headers: {
+          component: () => Vue.h(EditableKeyValue, {
+            modelValue: this.request.headers,
+            'onUpdate:modelValue': (value) => this.request.headers = value
+          }),
+
+          handleCreate: () => {
+            console.log('headers create')
+          },
+        }
       }
     },
 
@@ -283,29 +360,42 @@ export default {
             grow
           >
             <v-tab
-              v-for="(componentFn, name) of details"
+              v-for="(detail, name) of details"
 
+              :text="name"
               :value="name"
 
               @click="handleTabClick(name)"
               :selected-class="openedTab ? 'v-tab--selected' : ''"
             >
-              {{ name }}
+              <template v-slot:append>
+                <detail-title
+                  :visible="openedTab == name"
+                  :create="detail.create ?? true"
+
+                  :modes="detail.modes"
+                  v-model:mode="bodyMode"
+
+                  @create="detail.handleCreate"
+                />
+              </template>
             </v-tab>
           </v-tabs>
 
-          <v-tabs-window
-            v-if="openedTab"
-            :model-value="openedTab"
-          >
-            <v-tabs-window-item
-              v-for="(componentFn, name) of details"
-              :value="name"
-              class="rounded-b"
+          <v-expand-transition>
+            <v-tabs-window
+              v-if="openedTab"
+              :model-value="openedTab"
             >
-              <component :is="componentFn"></component>
-            </v-tabs-window-item>
-          </v-tabs-window>
+              <v-tabs-window-item
+                v-for="(detail, name) of details"
+                :value="name"
+                class="rounded-b"
+              >
+                  <component :is="detail.component"></component>
+              </v-tabs-window-item>
+            </v-tabs-window>
+          </v-expand-transition>
         </div>
 
         <v-expansion-panels
@@ -319,7 +409,7 @@ export default {
           @update:modelValue="handlePanelClick"
         >
           <v-expansion-panel
-            v-for="(componentFn, name) of details"
+            v-for="(detail, name) of details"
             :value="name"
           >
             <v-expansion-panel-title 
@@ -327,10 +417,23 @@ export default {
               density="compact"
               class="text-label-large"
             >
-              {{ name }}
+              <span style="margin-right: 0.5rem;">
+                {{ name }}
+              </span>
+
+              <detail-title
+                :visible="openedPanels.includes(name)"
+                :create="detail.create ?? true"
+
+                :modes="detail.modes"
+                v-model:mode="bodyMode"
+
+                @create="detail.handleCreate"
+              />
+
             </v-expansion-panel-title>
             <v-expansion-panel-text>
-              <component :is="componentFn"></component>
+              <component :is="detail.component"></component>
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>

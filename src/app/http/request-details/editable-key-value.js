@@ -14,6 +14,7 @@ export default {
         return [
           ...acc,
           {
+            _id: crypto.randomUUID(),
             key,
             value,
             enabled: true,
@@ -29,17 +30,54 @@ export default {
     },
   },
 
+  mounted() {
+    this.sortable = Sortable.create(this.$refs.items, {
+      handle: '.sort-handle',
+      direction: 'vertical',
+      scroll: true,
+
+      onEnd: ({ oldIndex, newIndex }) => {
+        const moved = this.items.splice(oldIndex, 1)[0]
+        this.items.splice(newIndex, 0, moved)
+      },  
+    })
+  },
+
+  beforeUnmount() {
+    this.sortable?.destroy()
+  },
+
   template: `
-    <v-table style="user-select: text;">
-      <tbody>
+    <v-table class="_http_request-details_editable-key-value">
+      <component is="style">
+        ._http_request-details_editable-key-value {
+          .sort-handle:hover {
+            cursor: move;
+          }
+
+          tr[disabled=true]>*:not(.handle) {
+            opacity: 40%; 
+          }
+
+          .sortable-chosen {
+            background-color: lightgray;
+          }
+
+          .sortable-ghost * {
+            opacity: 0 !important;
+          }
+        }
+      </component>
+
+      <tbody ref="items">
         <tr
           v-for="item in items"
-          :key="item.key"
+          :key="item._id"
 
-          :style="{ opacity: item.enabled ? 1 : 0.5, }"
+          :disabled="!item.enabled"
         >
-          <td>
-            <v-icon icon="mdi-drag-vertical" />
+          <td class="handle">
+            <v-icon icon="mdi-drag-vertical" class="sort-handle" />
           </td>
 
           <td>
