@@ -14,7 +14,7 @@ export default async function http(request) {
   })
 
   let response = null
-  if (result) {
+  if (Object.keys(result).length > 0) {
     response = {
       ...result, 
       duration: (Date.now() - start),
