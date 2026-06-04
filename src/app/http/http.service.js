@@ -9,7 +9,7 @@ export default async function http(request) {
   const start = Date.now()
 
   const { error, ...result } = await window.electron.http({
-    ...request.toJSON(),
+    ...request.fetchOptions,
     redirect,
   })
 

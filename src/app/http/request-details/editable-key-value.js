@@ -1,33 +1,18 @@
 export default {
 
   emits: [
-    'update:modelValue'
+    'update:modelValue',
+    'delete',
   ],
 
   props: [
     'modelValue',
   ],
 
-  data() {
-    return {
-      items: Object.entries({ ...this.modelValue }).reduce( (acc, [key, value]) => {
-        return [
-          ...acc,
-          {
-            _id: crypto.randomUUID(),
-            key,
-            value,
-            enabled: true,
-          },
-        ]
-      }, [])
-    }
-  },
-
   methods: {
-    test() {
-      this.$emit('update:modelValue', { a: 1})
-    },
+    handleDelete(id) {
+      this.$emit('delete', id)
+    }
   },
 
   mounted() {
@@ -37,8 +22,8 @@ export default {
       scroll: true,
 
       onEnd: ({ oldIndex, newIndex }) => {
-        const moved = this.items.splice(oldIndex, 1)[0]
-        this.items.splice(newIndex, 0, moved)
+        const moved = this.modelValue.splice(oldIndex, 1)[0]
+        this.modelValue.splice(newIndex, 0, moved)
       },  
     })
   },
@@ -55,7 +40,7 @@ export default {
             cursor: move;
           }
 
-          tr[disabled=true]>*:not(.handle) {
+          tr[disabled=true]>*:not(.no-disable) {
             opacity: 40%; 
           }
 
@@ -71,12 +56,12 @@ export default {
 
       <tbody ref="items">
         <tr
-          v-for="item in items"
+          v-for="item in modelValue"
           :key="item._id"
 
           :disabled="!item.enabled"
         >
-          <td class="handle">
+          <td class="no-disable">
             <v-icon icon="mdi-drag-vertical" class="sort-handle" />
           </td>
 
@@ -101,6 +86,19 @@ export default {
               density="compact"
               hide-details
             />
+          </td>
+
+          <td class="no-disable">
+            <v-btn
+              @click.stop="handleDelete(item._id)"
+
+              color="red"
+              size="x-small"
+              variant="outlined"
+              style="margin-right: 1rem; min-width: 0; aspect-ratio: 1;"
+            >
+            ㄨ
+            </v-btn>
           </td>
         </tr>
       </tbody>

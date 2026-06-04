@@ -100,7 +100,7 @@ export default {
         query: {
           component: () => Vue.h(EditableKeyValue, {
             modelValue: this.request.query,
-            'onUpdate:modelValue': (value) => this.request.query = value
+            'onUpdate:modelValue': (value) => this.request.query = value,
           }),
 
           handleCreate: () => {
@@ -124,11 +124,18 @@ export default {
         headers: {
           component: () => Vue.h(EditableKeyValue, {
             modelValue: this.request.headers,
-            'onUpdate:modelValue': (value) => this.request.headers = value
+            'onDelete': (id) => this.request.headers = this.request.headers.filter(m => m._id != id)
           }),
 
           handleCreate: () => {
-            console.log('headers create')
+            this.request.headers.push(
+              {
+                _id: crypto.randomUUID(),
+                key: '',
+                value: '',
+                enabled: true,
+              }
+            )
           },
         }
       }
@@ -392,7 +399,7 @@ export default {
                 :value="name"
                 class="rounded-b"
               >
-                  <component :is="detail.component"></component>
+                <component :is="detail.component"></component>
               </v-tabs-window-item>
             </v-tabs-window>
           </v-expand-transition>

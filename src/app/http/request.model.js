@@ -48,36 +48,6 @@ export default class Request extends VestModel {
     return `${this.fullUrl.pathname ?? '???'}`
   }
 
-  get query() {
-    // TODO
-    return this.q ?? {
-      a: 'value',
-      b: 2,
-      c: 3,
-    }
-  }
-
-  set query(v) {
-    // TODO
-    this.q = v
-    console.log({ query: v})
-  }
-
-  get headers() {
-    // TODO
-    return this.q ?? {
-      a: 'value',
-      b: 2,
-      c: 3,
-    }
-  }
-
-  set headers(v) {
-    // TODO
-    this.q = v
-    console.log({ headers: v})
-  }
-
   get text() {
     let text = ''
 
@@ -88,10 +58,47 @@ export default class Request extends VestModel {
     return text
   }
 
+  get fetchOptions() {
+    const headers = this.headers.reduce( (result, { key, value, enabled }) => {
+      if (enabled && key.trim() != '' && value.trim() != '') {
+        return {
+          ...result,
+          [key]: value,
+        }
+      } else {
+        return result
+      }
+    }, {})
+
+    return {
+      url: this.url ? this.fullUrl.toString() : '',
+      method: this.method,
+      headers,
+    }
+  }
+
   constructor(props) {
     super()
 
+    this.url = ''
     this.method = Request.Method.get
+    this.query = [
+      {
+        _id: '',
+        key: '',
+        value: '',
+        enabled: true,
+      }
+    ]
+
+    this.headers = [
+      {
+        _id: '',
+         key: '',
+         value: '',
+         enabled: true,
+      }
+    ]
 
     Object.assign(this, props)
   }
@@ -113,10 +120,10 @@ export default class Request extends VestModel {
 
   toJSON() {
     return {
-      ...super.toJSON(),
-
-      url: this. url ? this.fullUrl.toString(): '',
+      url: this.url ? this.fullUrl.toString() : '',
       method: this.method, 
+      headers: this.headers,
+      query: this.query,
     }
   }
 
