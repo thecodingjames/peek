@@ -28,6 +28,15 @@ export default class RequestModel extends VestModel {
     }
   }
 
+  static createQuery(key = '', value = '') {
+    return {
+      id: crypto.randomUUID(),
+      key,
+      value,
+      enabled: true,
+    }
+  }
+
   get fullUrl() {
     let url = this.url ?? ''
 
@@ -86,18 +95,42 @@ export default class RequestModel extends VestModel {
     }
   }
 
+  get url() {
+    return this._url
+  }
+
+  set url(value) {
+    this._url = value
+
+    const merged = []
+
+    this.fullUrl.searchParams?.entries().forEach( ([key, value], index) => {
+      const cursor = this.query[0] ?? { }
+
+      if(cursor.key == key) {
+        this.query.slice(0, 1)[0]
+
+        merged.push({
+          ...cursor,
+          value,
+        })
+      } else {
+        merged.push(RequestModel.createQuery(key, value))
+      }
+    })
+
+    // TODO make sure to keep disabled items
+    const remainingDisabled = this.query.filter( q => !q.enabled )
+    this.query = [...merged, ...remainingDisabled]
+  }
+
   constructor(props) {
     super()
 
-    this.url = ''
+    this._url = ''
     this.method = RequestModel.Method.get
     this.query = [
-      {
-        id: '',
-        key: '',
-        value: '',
-        enabled: true,
-      }
+      RequestModel.createQuery()
     ]
 
     this.headers = [
@@ -115,6 +148,16 @@ export default class RequestModel extends VestModel {
 
   removeHeader(id) {
     this.headers = this.headers.filter(m => m.id != id)
+  }
+
+  addQuery() {
+    this.query.push(
+      RequestModel.createQuery()
+    )
+  }
+
+  removeQuery(id) {
+    this.query = this.query.filter(q => q.id != id)
   }
 
   vestSuite() {

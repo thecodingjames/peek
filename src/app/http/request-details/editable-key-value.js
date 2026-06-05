@@ -33,7 +33,10 @@ export default {
   },
 
   template: `
-    <v-table class="_http_request-details_editable-key-value">
+    <v-table
+      v-show="modelValue.length > 0"
+      class="_http_request-details_editable-key-value"
+    >
       <component is="style">
         ._http_request-details_editable-key-value {
           .sort-handle:hover {
@@ -113,7 +116,6 @@ export default {
           <td class="min-width">
             <v-btn
               @click.stop="handleDelete(item.id)"
-              :disabled="modelValue.length <= 1"
 
               color="red"
               size="x-small"
@@ -126,5 +128,12 @@ export default {
         </tr>
       </tbody>
     </v-table>
+
+    <div
+      v-show="modelValue.length == 0"
+      style="margin-left: 1.5rem; padding: 0.5rem 0; font-style: italic;"
+    >
+      <span>{{ t.request.details.keyValue.empty }}</span>
+    </div>
   `
 }

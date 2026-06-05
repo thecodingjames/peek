@@ -91,6 +91,10 @@ export default {
     rawHttp: 'Raw HTTP',
 
     details: {
+      keyValue: {
+        empty: 'No items...'
+      },
+
       query: {
         name: 'query',
       },

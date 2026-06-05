@@ -95,19 +95,23 @@ export default {
 
     details() {
       return {
-        /*
         query: {
           component: () => Vue.h(EditableKeyValue, {
             modelValue: this.request.query,
             'onUpdate:modelValue': (value) => this.request.query = value,
+            'onDelete': (id) => {
+              this.request.removeQuery(id)
+            }
           }),
 
           handleCreate: (handleDetail) => {
             console.log('query create')
+            this.request.addQuery()
             handleDetail()
           },
         },
 
+        /*
         body: {
           component: () => Vue.h(Body, {
           }),
