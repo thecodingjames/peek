@@ -309,164 +309,166 @@ export default {
           }
         }
       </component>
-      <div class="section-title">
-        {{ t.request.title }}
-        <v-btn
-          ref="altButton"
-          @click="handleTogglePanel()"
-          :icon="rawVisible ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
-        />
 
-        <v-tooltip
-          v-if="!rawVisible"
-          :text="t.request.rawHttp"
-          :activator="$refs.altButton"
-          open-delay="1000"
-        />
-      </div>
-
-      <div v-if="rawVisible">
-        <pre>{{ request.text }}</pre>
-      </div>
-
-      <div v-else>
-        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
-          <v-text-field
-            v-model="request.url"
-            ref="url"
-
-            label="URL"
-            required
-            :rules="request.rules('url')"
+      <div>
+        <div class="section-title">
+          {{ t.request.title }}
+          <v-btn
+            ref="altButton"
+            @click="handleTogglePanel()"
+            :icon="rawVisible ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
           />
 
-          <v-btn-group
-            ref="methodGroup"
-            divided
-          >
-            <v-btn
-              :text="request.method"
-              type="submit"
-              width="96"
+          <v-tooltip
+            v-if="!rawVisible"
+            :text="t.request.rawHttp"
+            :activator="$refs.altButton"
+            open-delay="1000"
+          />
+        </div>
+
+        <div v-if="rawVisible">
+          <pre>{{ request.text }}</pre>
+        </div>
+
+        <div v-else>
+          <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
+            <v-text-field
+              v-model="request.url"
+              ref="url"
+
+              label="URL"
+              required
+              :rules="request.rules('url')"
             />
 
-            <v-btn
-              ref="methodChevron"
-              icon="mdi-chevron-down"
-            />
-
-            <v-menu
-              v-model="methodMenuOpened"
-              :activator="$refs.methodChevron"
-              :target="$refs.methodGroup"
-              location="bottom"
+            <v-btn-group
+              ref="methodGroup"
+              divided
             >
-              <v-list
-                :items="methods"
-                ref="methodMenuList"
-
-                v-model:navigation-index="methodPickerNavIndex"
-                navigationStrategy="track"
-                @update:selected="handleMethodChange($event[0])"
-                @keydown.enter.exact="handleMenuEnter()"
+              <v-btn
+                :text="request.method"
+                type="submit"
+                width="96"
               />
-            </v-menu>
 
-          </v-btn-group>
-        </v-form>
+              <v-btn
+                ref="methodChevron"
+                icon="mdi-chevron-down"
+              />
 
-        <div class="horizontal-tabs">
-          <v-tabs
-            :model-value="openedTab"
-            :class="{ rounded: !openedTab, 'rounded-t': openedTab }"
-            density="compact"
-            grow
-          >
-            <v-tab
-              v-for="(detail, name) of details"
+              <v-menu
+                v-model="methodMenuOpened"
+                :activator="$refs.methodChevron"
+                :target="$refs.methodGroup"
+                location="bottom"
+              >
+                <v-list
+                  :items="methods"
+                  ref="methodMenuList"
 
-              :value="name"
+                  v-model:navigation-index="methodPickerNavIndex"
+                  navigationStrategy="track"
+                  @update:selected="handleMethodChange($event[0])"
+                  @keydown.enter.exact="handleMenuEnter()"
+                />
+              </v-menu>
 
-              @click="handleTabClick(name)"
-              :selected-class="openedTab ? 'v-tab--selected' : ''"
+            </v-btn-group>
+          </v-form>
+
+          <div class="horizontal-tabs">
+            <v-tabs
+              :model-value="openedTab"
+              :class="{ rounded: !openedTab, 'rounded-t': openedTab }"
+              density="compact"
+              grow
             >
-              <template v-slot:default>
-                <span class="detail-name">
+              <v-tab
+                v-for="(detail, name) of details"
+
+                :value="name"
+
+                @click="handleTabClick(name)"
+                :selected-class="openedTab ? 'v-tab--selected' : ''"
+              >
+                <template v-slot:default>
+                  <span class="detail-name">
+                    {{ t.request.details[name].name }}
+                  </span>
+                </template>
+
+                <template v-slot:append>
+                  <detail-title
+                    :visible="openedTab == name"
+                    :create="detail.create ?? true"
+
+                    :modes="detail.modes"
+                    v-model:mode="bodyMode"
+                    @update:mode="handleDetailTab(name)"
+
+                    @create="detail.handleCreate(() => handleDetailTab(name))"
+                  />
+                </template>
+              </v-tab>
+            </v-tabs>
+
+            <v-expand-transition>
+              <v-tabs-window
+                v-if="openedTab"
+                :model-value="openedTab"
+              >
+                <v-tabs-window-item
+                  v-for="(detail, name) of details"
+                  :value="name"
+                  class="rounded-b"
+                >
+                  <component :is="detail.component"></component>
+                </v-tabs-window-item>
+              </v-tabs-window>
+            </v-expand-transition>
+          </div>
+
+          <v-expansion-panels
+            multiple
+            variant="accordion"
+            static
+            elevation="0"
+            class="vertical-panels"
+
+            :model-value="openedPanels"
+            @update:modelValue="handlePanelClick"
+          >
+            <v-expansion-panel
+              v-for="(detail, name) of details"
+              :value="name"
+            >
+              <v-expansion-panel-title 
+                style="background-color: var(--bg); min-height: 2.5rem; padding-top: 0; padding-bottom: 0;"
+                density="compact"
+              >
+                <span class="detail-name" style="margin-right: 0.5rem;">
                   {{ t.request.details[name].name }}
                 </span>
-              </template>
 
-              <template v-slot:append>
                 <detail-title
-                  :visible="openedTab == name"
+                  :visible="openedPanels.includes(name)"
                   :create="detail.create ?? true"
 
                   :modes="detail.modes"
                   v-model:mode="bodyMode"
                   @update:mode="handleDetailTab(name)"
 
-                  @create="detail.handleCreate(() => handleDetailTab(name))"
+                  @create="detail.handleCreate(() => handleDetailPanel(name))"
                 />
-              </template>
-            </v-tab>
-          </v-tabs>
 
-          <v-expand-transition>
-            <v-tabs-window
-              v-if="openedTab"
-              :model-value="openedTab"
-            >
-              <v-tabs-window-item
-                v-for="(detail, name) of details"
-                :value="name"
-                class="rounded-b"
-              >
+              </v-expansion-panel-title>
+              <v-expansion-panel-text>
                 <component :is="detail.component"></component>
-              </v-tabs-window-item>
-            </v-tabs-window>
-          </v-expand-transition>
+              </v-expansion-panel-text>
+            </v-expansion-panel>
+          </v-expansion-panels>
         </div>
-
-        <v-expansion-panels
-          multiple
-          variant="accordion"
-          static
-          elevation="0"
-          class="vertical-panels"
-
-          :model-value="openedPanels"
-          @update:modelValue="handlePanelClick"
-        >
-          <v-expansion-panel
-            v-for="(detail, name) of details"
-            :value="name"
-          >
-            <v-expansion-panel-title 
-              style="background-color: var(--bg); min-height: 2.5rem; padding-top: 0; padding-bottom: 0;"
-              density="compact"
-            >
-              <span class="detail-name" style="margin-right: 0.5rem;">
-                {{ t.request.details[name].name }}
-              </span>
-
-              <detail-title
-                :visible="openedPanels.includes(name)"
-                :create="detail.create ?? true"
-
-                :modes="detail.modes"
-                v-model:mode="bodyMode"
-                @update:mode="handleDetailTab(name)"
-
-                @create="detail.handleCreate(() => handleDetailPanel(name))"
-              />
-
-            </v-expansion-panel-title>
-            <v-expansion-panel-text>
-              <component :is="detail.component"></component>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
-
       </div>
     </div>
   `

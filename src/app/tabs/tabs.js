@@ -134,8 +134,7 @@ export default {
         <template v-slot:append>
           <v-btn
             v-if="tabs.length > 1"
-
-            @click.stop="handleClose(item.id)"
+            @click.prevent="handleClose(item.id)"
 
             color="error"
             size="x-small"
