@@ -95,6 +95,7 @@ export default {
 
     details() {
       return {
+        /*
         query: {
           component: () => Vue.h(EditableKeyValue, {
             modelValue: this.request.query,
@@ -121,6 +122,7 @@ export default {
 
         },
 
+        */
         headers: {
           component: () => Vue.h(EditableKeyValue, {
             modelValue: this.request.headers,
@@ -285,6 +287,13 @@ export default {
             display: none;
           }
 
+          .detail-name {
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: bold;
+            letter-spacing: 0.01rem;
+          }
+
           .v-expansion-panel-text__wrapper {
             padding: 0;
           }
@@ -376,12 +385,17 @@ export default {
             <v-tab
               v-for="(detail, name) of details"
 
-              :text="name"
               :value="name"
 
               @click="handleTabClick(name)"
               :selected-class="openedTab ? 'v-tab--selected' : ''"
             >
+              <template v-slot:default>
+                <span class="detail-name">
+                  {{ t.request.details[name].name }}
+                </span>
+              </template>
+
               <template v-slot:append>
                 <detail-title
                   :visible="openedTab == name"
@@ -430,10 +444,9 @@ export default {
             <v-expansion-panel-title 
               style="background-color: var(--bg); min-height: 2.5rem; padding-top: 0; padding-bottom: 0;"
               density="compact"
-              class="text-label-large"
             >
-              <span style="margin-right: 0.5rem;">
-                {{ name }}
+              <span class="detail-name" style="margin-right: 0.5rem;">
+                {{ t.request.details[name].name }}
               </span>
 
               <detail-title

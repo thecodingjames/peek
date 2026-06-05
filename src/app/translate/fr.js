@@ -90,6 +90,20 @@ export default {
     title: 'Requête',
     rawHttp: 'HTTP brut',
 
+    details: {
+      query: {
+        name: 'paramètres',
+      },
+
+      body: {
+        name: 'corps',
+      },
+
+      headers: {
+        name: 'en-têtes',
+      },
+    },
+
     model: {
       invalidPath: 'CHEMIN INVALIDE',
       invalidHost: 'HÔTE INVALIDE',

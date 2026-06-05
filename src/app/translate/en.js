@@ -90,6 +90,20 @@ export default {
     title: 'Request',
     rawHttp: 'Raw HTTP',
 
+    details: {
+      query: {
+        name: 'query',
+      },
+
+      body: {
+        name: 'body',
+      },
+
+      headers: {
+        name: 'headers',
+      },
+    },
+
     model: {
       invalidPath: 'INVALID PATH',
       invalidHost: 'INVALID HOST',
