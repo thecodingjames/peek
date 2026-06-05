@@ -69,7 +69,7 @@ export default class RequestModel extends VestModel {
 
   get fetchOptions() {
     const headers = this.headers.reduce( (result, { key, value, enabled }) => {
-      if (enabled && key.trim() != '' && value.trim() != '') {
+      if (enabled && key.trim() != '') {
         return {
           ...result,
           [key]: value,
@@ -93,7 +93,7 @@ export default class RequestModel extends VestModel {
     this.method = RequestModel.Method.get
     this.query = [
       {
-        _id: '',
+        id: '',
         key: '',
         value: '',
         enabled: true,
@@ -105,6 +105,16 @@ export default class RequestModel extends VestModel {
     ]
 
     Object.assign(this, props)
+  }
+
+  addHeader() {
+    this.headers.push(
+      RequestModel.createHeader()
+    )
+  }
+
+  removeHeader(id) {
+    this.headers = this.headers.filter(m => m.id != id)
   }
 
   vestSuite() {

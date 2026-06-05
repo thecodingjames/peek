@@ -51,7 +51,7 @@ const DetailTitle = {
         size="x-small"
         variant="outlined"
         :style="{ visibility: (create ? 'visible' : 'hidden') }"
-        style="min-width: 0; aspect-ratio: 1; rotate: 45deg; border-radius: 99px; line-height: 1rem;"
+        style="min-width: 0; aspect-ratio: 1; rotate: 45deg; border-radius: 99px;"
       >ㄨ</v-btn>
     </span>
   `
@@ -125,14 +125,12 @@ export default {
           component: () => Vue.h(EditableKeyValue, {
             modelValue: this.request.headers,
             'onDelete': (id) => {
-              this.request.headers = this.request.headers.filter(m => m.id != id)
+              this.request.removeHeader(id)
             }
           }),
 
           handleCreate: (handleDetail) => {
-            this.request.headers.push(
-              RequestModel.createHeader()
-            )
+            this.request.addHeader()
 
             handleDetail()
           },
