@@ -40,8 +40,8 @@ export default {
             cursor: move;
           }
 
-          tr[disabled=true]>*:not(.no-disable) {
-            opacity: 40%; 
+          tr[disabled=true] td.can-disable * {
+            opacity: 70%; 
           }
 
           td {
@@ -77,7 +77,7 @@ export default {
 
           :disabled="!item.enabled || item.key.trim() == ''"
         >
-          <td class="no-disable min-width">
+          <td class="min-width">
             <v-icon 
               :disabled="modelValue.length <= 1"
               icon="mdi-drag-vertical" 
@@ -94,7 +94,7 @@ export default {
             />
           </td>
 
-          <td>
+          <td class="can-disable">
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
               <v-text-field
                 v-model="item.key"
@@ -110,7 +110,7 @@ export default {
             </div>
           </td>
 
-          <td class="no-disable min-width">
+          <td class="min-width">
             <v-btn
               @click.stop="handleDelete(item.id)"
               :disabled="modelValue.length <= 1"
