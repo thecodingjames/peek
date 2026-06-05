@@ -1,7 +1,7 @@
 import VestModel from '../core/vest.model.js'
 import t from '../translate/translate.service.js'
 
-export default class Request extends VestModel {
+export default class RequestModel extends VestModel {
 
   static get Method() {
     return {
@@ -16,7 +16,16 @@ export default class Request extends VestModel {
   }
 
   static get methods() {
-    return Object.values(Request.Method)
+    return Object.values(RequestModel.Method)
+  }
+
+  static createHeader() {
+    return {
+      id: crypto.randomUUID(),
+      key: '',
+      value: '',
+      enabled: true,
+    }
   }
 
   get fullUrl() {
@@ -81,7 +90,7 @@ export default class Request extends VestModel {
     super()
 
     this.url = ''
-    this.method = Request.Method.get
+    this.method = RequestModel.Method.get
     this.query = [
       {
         _id: '',
@@ -92,12 +101,7 @@ export default class Request extends VestModel {
     ]
 
     this.headers = [
-      {
-        _id: '',
-         key: '',
-         value: '',
-         enabled: true,
-      }
+      RequestModel.createHeader()
     ]
 
     Object.assign(this, props)
@@ -107,8 +111,8 @@ export default class Request extends VestModel {
     return Vest.create( request => {
       const { test, enforce } = Vest
 
-      test('method', `${t.request.model.validations.method}: ${Request.methods.join(', ')}`, () => {
-        enforce(request.method).isValueOf(Request.Method);
+      test('method', `${t.request.model.validations.method}: ${RequestModel.methods.join(', ')}`, () => {
+        enforce(request.method).isValueOf(RequestModel.Method);
       })
 
       test('url', t.request.model.validations.url, () => {

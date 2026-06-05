@@ -57,7 +57,7 @@ export default {
       <tbody ref="items">
         <tr
           v-for="item in modelValue"
-          :key="item._id"
+          :key="item.id"
 
           :disabled="!item.enabled"
         >
@@ -90,7 +90,8 @@ export default {
 
           <td class="no-disable">
             <v-btn
-              @click.stop="handleDelete(item._id)"
+              @click.stop="handleDelete(item.id)"
+              :disabled="modelValue.length <= 1"
 
               color="red"
               size="x-small"

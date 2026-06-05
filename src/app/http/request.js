@@ -1,4 +1,4 @@
-import Request from './request.model.js'
+import RequestModel from './request.model.js'
 import EditableKeyValue from './request-details/editable-key-value.js'
 import Body from './request-details/body.js'
 
@@ -31,9 +31,7 @@ const DetailTitle = {
   },
 
   template: `
-    <template
-      v-if="visible"
-    >
+    <span>
       <v-btn
         v-if="modes"
 
@@ -47,15 +45,15 @@ const DetailTitle = {
       </v-btn>
 
       <v-btn
-        v-if="create"
         @click.stop="$emit('create')"
 
         color="success"
         size="x-small"
         variant="outlined"
+        :style="{ visibility: (create ? 'visible' : 'hidden') }"
         style="min-width: 0; aspect-ratio: 1; rotate: 45deg; border-radius: 99px; line-height: 1rem;"
       >ㄨ</v-btn>
-    </template>
+    </span>
   `
 }
 
@@ -92,7 +90,7 @@ export default {
   computed: {
 
     methods() {
-      return Request.methods
+      return RequestModel.methods
     },
 
     details() {
@@ -103,8 +101,9 @@ export default {
             'onUpdate:modelValue': (value) => this.request.query = value,
           }),
 
-          handleCreate: () => {
+          handleCreate: (handleDetail) => {
             console.log('query create')
+            handleDetail()
           },
         },
 
@@ -115,8 +114,9 @@ export default {
 
           create: this.bodyMode == 'form',
 
-          handleCreate: () => {
+          handleCreate: (handleDetail) => {
             console.log('body create')
+            handleDetail()
           },
 
         },
@@ -124,18 +124,17 @@ export default {
         headers: {
           component: () => Vue.h(EditableKeyValue, {
             modelValue: this.request.headers,
-            'onDelete': (id) => this.request.headers = this.request.headers.filter(m => m._id != id)
+            'onDelete': (id) => {
+              this.request.headers = this.request.headers.filter(m => m.id != id)
+            }
           }),
 
-          handleCreate: () => {
+          handleCreate: (handleDetail) => {
             this.request.headers.push(
-              {
-                _id: crypto.randomUUID(),
-                key: '',
-                value: '',
-                enabled: true,
-              }
+              RequestModel.createHeader()
             )
+
+            handleDetail()
           },
         }
       }
@@ -199,6 +198,16 @@ export default {
 
     handlePanelClick(panels) {
       this.detailsPanels = panels
+    },
+
+    handleDetailTab(tab) {
+      this.detailsTab = tab
+    },
+
+    handleDetailPanel(panel) {
+      if(!this.detailsPanels.includes(panel)) {
+        this.detailsPanels.push(panel)
+      }
     },
 
   },
@@ -382,8 +391,9 @@ export default {
 
                   :modes="detail.modes"
                   v-model:mode="bodyMode"
+                  @update:mode="handleDetailTab(name)"
 
-                  @create="detail.handleCreate"
+                  @create="detail.handleCreate(() => handleDetailTab(name))"
                 />
               </template>
             </v-tab>
@@ -434,8 +444,9 @@ export default {
 
                 :modes="detail.modes"
                 v-model:mode="bodyMode"
+                @update:mode="handleDetailTab(name)"
 
-                @create="detail.handleCreate"
+                @create="detail.handleCreate(() => handleDetailPanel(name))"
               />
 
             </v-expansion-panel-title>
