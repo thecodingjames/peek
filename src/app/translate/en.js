@@ -1,19 +1,19 @@
 export default {
 
-  save: 'Save',
-
-  panels: {
+  drawers: {
     newRequest: {
       title: 'New request',
     },
 
     history: {
       title: 'History',
+      empty: 'No requests...',
     },
 
     settings: {
       title: 'Settings',
       followRedirect: 'Follow redirects',
+      alwaysShowTabs: 'Always show tabs',
       appearance: 'Appearance',
       theme: 'Theme',
       system: 'System',
@@ -25,13 +25,84 @@ export default {
   },
 
   tabs: {
-    defaultRequestName: 'Requête',
-    newRequest: 'Nouvelle requête',
+    defaultRequestName: 'Request',
+    newRequest: 'New request',
+  },
+
+  hotkeys: {
+    dialog: {
+      title: 'Key-bindings',
+    },
+
+    nav: {
+      title: 'Navigation',
+
+      hotkeys: {
+        title: 'Key-bindings',
+      },
+
+      history: {
+        title: 'History',
+      },
+
+      settings: {
+        title: 'Settings',
+      },
+    },
+
+    tabs: {
+      title: 'Tabs',
+
+      new: {
+        title: 'New tab'
+      },
+
+      close: {
+        title: 'Close current tab'
+      },
+
+      next: {
+        title: 'Go to next tab'
+      },
+
+      previous: {
+        title: 'Go to previous tab'
+      },
+
+    },
+
+    request: {
+      title: 'Request',
+
+      url: {
+        title: 'Focus URL input'
+      },
+
+      method: {
+        title: 'Customize HTTP verb'
+      },
+
+    },
+
   },
 
   request: {
     title: 'Request',
     rawHttp: 'Raw HTTP',
+
+    details: {
+      query: {
+        name: 'query',
+      },
+
+      body: {
+        name: 'body',
+      },
+
+      headers: {
+        name: 'headers',
+      },
+    },
 
     model: {
       invalidPath: 'INVALID PATH',
@@ -47,6 +118,7 @@ export default {
   response: {
     title: 'Response',
     pending: 'Waiting for request...',
+    error: 'Remote host unavailable',
 
     tabs: {
       raw: {

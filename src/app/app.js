@@ -1,10 +1,11 @@
-import Panel from './nav/panel.js'
-import Tabs from './nav/tabs.js'
-import SettingsService from './nav/drawers/settings.service.js'
+import Drawers from './drawers/drawers.js'
+import Tabs from './tabs/tabs.js'
+
+import SettingsService from './drawers/settings/settings.service.js'
 
 export default {
   components: {
-    Panel,
+    Drawers,
     Tabs,
   },
 
@@ -47,13 +48,14 @@ export default {
       <v-app :theme="SettingsService.ui.theme">
         <div 
           v-if="app.development"
-          style="background-color: red; color: white; padding: 4px; text-align: center;"
+          class="bg-red"
+          style="color: white; padding: 4px; text-align: center;"
         >
           [dev]
         </div>
 
         <v-layout>
-          <panel />
+          <drawers />
 
           <v-main>
             <tabs />

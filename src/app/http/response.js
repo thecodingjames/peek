@@ -1,9 +1,11 @@
-import MessageCard from './message-card.js'
+import ResponseModel from './response.model.js'
+
+import TabMixin from '../tabs/tab.mixin.js'
 
 export default {
-  components: {
-    MessageCard,
-  },
+  mixins: [
+    TabMixin,
+  ],
 
   props: [
     'response',
@@ -16,6 +18,7 @@ export default {
   },
 
   computed: {
+
     html() {
       // TODO add more content types detection
       return this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}">`);
@@ -28,25 +31,31 @@ export default {
     },
 
     statusColor() {
-      const code = this.response.code
-
-      if (code >= 200 && code < 300) {
-        return 'text-green'
-      } else if (code >= 400 && code < 500) {
-        return 'text-orange'
-      } else if (code > 500) {
-        return 'text-red'
-      } else {
-        return 'text-grey'
-      }
+      return `text-${ResponseModel.statusColor(this.response.code)}`
     }
 
   },
 
   template: `
-    <message-card
-      :title="t.response.title"
-    >
+    <div>
+
+      <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+        <div class="section-title">
+          {{ t.response.title }}
+        </div>
+
+        <v-chip
+          v-if="response"
+          color="gray"
+          label
+          variant="tonal"
+          size="small"
+          density="comfortable"
+        >
+          {{ response.formattedDuration }}
+        </v-chip>
+      </div>
+
       <div v-if="response">
         <v-tabs v-model="tab">
           <v-tab 
@@ -69,7 +78,7 @@ export default {
           </v-tabs-window-item>
 
           <v-tabs-window-item value="headers">
-            <v-table striped="odd" style="user-select: text;">
+            <v-table striped="even" style="user-select: text;">
               <tbody>
                 <tr
                   v-for="(value, name) in response.headers"
@@ -93,7 +102,9 @@ export default {
         </v-tabs-window>
       </div>
 
-      <p v-else style="font-style: italic;">{{ t.response.pending }}</p>
-    </message-card>
+      <span v-else-if="response === undefined" style="font-style: italic;">{{ t.response.pending }}</span>
+
+      <span v-else-if="response === null" class="text-red">{{ t.response.error }}</span>
+    </div>
   `
 }

@@ -1,7 +1,7 @@
 import VestModel from '../core/vest.model.js'
 import t from '../translate/translate.service.js'
 
-export default class Request extends VestModel {
+export default class RequestModel extends VestModel {
 
   static get Method() {
     return {
@@ -16,7 +16,16 @@ export default class Request extends VestModel {
   }
 
   static get methods() {
-    return Object.values(Request.Method)
+    return Object.values(RequestModel.Method)
+  }
+
+  static createHeader() {
+    return {
+      id: crypto.randomUUID(),
+      key: '',
+      value: '',
+      enabled: true,
+    }
   }
 
   get fullUrl() {
@@ -36,38 +45,84 @@ export default class Request extends VestModel {
     }
   }
 
+  get host() {
+    const url = this.fullUrl
+
+    const port = url.port ? `:${url.port}` : ''
+
+    return `${url.hostname}${port}`
+  }
+
+  get path() {
+    return `${this.fullUrl.pathname ?? '???'}`
+  }
+
   get text() {
     let text = ''
 
-    const url = this.fullUrl
-    const port = url.port ? `:${url.port}` : ''
-
-    text += `${this.method} ${url.pathname ?? '???'}`
+    text += `${this.method} ${this.path}`
     text += '\n'
-    text += `Host: ${url.hostname}${port}`
+    text += `Host: ${this.host}`
 
     return text
   }
 
-  get fetchInit() {
+  get fetchOptions() {
+    const headers = this.headers.reduce( (result, { key, value, enabled }) => {
+      if (enabled && key.trim() != '') {
+        return {
+          ...result,
+          [key]: value,
+        }
+      } else {
+        return result
+      }
+    }, {})
+
     return {
-      url: this.fullUrl.toString(),
-      method: this.method, 
+      url: this.url ? this.fullUrl.toString() : '',
+      method: this.method,
+      headers,
     }
   }
 
-  constructor() {
+  constructor(props) {
     super()
 
-    this.method = Request.Method.get
+    this.url = ''
+    this.method = RequestModel.Method.get
+    this.query = [
+      {
+        id: '',
+        key: '',
+        value: '',
+        enabled: true,
+      }
+    ]
+
+    this.headers = [
+      RequestModel.createHeader()
+    ]
+
+    Object.assign(this, props)
+  }
+
+  addHeader() {
+    this.headers.push(
+      RequestModel.createHeader()
+    )
+  }
+
+  removeHeader(id) {
+    this.headers = this.headers.filter(m => m.id != id)
   }
 
   vestSuite() {
     return Vest.create( request => {
       const { test, enforce } = Vest
 
-      test('method', `${t.request.model.validations.method}: ${Request.methods.join(', ')}`, () => {
-        enforce(request.method).isValueOf(Request.Method);
+      test('method', `${t.request.model.validations.method}: ${RequestModel.methods.join(', ')}`, () => {
+        enforce(request.method).isValueOf(RequestModel.Method);
       })
 
       test('url', t.request.model.validations.url, () => {
@@ -75,6 +130,15 @@ export default class Request extends VestModel {
       })
 
     })
+  }
+
+  toJSON() {
+    return {
+      url: this.url ? this.fullUrl.toString() : '',
+      method: this.method, 
+      headers: this.headers,
+      query: this.query,
+    }
   }
 
 }

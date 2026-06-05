@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron/renderer')
 
 const development = process.argv.includes('--dev')
+const darwin = process.platform.includes('darwin')
 
 contextBridge.exposeInMainWorld('electron', {
 
@@ -10,6 +11,7 @@ contextBridge.exposeInMainWorld('electron', {
     return {
       ...app,
       development,
+      darwin,
     }
   },
 

@@ -19,6 +19,26 @@ export default class Response extends VestModel {
     }
   }
 
+  static statusColor(code) {
+    if (code >= 200 && code < 300) {
+      return 'green'
+    } else if (code >= 400 && code < 500) {
+      return 'orange'
+    } else if (code >= 500) {
+      return 'red'
+    } else {
+      return 'grey'
+    }
+  }
+
+  static formattedDuration(duration) {
+    return `${duration ?? 'N/A'}ms`
+  }
+
+  get formattedDuration() {
+    return Response.formattedDuration(this.duration)
+  }
+
   vestSuite() {
     return Vest.create( response => {
       const { test, enforce, compose } = Vest
@@ -46,6 +66,19 @@ export default class Response extends VestModel {
         enforce(response.redirected).isBoolean()
       })
     })
+  }
+
+  toJSON() {
+    return {
+      ...super.toJSON(),
+
+      url,
+      code,
+      statusText,
+      headers,
+      redirected,
+      blob,
+    }
   }
 
 }
