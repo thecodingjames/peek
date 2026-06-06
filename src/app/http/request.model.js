@@ -67,17 +67,22 @@ export default class RequestModel extends VestModel {
   }
 
   get text() {
+    const params = this.fullUrl.searchParams
     let text = ''
 
-    text += `${this.method} ${this.path}`
+    text += `${this.method} ${this.path}${params.size > 0 ? '?'+params.toString() : ''}`
     text += '\n'
-    text += `Host: ${this.host}`
+    text += `host: ${this.host}\n`
+
+    Object.entries(this.fetchHeaders).forEach(([key, value]) => {
+      text += `${key}: ${value}\n`
+    })
 
     return text
   }
 
-  get fetchOptions() {
-    const headers = this.headers.reduce( (result, { key, value, enabled }) => {
+  get fetchHeaders() {
+    return this.headers.reduce( (result, { key, value, enabled }) => {
       if (enabled && key.trim() != '') {
         return {
           ...result,
@@ -87,6 +92,10 @@ export default class RequestModel extends VestModel {
         return result
       }
     }, {})
+  }
+
+  get fetchOptions() {
+    const headers = this.fetchHeaders
 
     return {
       url: this.url ? this.fullUrl.toString() : '',
@@ -129,13 +138,10 @@ export default class RequestModel extends VestModel {
 
     this._url = ''
     this.method = RequestModel.Method.get
-    this.query = [
-      RequestModel.createQuery()
-    ]
 
-    this.headers = [
-      RequestModel.createHeader()
-    ]
+    this.query = []
+
+    this.headers = []
 
     Object.assign(this, props)
   }
