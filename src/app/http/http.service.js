@@ -4,6 +4,7 @@ import ResponseModel from './response.model.js'
 import HistoryService from '../drawers/history/history.service.js'
 
 export default async function http(request) {
+  debugger
   const redirect = SettingsService.http.followRedirect ? 'follow' : 'manual'
 
   const start = Date.now()

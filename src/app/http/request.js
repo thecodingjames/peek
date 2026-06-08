@@ -97,15 +97,19 @@ export default {
       return {
         query: {
           component: () => Vue.h(EditableKeyValue, {
-            modelValue: this.request.query,
-            'onUpdate:modelValue': (value) => this.request.query = value,
+            items: this.request.query,
+            'onSort': (oldIndex, newIndex) => {
+              this.request.sortQuery(oldIndex, newIndex)
+            },
+            'onEdit': () => {
+              this.request.applyQuery()
+            },
             'onDelete': (id) => {
               this.request.removeQuery(id)
             }
           }),
 
           handleCreate: (handleDetail) => {
-            console.log('query create')
             this.request.addQuery()
             handleDetail()
           },
@@ -129,7 +133,10 @@ export default {
         */
         headers: {
           component: () => Vue.h(EditableKeyValue, {
-            modelValue: this.request.headers,
+            items: this.request.headers,
+            'onSort': (oldIndex, newIndex) => {
+              this.request.sortHeaders(oldIndex, newIndex)
+            },
             'onDelete': (id) => {
               this.request.removeHeader(id)
             }
@@ -336,7 +343,7 @@ export default {
         </div>
 
         <div v-else>
-          <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
+          <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
             <v-text-field
               v-model="request.url"
               ref="url"
@@ -344,6 +351,7 @@ export default {
               label="URL"
               required
               :rules="request.rules('url')"
+              hide-details
             />
 
             <v-btn-group

@@ -1,6 +1,136 @@
 import VestModel from '../core/vest.model.js'
 import t from '../translate/translate.service.js'
 
+class KeyValuesModel {
+
+  static create(key = '', value = '') {
+    return {
+      id: crypto.randomUUID(),
+      key,
+      value,
+      enabled: true,
+    }
+  }
+
+  static ignored(pair) {
+    return !pair?.enabled || pair?.key?.trim() == ''
+  }
+
+  constructor(pairs) {
+    this.pairs = pairs ?? []
+  }
+
+  new() {
+    this.pairs.push(
+      KeyValuesModel.create()
+    )
+  }
+
+  remove(id) {
+    this.pairs = this.pairs.filter(p => p.id != id)
+  }
+
+  sort(oldIndex, newIndex) {
+    const moved = this.pairs.splice(oldIndex, 1)[0]
+    this.pairs.splice(newIndex, 0, moved)
+  }
+
+}
+
+class QueryModel extends KeyValuesModel {
+
+  constructor(url, params) {
+    super(params)
+
+    this.url = url
+
+    this.merge()
+  }
+
+  new() {
+    super.new()
+
+    this.merge()
+  }
+
+  remove(id) {
+    super.remove(id)
+
+    return this.apply()
+  }
+
+  sort(oldIndex, newIndex) {
+    super.sort(oldIndex, newIndex)
+
+    return this.apply()
+  }
+
+  apply() {
+    const newParams = this.pairs
+      .filter( p => !KeyValuesModel.ignored(p) )
+      .map( ({ id, key, value }, index) => {
+        const matchingParams = this.pairs.filter( p => p.key == key )
+        const keyExpression = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const matchingParamsInUrl = this.url?.matchAll(`${keyExpression}(=|&|$){1}`).toArray() ?? []
+
+        const matchingIndex = matchingParams.findIndex( p => p.id == id )
+        const equal = (matchingParamsInUrl[matchingIndex]?.at(-1) == '=' || value != '') ? '=' : ''
+
+        return `${key}${equal}${value}`
+      })
+
+    const prefix = newParams.length > 0 ? '?' : ''
+
+    if (RequestModel.parseUrl(this.url)) {
+      const paramsRegExp = /\?.*$/
+      const paramsValue = `${prefix}${newParams.join('&')}`
+
+      if (this.url?.match(paramsRegExp)) {
+        this.url = this.url?.replace(paramsRegExp, paramsValue)
+      } else {
+        this.url += paramsValue
+      }
+    }
+
+    return this.url
+  }
+
+  merge(newUrl) {
+    newUrl = newUrl ?? this.url
+
+    const newUrlParams = RequestModel.parseUrl(newUrl)?.searchParams ?? new URLSearchParams()
+
+    this.url = newUrl
+
+    const merged = []
+
+    newUrlParams.entries().forEach( ([key, value], index) => {
+      let cursor = this.pairs[0] ?? { }
+
+      while(this.pairs.length > 0 && KeyValuesModel.ignored(cursor)) {
+        const saved = this.pairs.splice(0, 1)[0]
+        merged.push(saved)
+
+        cursor = this.pairs[0] ?? { }
+      }
+
+      if(cursor.key == key) {
+        this.pairs.splice(0, 1)[0]
+
+        merged.push({
+          ...cursor,
+          value,
+        })
+      } else {
+        merged.push(KeyValuesModel.create(key, value))
+      }
+    })
+
+    const remainingDisabled = this.pairs.filter( q => KeyValuesModel.ignored(q))
+    this.pairs = [...merged, ...remainingDisabled]
+  }
+}
+
 export default class RequestModel extends VestModel {
 
   static get Method() {
@@ -19,6 +149,18 @@ export default class RequestModel extends VestModel {
     return Object.values(RequestModel.Method)
   }
 
+  static parseUrl(url) {
+    if (! url?.match(/^https?:\/\/.+/) ) {
+      url = `http://${url}`
+    }
+
+    try {
+      return new URL(url)
+    } catch {
+      return null
+    }
+  }
+
   static createHeader() {
     return {
       id: crypto.randomUUID(),
@@ -28,46 +170,20 @@ export default class RequestModel extends VestModel {
     }
   }
 
-  static createQuery(key = '', value = '') {
-    return {
-      id: crypto.randomUUID(),
-      key,
-      value,
-      enabled: true,
-    }
-  }
-
-  get fullUrl() {
-    let url = this.url ?? ''
-
-    if (! url.match(/^https?:\/\/.+/) ) {
-      url = `http://${url}`
-    }
-
-    try {
-      return new URL(url)
-    } catch {
-      return {
-        pathname: `{ ${t.request.model.invalidPath} }`,
-        hostname: `{ ${t.request.model.invalidHost}  }`,
-      }
-    }
-  }
-
   get host() {
-    const url = this.fullUrl
+    const { port, hostname } = this._parsedUrl ?? {
+      hostname: `{ ${t.request.model.invalidHost}  }`,
+    }
 
-    const port = url.port ? `:${url.port}` : ''
-
-    return `${url.hostname}${port}`
+    return `${hostname}${port ? `:${port}` : ''}`
   }
 
   get path() {
-    return `${this.fullUrl.pathname ?? '???'}`
+    return this._parsedUrl?.pathname ?? `{ ${t.request.model.invalidPath} }`
   }
 
   get text() {
-    const params = this.fullUrl.searchParams
+    const params = this._parsedUrl?.searchParams ?? new URLSearchParams()
     let text = ''
 
     text += `${this.method} ${this.path}${params.size > 0 ? '?'+params.toString() : ''}`
@@ -82,11 +198,11 @@ export default class RequestModel extends VestModel {
   }
 
   get fetchHeaders() {
-    return this.headers.reduce( (result, { key, value, enabled }) => {
-      if (enabled && key.trim() != '') {
+    return this.headers.reduce( (result, header) => {
+      if (!KeyValuesModel.ignored(header)) {
         return {
           ...result,
-          [key]: value,
+          [header.key]: header.value,
         }
       } else {
         return result
@@ -98,7 +214,7 @@ export default class RequestModel extends VestModel {
     const headers = this.fetchHeaders
 
     return {
-      url: this.url ? this.fullUrl.toString() : '',
+      url: this._parsedUrl?.toString() ?? '',
       method: this.method,
       headers,
     }
@@ -110,60 +226,58 @@ export default class RequestModel extends VestModel {
 
   set url(value) {
     this._url = value
+    this._parsedUrl = RequestModel.parseUrl(this._url)
 
-    const merged = []
-
-    this.fullUrl.searchParams?.entries().forEach( ([key, value], index) => {
-      const cursor = this.query[0] ?? { }
-
-      if(cursor.key == key) {
-        this.query.slice(0, 1)[0]
-
-        merged.push({
-          ...cursor,
-          value,
-        })
-      } else {
-        merged.push(RequestModel.createQuery(key, value))
-      }
-    })
-
-    // TODO make sure to keep disabled items
-    const remainingDisabled = this.query.filter( q => !q.enabled )
-    this.query = [...merged, ...remainingDisabled]
+    this.queryModel.merge(this._url)
   }
 
-  constructor(props) {
+  get query() {
+    return this.queryModel.pairs
+  }
+
+  get headers() {
+    return this.headersModel.pairs
+  }
+
+  constructor(props = {}) {
     super()
 
-    this._url = ''
-    this.method = RequestModel.Method.get
+    this._url = props.url ?? ''
+    this._parsedUrl = RequestModel.parseUrl(this._url)
 
-    this.query = []
+    this.method = props.method ?? RequestModel.Method.get
 
-    this.headers = []
+    this.queryModel = new QueryModel(this._url, props.query)
 
-    Object.assign(this, props)
+    this.headersModel = new KeyValuesModel(props.headers)
   }
 
   addHeader() {
-    this.headers.push(
-      RequestModel.createHeader()
-    )
+    this.headersModel.new()
   }
 
   removeHeader(id) {
-    this.headers = this.headers.filter(m => m.id != id)
+    this.headersModel.remove(id)
+  }
+
+  sortHeaders(oldIndex, newIndex) {
+    this.headersModel.sort(oldIndex, newIndex)
   }
 
   addQuery() {
-    this.query.push(
-      RequestModel.createQuery()
-    )
+    this.queryModel.new()
   }
 
   removeQuery(id) {
-    this.query = this.query.filter(q => q.id != id)
+    this._url = this.queryModel.remove(id)
+  }
+
+  sortQuery(oldIndex, newIndex) {
+    this._url = this.queryModel.sort(oldIndex, newIndex)
+  }
+
+  applyQuery() {
+    this._url = this.queryModel.apply()
   }
 
   vestSuite() {
@@ -175,7 +289,10 @@ export default class RequestModel extends VestModel {
       })
 
       test('url', t.request.model.validations.url, () => {
-        enforce(request.url).isNotBlank();
+        enforce(request.url).allOf(
+          enforce.isNotBlank(),
+          enforce.condition(url => !!RequestModel.parseUrl(url))
+        )
       })
 
     })
@@ -183,7 +300,7 @@ export default class RequestModel extends VestModel {
 
   toJSON() {
     return {
-      url: this.url ? this.fullUrl.toString() : '',
+      url: this.url,
       method: this.method, 
       headers: this.headers,
       query: this.query,
