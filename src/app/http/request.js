@@ -51,7 +51,7 @@ const DetailTitle = {
         size="x-small"
         variant="outlined"
         :style="{ visibility: (create ? 'visible' : 'hidden') }"
-        style="min-width: 0; aspect-ratio: 1; border-radius: 99px; font-size: 1rem;"
+        style="min-width: 0; aspect-ratio: 1; border-radius: 99px; font-size: 1rem; line-height: 19px;"
       >+</v-btn>
     </span>
   `
