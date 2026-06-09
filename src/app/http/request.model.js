@@ -44,28 +44,28 @@ class QueryModel extends KeyValuesModel {
 
     this.url = url
 
-    this.merge()
+    this.mergeFromUrl()
   }
 
   new() {
     super.new()
 
-    this.merge()
+    this.mergeFromUrl()
   }
 
   remove(id) {
     super.remove(id)
 
-    return this.apply()
+    return this.applyToUrl()
   }
 
   sort(oldIndex, newIndex) {
     super.sort(oldIndex, newIndex)
 
-    return this.apply()
+    return this.applyToUrl()
   }
 
-  apply() {
+  applyToUrl() {
     const newParams = this.pairs
       .filter( p => !KeyValuesModel.ignored(p) )
       .map( ({ id, key, value }, index) => {
@@ -95,7 +95,7 @@ class QueryModel extends KeyValuesModel {
     return this.url
   }
 
-  merge(newUrl) {
+  mergeFromUrl(newUrl) {
     newUrl = newUrl ?? this.url
 
     const newUrlParams = RequestModel.parseUrl(newUrl)?.searchParams ?? new URLSearchParams()
@@ -231,7 +231,7 @@ export default class RequestModel extends VestModel {
   set url(value) {
     this._url = value
 
-    this.queryModel.merge(this._url)
+    this.queryModel.mergeFromUrl(this._url)
   }
 
   get query() {
@@ -279,7 +279,7 @@ export default class RequestModel extends VestModel {
   }
 
   applyQuery() {
-    this._url = this.queryModel.apply()
+    this._url = this.queryModel.applyToUrl()
   }
 
   vestSuite() {
