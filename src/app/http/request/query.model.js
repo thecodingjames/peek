@@ -8,7 +8,6 @@ export default class QueryModel extends KeyValueModel {
     super(params)
 
     this.url = url
-
     this.mergeFromUrl()
   }
 
@@ -61,12 +60,9 @@ export default class QueryModel extends KeyValueModel {
   }
 
   mergeFromUrl(newUrl) {
-    newUrl = newUrl ?? this.url
+    this.url = newUrl ?? this.url
 
-    const newUrlParams = parseUrl(newUrl)?.searchParams ?? new URLSearchParams()
-
-    this.url = newUrl
-
+    const newUrlParams = parseUrl(this.url)?.searchParams ?? new URLSearchParams()
     const merged = []
 
     newUrlParams.entries().forEach( ([key, value], index) => {
@@ -94,5 +90,6 @@ export default class QueryModel extends KeyValueModel {
     const remainingDisabled = this.pairs.filter( q => KeyValueModel.ignored(q))
     this.pairs = [...merged, ...remainingDisabled]
   }
+
 }
 

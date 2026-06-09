@@ -24,7 +24,7 @@ export default {
   methods: {
     async handleRequest(request) {
       try {
-        this.response = ResponseModel.instantiate(await http(Vue.toRaw(request)))
+        this.response = ResponseModel.instantiate(await http(request))
       } catch (e) {
         this.response = null
 

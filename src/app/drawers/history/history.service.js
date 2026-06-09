@@ -26,7 +26,7 @@ export default {
     requests.splice(0, 0, new HistoryModel(request, result))
   },
 
-  openTab(request) {
-    TabsService.new(new RequestModel(request))
+  openTab(historyModel) {
+    TabsService.new(new RequestModel(historyModel))
   },
 }

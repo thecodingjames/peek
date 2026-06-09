@@ -1,3 +1,4 @@
+import { raw } from '../../core/helpers.js'
 import { parseUrl } from '../url.helpers.js'
 
 import VestModel from '../../core/vest.model.js'
@@ -65,12 +66,10 @@ export default class RequestModel extends VestModel {
   }
 
   get fetchOptions() {
-    const headers = this.headersModel.forFetch
-
     return {
       url: this.parsedUrl?.toString() ?? '',
       method: this.method,
-      headers,
+      headers: this.headersModel.forFetch,
     }
   }
 
@@ -95,10 +94,12 @@ export default class RequestModel extends VestModel {
   constructor(props = {}) {
     super()
 
-    this._url = props.url ?? ''
+    // make sure no references to source object are kept
+    props = raw(props)
 
     this.method = props.method ?? RequestModel.Method.get
 
+    this._url = props.url ?? ''
     this.queryModel = new QueryModel(this._url, props.query)
 
     this.headersModel = new HeadersModel(props.headers)
@@ -151,14 +152,12 @@ export default class RequestModel extends VestModel {
   }
 
   toJSON() {
-    return {
+    return raw({
       url: this.url,
-      method: this.method, 
-      headers: this.headers,
       query: this.query,
-    }
+      method: this.method,
+      headers: this.headers,
+    })
   }
 
 }
-
-
