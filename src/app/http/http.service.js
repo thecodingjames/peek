@@ -11,7 +11,7 @@ export default async function http(request) {
   const { error, ...result } = await window.electron.http({
     ...request.fetchOptions,
     redirect,
-    cache: "no-store",
+    cache: 'no-store',
   })
 
   let response = null

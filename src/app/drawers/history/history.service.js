@@ -1,6 +1,6 @@
 import TabsService from '../../tabs/tabs.service.js'
 
-import RequestModel from '../../http/request.model.js'
+import RequestModel from '../../http/request/request.model.js'
 
 import HistoryModel from './history.model.js'
 

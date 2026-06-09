@@ -2,7 +2,7 @@ import t from '../translate/translate.service.js'
 
 import SettingsService from '../drawers/settings/settings.service.js'
 
-import RequestModel from '../http/request.model.js'
+import RequestModel from '../http/request/request.model.js'
 
 const KEY = 'tabs'
 

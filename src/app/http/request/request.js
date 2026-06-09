@@ -1,11 +1,11 @@
 import RequestModel from './request.model.js'
-import EditableKeyValue from './request-details/editable-key-value.js'
-import Body from './request-details/body.js'
+import EditableKeyValue from './details/editable-key-value.js'
+import Body from './details/body.js'
 
-import TabsService from '../tabs/tabs.service.js'
-import TabMixin from '../tabs/tab.mixin.js'
+import TabsService from '../../tabs/tabs.service.js'
+import TabMixin from '../../tabs/tab.mixin.js'
 
-import HotkeysService from '../hotkeys/hotkeys.service.js'
+import HotkeysService from '../../hotkeys/hotkeys.service.js'
 
 const DetailTitle = {
 
