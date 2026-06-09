@@ -170,8 +170,12 @@ export default class RequestModel extends VestModel {
     }
   }
 
+  get parsedUrl() {
+    return RequestModel.parseUrl(this._url)
+  }
+
   get host() {
-    const { port, hostname } = this._parsedUrl ?? {
+    const { port, hostname } = this.parsedUrl ?? {
       hostname: `{ ${t.request.model.invalidHost}  }`,
     }
 
@@ -179,11 +183,11 @@ export default class RequestModel extends VestModel {
   }
 
   get path() {
-    return this._parsedUrl?.pathname ?? `{ ${t.request.model.invalidPath} }`
+    return this.parsedUrl?.pathname ?? `{ ${t.request.model.invalidPath} }`
   }
 
   get text() {
-    const params = this._parsedUrl?.searchParams ?? new URLSearchParams()
+    const params = this.parsedUrl?.searchParams ?? new URLSearchParams()
     let text = ''
 
     text += `${this.method} ${this.path}${params.size > 0 ? '?'+params.toString() : ''}`
@@ -214,7 +218,7 @@ export default class RequestModel extends VestModel {
     const headers = this.fetchHeaders
 
     return {
-      url: this._parsedUrl?.toString() ?? '',
+      url: this.parsedUrl?.toString() ?? '',
       method: this.method,
       headers,
     }
@@ -226,7 +230,6 @@ export default class RequestModel extends VestModel {
 
   set url(value) {
     this._url = value
-    this._parsedUrl = RequestModel.parseUrl(this._url)
 
     this.queryModel.merge(this._url)
   }
@@ -243,7 +246,6 @@ export default class RequestModel extends VestModel {
     super()
 
     this._url = props.url ?? ''
-    this._parsedUrl = RequestModel.parseUrl(this._url)
 
     this.method = props.method ?? RequestModel.Method.get
 
