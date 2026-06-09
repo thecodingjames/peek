@@ -1,6 +1,6 @@
 import TabsService from '../../tabs/tabs.service.js'
 
-import RequestModel from '../../http/request.model.js'
+import RequestModel from '../../http/request/request.model.js'
 
 import HistoryModel from './history.model.js'
 
@@ -26,7 +26,7 @@ export default {
     requests.splice(0, 0, new HistoryModel(request, result))
   },
 
-  openTab(request) {
-    TabsService.new(new RequestModel(request))
+  openTab(historyModel) {
+    TabsService.new(new RequestModel(historyModel))
   },
 }

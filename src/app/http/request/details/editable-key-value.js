@@ -1,18 +1,25 @@
 export default {
 
   emits: [
-    'update:modelValue',
+    'edit',
+    'sort',
     'delete',
   ],
 
   props: [
-    'modelValue',
+    'items',
   ],
 
   methods: {
+
     handleDelete(id) {
       this.$emit('delete', id)
-    }
+    },
+
+    handleEdit() {
+      this.$emit('edit')
+    },
+
   },
 
   mounted() {
@@ -22,8 +29,7 @@ export default {
       scroll: true,
 
       onEnd: ({ oldIndex, newIndex }) => {
-        const moved = this.modelValue.splice(oldIndex, 1)[0]
-        this.modelValue.splice(newIndex, 0, moved)
+        this.$emit('sort', oldIndex, newIndex)
       },  
     })
   },
@@ -33,7 +39,10 @@ export default {
   },
 
   template: `
-    <v-table class="_http_request-details_editable-key-value">
+    <v-table
+      v-show="items.length > 0"
+      class="_http_request-details_editable-key-value"
+    >
       <component is="style">
         ._http_request-details_editable-key-value {
           .sort-handle:hover {
@@ -72,14 +81,14 @@ export default {
 
       <tbody ref="items">
         <tr
-          v-for="item in modelValue"
+          v-for="item in items"
           :key="item.id"
 
           :disabled="!item.enabled || item.key.trim() == ''"
         >
           <td class="min-width">
             <v-icon 
-              :disabled="modelValue.length <= 1"
+              :disabled="items.length <= 1"
               icon="mdi-drag-vertical" 
               class="sort-handle" 
             />
@@ -88,6 +97,7 @@ export default {
           <td class="min-width">
             <v-checkbox
               v-model="item.enabled"
+              @update:modelValue="handleEdit"
               hide-details
 
               style="width: 16px; margin-left: -8px; margin-right: 16px;"
@@ -98,12 +108,16 @@ export default {
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
               <v-text-field
                 v-model="item.key"
+                @update:modelValue="handleEdit"
+
                 density="compact"
                 hide-details
               />
 
               <v-text-field
                 v-model="item.value"
+                @update:modelValue="handleEdit"
+
                 density="compact"
                 hide-details
               />
@@ -113,7 +127,6 @@ export default {
           <td class="min-width">
             <v-btn
               @click.stop="handleDelete(item.id)"
-              :disabled="modelValue.length <= 1"
 
               color="red"
               size="x-small"
@@ -126,5 +139,12 @@ export default {
         </tr>
       </tbody>
     </v-table>
+
+    <div
+      v-show="items.length == 0"
+      style="margin-left: 1.5rem; padding: 0.5rem 0; font-style: italic;"
+    >
+      <span>{{ t.request.details.keyValue.empty }}</span>
+    </div>
   `
 }

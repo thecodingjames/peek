@@ -1,4 +1,4 @@
-import Request from './request.js'
+import Request from './request/request.js'
 import Response from './response.js'
 import http from './http.service.js'
 import ResponseModel from './response.model.js'
@@ -24,7 +24,7 @@ export default {
   methods: {
     async handleRequest(request) {
       try {
-        this.response = ResponseModel.instantiate(await http(Vue.toRaw(request)))
+        this.response = ResponseModel.instantiate(await http(request))
       } catch (e) {
         this.response = null
 

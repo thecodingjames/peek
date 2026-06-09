@@ -91,6 +91,10 @@ export default {
     rawHttp: 'HTTP brut',
 
     details: {
+      keyValue: {
+        empty: 'Aucuns items...'
+      },
+
       query: {
         name: 'paramètres',
       },

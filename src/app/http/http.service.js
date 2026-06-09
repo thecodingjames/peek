@@ -1,3 +1,4 @@
+import { raw } from '../core/helpers.js'
 import SettingsService from '../drawers/settings/settings.service.js'
 import ResponseModel from './response.model.js'
 
@@ -8,10 +9,10 @@ export default async function http(request) {
 
   const start = Date.now()
 
-  const { error, ...result } = await window.electron.http({
+  const { error, ...result } = await window.electron.http(raw({
     ...request.fetchOptions,
     redirect,
-  })
+  }))
 
   let response = null
   if (Object.keys(result).length > 0) {
