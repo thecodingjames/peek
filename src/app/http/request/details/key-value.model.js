@@ -13,6 +13,14 @@ export default class KeyValueModel {
     return !pair?.enabled || pair?.key?.trim() == ''
   }
 
+  static active(pair) {
+    return !KeyValueModel.ignored(pair)
+  }
+
+  get actives() {
+    return this.pairs.filter( p => KeyValueModel.active(p) )
+  }
+
   constructor(pairs) {
     this.pairs = pairs ?? []
   }

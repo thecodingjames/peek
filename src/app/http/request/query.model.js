@@ -30,18 +30,16 @@ export default class QueryModel extends KeyValueModel {
   }
 
   applyToUrl() {
-    const newParams = this.pairs
-      .filter( p => !KeyValueModel.ignored(p) )
-      .map( ({ id, key, value }, index) => {
-        const matchingParams = this.pairs.filter( p => p.key == key )
-        const keyExpression = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const matchingParamsInUrl = this.url?.matchAll(`${keyExpression}(=|&|$){1}`).toArray() ?? []
+    const newParams = this.actives.map( ({ id, key, value }, index) => {
+      const matchingParams = this.pairs.filter( p => p.key == key )
+      const keyExpression = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const matchingParamsInUrl = this.url?.matchAll(`${keyExpression}(=|&|$){1}`).toArray() ?? []
 
-        const matchingIndex = matchingParams.findIndex( p => p.id == id )
-        const equal = (matchingParamsInUrl[matchingIndex]?.at(-1) == '=' || value != '') ? '=' : ''
+      const matchingIndex = matchingParams.findIndex( p => p.id == id )
+      const equal = (matchingParamsInUrl[matchingIndex]?.at(-1) == '=' || value != '') ? '=' : ''
 
-        return `${key}${equal}${value}`
-      })
+      return `${key}${equal}${value}`
+    })
 
     const prefix = newParams.length > 0 ? '?' : ''
 

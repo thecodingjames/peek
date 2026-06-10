@@ -1,60 +1,11 @@
+import Title from './title.js'
 import EditableKeyValue from './editable-key-value.js'
 import Body from './body.js'
-
-const DetailTitle = {
-
-  props: [
-    'visible',
-    'create',
-    'modes',
-    'mode',
-  ],
-
-  emits: [
-    'create',
-    'update:mode',
-  ],
-
-  methods: {
-    handleToggle() {
-      const currentMode = this.modes.findIndex( mode => mode == this.mode) 
-      const newIndex = (currentMode + 1) % this.modes.length
-
-      this.$emit('update:mode', this.modes[newIndex])
-    }
-  },
-
-  template: `
-    <span>
-      <v-btn
-        v-if="modes"
-
-        @click.stop="handleToggle"
-
-        size="x-small"
-        variant="outlined"
-        style="margin-right: 1rem; min-width: 0; aspect-ratio: 1;"
-      >
-      ⇄
-      </v-btn>
-
-      <v-btn
-        @click.stop="$emit('create')"
-
-        color="success"
-        size="x-small"
-        variant="outlined"
-        :style="{ visibility: (create ? 'visible' : 'hidden') }"
-        style="min-width: 0; aspect-ratio: 1; border-radius: 99px; font-size: 1rem; line-height: 19px;"
-      >+</v-btn>
-    </span>
-  `
-}
 
 export default {
 
   components: {
-    DetailTitle
+    DetailTitle: Title,
   },
 
   props: [
@@ -65,16 +16,15 @@ export default {
     return {
       detailsTab: null,
       detailsPanels: [],
-
-      bodyMode: 'raw',
     }
   },
 
   computed: {
 
     details() {
-      return {
-        query: {
+      return [
+        {
+          name: 'query',
           component: () => Vue.h(EditableKeyValue, {
             items: this.request.query,
             'onSort': (oldIndex, newIndex) => {
@@ -88,7 +38,7 @@ export default {
             }
           }),
 
-          count: () => this.request.query.length,
+          count: Vue.computed( () => this.request.queryModel.actives.length ),
 
           handleCreate: (handleDetail) => {
             this.request.addQuery()
@@ -100,9 +50,10 @@ export default {
         body: {
           component: () => Vue.h(Body, {
           }),
-          modes: ['raw', 'form'],
 
-          create: this.bodyMode == 'form',
+          modes: ['raw', 'form'],
+          mode: Vue.ref('raw'),
+          create: (detail) => detail.mode.value == 'form',
 
           count: () => undefined,
 
@@ -114,7 +65,8 @@ export default {
         },
 
         */
-        headers: {
+        {
+          name: 'headers',
           component: () => Vue.h(EditableKeyValue, {
             items: this.request.headers,
             'onSort': (oldIndex, newIndex) => {
@@ -125,7 +77,7 @@ export default {
             }
           }),
 
-          count: () => this.request.headers.length,
+          count: Vue.computed( () => this.request.headersModel.actives.length ),
 
           handleCreate: (handleDetail) => {
             this.request.addHeader()
@@ -133,7 +85,7 @@ export default {
             handleDetail()
           },
         }
-      }
+      ]
     },
 
     openedTab() {
@@ -216,20 +168,13 @@ export default {
             display: none;
           }
 
-          .detail-name {
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            font-weight: bold;
-            letter-spacing: 0.01rem;
-          }
-
           .v-expansion-panel-text__wrapper {
             padding: 0;
           }
 
           @media (min-width: 960px) {
             .horizontal-tabs {
-              display: none;
+              DDDdisplay: none;
             }
 
             .vertical-panels {
@@ -247,41 +192,22 @@ export default {
           grow
         >
           <v-tab
-            v-for="(detail, name) of details"
+            v-for="detail of details"
 
-            :value="name"
+            :value="detail.name"
 
-            @click="handleTabClick(name)"
+            @click="handleTabClick(detail.name)"
             :selected-class="openedTab ? 'v-tab--selected' : ''"
           >
-            <template v-slot:default>
-              <v-badge
-                :content="detail.count()"
+            <detail-title
+              :detail
+              :visible="openedTab == detail.name"
 
-                tag="span"
-                floating
-                offset-x="2"
-                offset-y="2"
-                color="transparent"
-                location="top right"
-                class="detail-name"
-              >
-                {{ t.request.details[name].name }}
-              </v-badge>
-            </template>
+              v-model:mode="detail.mode"
+              @update:mode="handleDetailTab(detail.name)"
 
-            <template v-slot:append>
-              <detail-title
-                :visible="openedTab == name"
-                :create="detail.create ?? true"
-
-                :modes="detail.modes"
-                v-model:mode="bodyMode"
-                @update:mode="handleDetailTab(name)"
-
-                @create="detail.handleCreate(() => handleDetailTab(name))"
-              />
-            </template>
+              @create="detail.handleCreate(() => handleDetailTab(detail.name))"
+            />
           </v-tab>
         </v-tabs>
 
@@ -291,8 +217,8 @@ export default {
             :model-value="openedTab"
           >
             <v-tabs-window-item
-              v-for="(detail, name) of details"
-              :value="name"
+              v-for="detail of details"
+              :value="detail.name"
               class="rounded-b"
             >
               <component :is="detail.component"></component>
@@ -312,26 +238,21 @@ export default {
         @update:modelValue="handlePanelClick"
       >
         <v-expansion-panel
-          v-for="(detail, name) of details"
-          :value="name"
+          v-for="detail of details"
+          :value="detail.name"
         >
           <v-expansion-panel-title 
             style="background-color: var(--bg); min-height: 2.5rem; padding-top: 0; padding-bottom: 0;"
             density="compact"
           >
-            <span class="detail-name" style="margin-right: 0.5rem;">
-              {{ t.request.details[name].name }}
-            </span>
-
             <detail-title
-              :visible="openedPanels.includes(name)"
-              :create="detail.create ?? true"
+              :detail
+              :visible="openedPanels.includes(detail.name)"
 
-              :modes="detail.modes"
-              v-model:mode="bodyMode"
-              @update:mode="handleDetailTab(name)"
+              v-model:mode="detail.mode"
+              @update:mode="handleDetailTab(detail.name)"
 
-              @create="detail.handleCreate(() => handleDetailPanel(name))"
+              @create="detail.handleCreate(() => handleDetailPanel(detail.name))"
             />
 
           </v-expansion-panel-title>
