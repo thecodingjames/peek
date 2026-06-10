@@ -25,8 +25,13 @@ export default class KeyValueModel {
     this.pairs = pairs ?? []
   }
 
-  new() {
-    this.pairs.push(
+  create(index) {
+    index = (index ?? this.pairs.length) + 1
+    // Insert at position or append if greater than length
+
+    this.pairs.splice(
+      index,
+      0,
       KeyValueModel.create()
     )
   }

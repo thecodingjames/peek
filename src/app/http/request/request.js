@@ -1,3 +1,5 @@
+import { forceFocus } from '../../core/helpers.js'
+
 import RequestModel from './request.model.js'
 import Details from './details/details.js'
 
@@ -73,22 +75,13 @@ export default {
   watch: {
 
     methodMenuOpened(opened) {
-      let interval = null
-
       if (opened) {
         this.methodPickerNavIndex = this.methods.findIndex( m => m == this.request.method)
 
-        // focus hack :(
-        Vue.nextTick(() => {
-          interval = setInterval(() => {
-            if (this.methodMenuOpened) {
-              this.$refs.methodMenuList.$el.focus()
-            }
-
-            if (this.$refs.methodMenuList.$el == document.activeElement) {
-              clearInterval(interval)
-            }
-          }, 1)
+        forceFocus(() => {
+          if(this.methodMenuOpened) {
+            return this.$refs.methodMenuList.$el
+          }
         })
       }
     },
@@ -137,14 +130,16 @@ export default {
       </div>
 
       <div v-else>
-        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <form @submit.prevent="handleSend" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <!-- Needed dependency with request.query to trigger re-render of url... :( -->
+          <span v-show="false">{{ request.query }}</span>
           <v-text-field
             v-model="request.url"
             ref="url"
+            :rules="request.rules('url')"
 
             label="URL"
             required
-            :rules="request.rules('url')"
             hide-details
           />
 
@@ -181,7 +176,7 @@ export default {
             </v-menu>
 
           </v-btn-group>
-        </v-form>
+        </form>
       </div>
 
       <request-details :request />

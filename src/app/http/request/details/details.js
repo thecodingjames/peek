@@ -27,21 +27,24 @@ export default {
           name: 'query',
           component: () => Vue.h(EditableKeyValue, {
             items: this.request.query,
-            'onSort': (oldIndex, newIndex) => {
-              this.request.sortQuery(oldIndex, newIndex)
+            'onCreate': (index) => {
+              this.request.queryModel.create(index)
             },
             'onEdit': () => {
-              this.request.applyQuery()
+              this.request.queryModel.applyToUrl()
+            },
+            'onSort': (oldIndex, newIndex) => {
+              this.request.queryModel.sort(oldIndex, newIndex)
             },
             'onDelete': (id) => {
-              this.request.removeQuery(id)
+              this.request.queryModel.remove(id)
             }
           }),
 
           count: Vue.computed( () => this.request.queryModel.actives.length ),
 
           handleCreate: (handleDetail) => {
-            this.request.addQuery()
+            this.request.queryModel.create()
             handleDetail()
           },
         },
@@ -69,18 +72,21 @@ export default {
           name: 'headers',
           component: () => Vue.h(EditableKeyValue, {
             items: this.request.headers,
+            'onCreate': (index) => {
+              this.request.headersModel.create(index)
+            },
             'onSort': (oldIndex, newIndex) => {
-              this.request.sortHeaders(oldIndex, newIndex)
+              this.request.headersModel.sort(oldIndex, newIndex)
             },
             'onDelete': (id) => {
-              this.request.removeHeader(id)
+              this.request.headersModel.remove(id)
             }
           }),
 
           count: Vue.computed( () => this.request.headersModel.actives.length ),
 
           handleCreate: (handleDetail) => {
-            this.request.addHeader()
+            this.request.headersModel.create()
 
             handleDetail()
           },

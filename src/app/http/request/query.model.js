@@ -9,10 +9,12 @@ export default class QueryModel extends KeyValueModel {
 
     this.url = url
     this.mergeFromUrl()
+
+    this.onUrlChange = undefined
   }
 
-  new() {
-    super.new()
+  create(index) {
+    super.create(index)
 
     this.mergeFromUrl()
   }
@@ -20,16 +22,22 @@ export default class QueryModel extends KeyValueModel {
   remove(id) {
     super.remove(id)
 
-    return this.applyToUrl()
+    this.applyToUrl()
   }
 
   sort(oldIndex, newIndex) {
     super.sort(oldIndex, newIndex)
 
-    return this.applyToUrl()
+    this.applyToUrl()
   }
 
   applyToUrl() {
+    const parsedUrl = parseUrl(this.url)
+
+    if(!parsedUrl) {
+      return
+    }
+
     const newParams = this.actives.map( ({ id, key, value }, index) => {
       const matchingParams = this.pairs.filter( p => p.key == key )
       const keyExpression = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -43,7 +51,7 @@ export default class QueryModel extends KeyValueModel {
 
     const prefix = newParams.length > 0 ? '?' : ''
 
-    if (parseUrl(this.url)) {
+    if (parsedUrl) {
       const paramsRegExp = /\?.*$/
       const paramsValue = `${prefix}${newParams.join('&')}`
 
@@ -54,11 +62,19 @@ export default class QueryModel extends KeyValueModel {
       }
     }
 
+    if (this.onUrlChange instanceof Function) {
+      this.onUrlChange(this.url)
+    }
+
     return this.url
   }
 
   mergeFromUrl(newUrl) {
     this.url = newUrl ?? this.url
+
+    if(!parseUrl(newUrl)) {
+      return
+    }
 
     const newUrlParams = parseUrl(this.url)?.searchParams ?? new URLSearchParams()
     const merged = []
