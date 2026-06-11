@@ -14,8 +14,8 @@ export default {
 
   data() {
     return {
-      detailsTab: null,
-      detailsPanels: [],
+      tab: null,
+      panels: [],
     }
   },
 
@@ -94,63 +94,32 @@ export default {
       ]
     },
 
-    openedTab() {
-      return this.detailsTab ?? this.detailsPanels.at(-1)
-    },
-
-    openedPanels() {
-      let panels = [ ...this.detailsPanels ]
-
-      if (!panels.includes(this.detailsTab)) {
-        panels.push(this.detailsTab)
-      }
-
-      return panels.filter( p => p )
-    },
-
-
   },
 
   methods: {
 
-    handleTabClick(tab) {
-      if (this.openedTab == tab) {
-        this.detailsTab = null
-        this.detailsPanels = this.detailsPanels.filter( p => p != tab )
+    handleTabSelect(tab) {
+      if (this.tab == tab) {
+        this.tab = null
+        this.handlePanelSelect(this.panels.filter( p => p != tab ))
       } else {
-        this.detailsTab = tab
+        this.tab = tab
+        this.handlePanelSelect([...this.panels, tab])
       }
     },
 
-    handlePanelClick(panels) {
-      this.detailsPanels = panels
-    },
+    handlePanelSelect(changedPanels) {
+      const deleted = this.panels.filter( i => !changedPanels.includes(i) )[0]
+      const added = changedPanels.filter( i => !this.panels.includes(i) )[0]
 
-    handleDetailTab(tab) {
-      this.detailsTab = tab
-    },
-
-    handleDetailPanel(panel) {
-      if(!this.detailsPanels.includes(panel)) {
-        this.detailsPanels.push(panel)
+      if (added) {
+        this.tab = added
+        this.panels = this.panels.filter( p => p == added ) // avoid duplicate
+      } else if (deleted == this.tab) {
+        this.tab = null
       }
-    },
 
-  },
-
-  watch: {
-
-    detailsPanels(panels) {
-      const deleted = this.openedPanels.filter( i => !panels.includes(i) )[0]
-      const added = panels.filter( i => !this.openedPanels.includes(i) )[0]
-
-      const notOpened = !this.openedPanels.includes(added)
-
-      if (added && notOpened) {
-        this.detailsTab = added
-      } else if (this.detailsTab && this.detailsTab == deleted) {
-        this.detailsTab = panels.at(-1)
-      }
+      this.panels = changedPanels
     },
 
   },
@@ -180,7 +149,7 @@ export default {
 
           @media (min-width: 960px) {
             .horizontal-tabs {
-              DDDdisplay: none;
+              display: none;
             }
 
             .vertical-panels {
@@ -192,8 +161,8 @@ export default {
 
       <div class="horizontal-tabs">
         <v-tabs
-          :model-value="openedTab"
-          :class="{ rounded: !openedTab, 'rounded-t': openedTab }"
+          :model-value="tab"
+          :class="{ rounded: !tab, 'rounded-t': tab }"
           density="compact"
           grow
         >
@@ -202,25 +171,25 @@ export default {
 
             :value="detail.name"
 
-            @click="handleTabClick(detail.name)"
-            :selected-class="openedTab ? 'v-tab--selected' : ''"
+            @click="handleTabSelect(detail.name)"
+            :selected-class="tab ? 'v-tab--selected' : ''"
           >
             <detail-title
               :detail
-              :visible="openedTab == detail.name"
+              :visible="tab == detail.name"
 
               v-model:mode="detail.mode"
-              @update:mode="handleDetailTab(detail.name)"
+              @update:mode="handleTabSelect(detail.name)"
 
-              @create="detail.handleCreate(() => handleDetailTab(detail.name))"
+              @create="detail.handleCreate(() => handleTabSelect(detail.name))"
             />
           </v-tab>
         </v-tabs>
 
         <v-expand-transition>
           <v-tabs-window
-            v-if="openedTab"
-            :model-value="openedTab"
+            v-if="tab"
+            :model-value="tab"
           >
             <v-tabs-window-item
               v-for="detail of details"
@@ -240,8 +209,8 @@ export default {
         elevation="0"
         class="vertical-panels"
 
-        :model-value="openedPanels"
-        @update:modelValue="handlePanelClick"
+        :model-value="panels"
+        @update:model-value="handlePanelSelect"
       >
         <v-expansion-panel
           v-for="detail of details"
@@ -253,12 +222,12 @@ export default {
           >
             <detail-title
               :detail
-              :visible="openedPanels.includes(detail.name)"
+              :visible="panels.includes(detail.name)"
 
               v-model:mode="detail.mode"
-              @update:mode="handleDetailTab(detail.name)"
+              @update:mode="handlePanelSelect([detail.name])"
 
-              @create="detail.handleCreate(() => handleDetailPanel(detail.name))"
+              @create="detail.handleCreate(() => handlePanelSelect([detail.name]))"
             />
 
           </v-expansion-panel-title>
