@@ -1,6 +1,9 @@
+import { forceFocus } from '../../../core/helpers.js'
+
 export default {
 
   emits: [
+    'create',
     'edit',
     'sort',
     'delete',
@@ -10,15 +13,44 @@ export default {
     'items',
   ],
 
+  data() {
+    return {
+      focusIndex: null,
+    }
+  },
+
   methods: {
 
-    handleDelete(id) {
-      this.$emit('delete', id)
+    handleCreate(index) {
+      this.focusIndex = index + 1
+
+      this.$emit('create', index)
     },
 
     handleEdit() {
       this.$emit('edit')
     },
+
+    handleSort({oldIndex, newIndex}) {
+      this.$emit('sort', oldIndex, newIndex)
+    },
+
+    handleDelete(id) {
+      this.$emit('delete', id)
+    },
+
+  },
+
+  watch: {
+
+    items(items) {
+      if (this.focusIndex) {
+        const index = this.focusIndex
+        this.focusIndex = null
+
+        forceFocus(() => this.$refs.items.children[index]?.querySelector('input[type=text]'))
+      }
+    }
 
   },
 
@@ -28,9 +60,7 @@ export default {
       direction: 'vertical',
       scroll: true,
 
-      onEnd: ({ oldIndex, newIndex }) => {
-        this.$emit('sort', oldIndex, newIndex)
-      },  
+      onEnd: this.handleSort,
     })
   },
 
@@ -41,6 +71,7 @@ export default {
   template: `
     <v-table
       v-show="items.length > 0"
+
       class="_http_request-details_editable-key-value"
     >
       <component is="style">
@@ -81,7 +112,7 @@ export default {
 
       <tbody ref="items">
         <tr
-          v-for="item in items"
+          v-for="(item, index) in items"
           :key="item.id"
 
           :disabled="!item.enabled || item.key.trim() == ''"
@@ -105,7 +136,10 @@ export default {
           </td>
 
           <td class="can-disable">
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+            <v-form
+              @submit.prevent="handleCreate(index)"
+              style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;"
+            >
               <v-text-field
                 v-model="item.key"
                 @update:modelValue="handleEdit"
@@ -121,7 +155,8 @@ export default {
                 density="compact"
                 hide-details
               />
-            </div>
+              <button style="display: none;">never shown, needed to allow Enter to trigger</button>
+            </v-form>
           </td>
 
           <td class="min-width">

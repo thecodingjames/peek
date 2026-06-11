@@ -13,12 +13,25 @@ export default class KeyValueModel {
     return !pair?.enabled || pair?.key?.trim() == ''
   }
 
+  static active(pair) {
+    return !KeyValueModel.ignored(pair)
+  }
+
+  get actives() {
+    return this.pairs.filter( p => KeyValueModel.active(p) )
+  }
+
   constructor(pairs) {
     this.pairs = pairs ?? []
   }
 
-  new() {
-    this.pairs.push(
+  create(index) {
+    index = (index ?? this.pairs.length) + 1
+    // Insert at position or append if greater than length
+
+    this.pairs.splice(
+      index,
+      0,
       KeyValueModel.create()
     )
   }

@@ -101,36 +101,11 @@ export default class RequestModel extends VestModel {
 
     this._url = props.url ?? ''
     this.queryModel = new QueryModel(this._url, props.query)
+    this.queryModel.onUrlChange = (url) => {
+      this._url = url
+    }
 
     this.headersModel = new HeadersModel(props.headers)
-  }
-
-  addHeader() {
-    this.headersModel.new()
-  }
-
-  removeHeader(id) {
-    this.headersModel.remove(id)
-  }
-
-  sortHeaders(oldIndex, newIndex) {
-    this.headersModel.sort(oldIndex, newIndex)
-  }
-
-  addQuery() {
-    this.queryModel.new()
-  }
-
-  removeQuery(id) {
-    this._url = this.queryModel.remove(id)
-  }
-
-  sortQuery(oldIndex, newIndex) {
-    this._url = this.queryModel.sort(oldIndex, newIndex)
-  }
-
-  applyQuery() {
-    this._url = this.queryModel.applyToUrl()
   }
 
   vestSuite() {
