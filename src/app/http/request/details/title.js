@@ -1,38 +1,38 @@
 export default {
   props: [
     'detail',
-
     'visible',
-    'mode',
+
+    'mode', // ref received from parent
   ],
 
   emits: [
     'create',
-    'update:mode',
+    'toggle:mode',
   ],
 
   computed: {
     
     create() {
-      return this.detail.create ?? true
+      return this.detail.create?.value ?? true
     },
 
     modes() {
-      this.detail.modes
+      return this.detail.modes
     },
 
     badgeColor() {
-      return this.detail.count.value > 0 ? 'primary' : 'transparent'
+      return this.detail.active.value ? 'primary' : 'transparent'
     },
 
   },
 
   methods: {
     handleToggle() {
-      const currentMode = this.modes.findIndex( mode => mode == this.mode) 
+      const currentMode = this.modes.findIndex( mode => mode == this.mode.value) 
       const newIndex = (currentMode + 1) % this.modes.length
 
-      this.$emit('update:mode', this.modes[newIndex])
+      this.$emit('toggle:mode', this.modes[newIndex])
     }
   },
 
@@ -51,7 +51,7 @@ export default {
 
     <span>
       <v-btn
-        v-if="modes"
+        v-if="!!modes"
 
         @click.stop="handleToggle"
 

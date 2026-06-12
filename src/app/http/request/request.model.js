@@ -6,6 +6,7 @@ import t from '../../translate/translate.service.js'
 
 import QueryModel from './query.model.js'
 import HeadersModel from './headers.model.js'
+import BodyModel from './body.model.js'
 
 export default class RequestModel extends VestModel {
 
@@ -106,6 +107,8 @@ export default class RequestModel extends VestModel {
     }
 
     this.headersModel = new HeadersModel(props.headers)
+
+    this.bodyModel = new BodyModel(props.body)
   }
 
   vestSuite() {

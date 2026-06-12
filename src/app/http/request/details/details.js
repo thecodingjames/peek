@@ -1,6 +1,9 @@
 import Title from './title.js'
+
 import EditableKeyValue from './editable-key-value.js'
 import Body from './body.js'
+
+import BodyModel from '../body.model.js'
 
 export default {
 
@@ -41,7 +44,7 @@ export default {
             }
           }),
 
-          count: Vue.computed( () => this.request.queryModel.actives.length ),
+          active: Vue.computed( () => this.request.queryModel.actives.length > 0),
 
           handleCreate: (handleDetail) => {
             this.request.queryModel.create()
@@ -49,25 +52,39 @@ export default {
           },
         },
 
-        /*
-        body: {
+        {
+          name: 'body',
           component: () => Vue.h(Body, {
+            body: this.request.bodyModel,
+            create: (index) => {
+              this.request.bodyModel.create(index)
+            },
+            sort: (oldIndex, newIndex) => {
+              this.request.bodyModel.sort(oldIndex, newIndex)
+            },
+            delete: (id) => {
+              this.request.bodyModel.remove(id)
+            }
           }),
 
-          modes: ['raw', 'form'],
-          mode: Vue.ref('raw'),
-          create: (detail) => detail.mode.value == 'form',
+          modes: BodyModel.Modes,
+          mode: Vue.computed( () => this.request.bodyModel.mode ),
+          create: Vue.computed( () => this.request.bodyModel.mode == 'form' ),
 
-          count: () => undefined,
+          active: Vue.computed( () => this.request.bodyModel.active ),
 
           handleCreate: (handleDetail) => {
-            console.log('body create')
+            this.request.bodyModel.create()
+
             handleDetail()
+          },
+
+          handleMode: (mode) => {
+            this.request.bodyModel.mode = mode 
           },
 
         },
 
-        */
         {
           name: 'headers',
           component: () => Vue.h(EditableKeyValue, {
@@ -83,7 +100,7 @@ export default {
             }
           }),
 
-          count: Vue.computed( () => this.request.headersModel.actives.length ),
+          active: Vue.computed( () => this.request.headersModel.actives.length > 0 ),
 
           handleCreate: (handleDetail) => {
             this.request.headersModel.create()
@@ -108,18 +125,29 @@ export default {
       }
     },
 
+    handleTabAction(tab) {
+      if (this.tab != tab) {
+        this.handleTabSelect(tab)
+      }
+    },
+
     handlePanelSelect(changedPanels) {
       const deleted = this.panels.filter( i => !changedPanels.includes(i) )[0]
       const added = changedPanels.filter( i => !this.panels.includes(i) )[0]
 
       if (added) {
         this.tab = added
-        this.panels = this.panels.filter( p => p == added ) // avoid duplicate
       } else if (deleted == this.tab) {
         this.tab = null
       }
 
-      this.panels = changedPanels
+      this.panels = changedPanels.reverse().reduce( (uniques, panel) => {
+        if (!uniques.includes(panel)) {
+          uniques.push(panel)
+        }
+
+        return uniques
+      }, []).reverse() // avoid duplicate
     },
 
   },
@@ -177,10 +205,10 @@ export default {
               :detail
               :visible="tab == detail.name"
 
-              v-model:mode="detail.mode"
-              @update:mode="handleTabSelect(detail.name)"
+              :mode="detail.mode"
+              @toggle:mode="detail.handleMode?.($event); handleTabAction(detail.name)"
 
-              @create="detail.handleCreate(() => handleTabSelect(detail.name))"
+              @create="detail.handleCreate(() => handleTabAction(detail.name))"
             />
           </v-tab>
         </v-tabs>
@@ -194,6 +222,7 @@ export default {
               v-for="detail of details"
               :value="detail.name"
               class="rounded-b"
+              style="background-color: rgb(33,33,33); padding-top: 0.5rem;"
             >
               <component :is="detail.component"></component>
             </v-tabs-window-item>
@@ -223,10 +252,10 @@ export default {
               :detail
               :visible="panels.includes(detail.name)"
 
-              v-model:mode="detail.mode"
-              @update:mode="handlePanelSelect([detail.name])"
+              :mode="detail.mode"
+              @toggle:mode="detail.handleMode?.($event); handlePanelSelect([...panels, detail.name])"
 
-              @create="detail.handleCreate(() => handlePanelSelect([detail.name]))"
+              @create="detail.handleCreate(() => handlePanelSelect([...panels, detail.name]))"
             />
 
           </v-expansion-panel-title>
