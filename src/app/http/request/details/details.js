@@ -128,11 +128,10 @@ export default {
     <div class="_http_request_details">
       <component is="style">
         ._http_request_details {
-            --opacity: calc(var(--v-activated-opacity) * var(--v-high-emphasis-opacity));
-            --bg: color-mix(in srgb, currentColor calc(var(--opacity) * 100%), transparent);
 
-          .v-tabs {
-            background-color: var(--bg);
+          .v-tab,.v-expansion-panel {
+            --c: color-mix(in srgb, currentColor calc(var(--v-activated-opacity) * 100%), transparent);
+            background-color: var(--c);
           }
 
           .horizontal-tabs {
@@ -217,7 +216,7 @@ export default {
           :value="detail.name"
         >
           <v-expansion-panel-title 
-            style="background-color: var(--bg); min-height: 2.5rem; padding-top: 0; padding-bottom: 0;"
+            style="min-height: 2.5rem; padding-top: 0; padding-bottom: 0;"
             density="compact"
           >
             <detail-title
