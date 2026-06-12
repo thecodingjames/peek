@@ -67,11 +67,26 @@ export default class RequestModel extends VestModel {
   }
 
   get fetchOptions() {
-    return {
-      url: this.parsedUrl?.toString() ?? '',
-      method: this.method,
-      headers: this.headersModel.forFetch,
-    }
+    return (async () => {
+
+      const headers = this.headersModel.forFetch
+      const body = await this.bodyModel.forFetch
+
+      if (this.bodyModel.mode == 'form') {
+        const contentType = Object.keys(headers).find( h => h.toLowerCase() == 'content-type' )
+
+        if (contentType) {
+          headers[contentType] += `;boundary=${body.split('\n')[0].trim().substring(2)}`
+        }
+      }
+
+      return {
+        url: this.parsedUrl?.toString() ?? '',
+        method: this.method,
+        headers,
+        body,
+      }
+    })()
   }
 
   get url() {
@@ -135,6 +150,7 @@ export default class RequestModel extends VestModel {
       query: this.query,
       method: this.method,
       headers: this.headers,
+      body: this.bodyModel.toJSON(),
     })
   }
 

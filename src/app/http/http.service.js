@@ -9,10 +9,13 @@ export default async function http(request) {
 
   const start = Date.now()
 
+  const options = await request.fetchOptions
+
   const { error, ...result } = await window.electron.http(raw({
-    ...request.fetchOptions,
+    ...options,
     redirect,
   }))
+
 
   let response = null
   if (Object.keys(result).length > 0) {

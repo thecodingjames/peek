@@ -4,11 +4,13 @@ function registerHttp() {
   ipcMain.handle('http', async (_, { url, ...options }) => {
 
     try {
+      console.log(options)
       const response = await fetch(url, options)
 
       const blob = await response.text()
 
       return {
+        options,
         url: response.url,
         code: response.status,
         statusText: response.statusText,

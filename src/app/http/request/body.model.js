@@ -8,17 +8,44 @@ export default class BodyModel extends KeyValueModel {
 
   get active() {
     return {
-      raw: this.raw.trim() != '',
+      raw: this.raw.length > 0,
       form: this.actives.length > 0,
     }[this.mode]
   }
 
+  get forFetch() {
+    return (async () => {
+      return await ({
+        raw: () => {
+          return this.raw
+        },
+
+        form: async () => {
+          const form = this.actives.reduce( (formData, {key, value}) => {
+            formData.append(key, value)
+            return formData
+          }, new FormData())
+
+          return (await new Response(form).text()).trim()
+        },
+      }[this.mode])()
+    })()
+  }
+
   constructor(props = {}) {
-    super(props.pairs)
+    super(props.form)
 
-    this.mode = BodyModel.Modes[0]
+    this.mode = props.mode ?? BodyModel.Modes[0]
 
-    this.raw = ''
+    this.raw = props.raw ?? ''
+  }
+
+  toJSON() {
+    return {
+      mode: this.mode,
+      raw: this.raw,
+      form: this.pairs,
+    }
   }
 
 }
