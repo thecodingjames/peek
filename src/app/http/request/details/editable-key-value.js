@@ -11,12 +11,28 @@ export default {
 
   props: [
     'items',
+    'altInputs',
   ],
 
   data() {
     return {
       focusIndex: null,
+      inputsIndices: { },
     }
+  },
+
+  computed: {
+
+    inputs() {
+      return [
+        {
+          tag: 'v-text-field',
+          default: '',
+        },
+        ...(this.altInputs ?? []),
+      ]
+    },
+
   },
 
   methods: {
@@ -37,6 +53,41 @@ export default {
 
     handleDelete(id) {
       this.$emit('delete', id)
+    },
+
+    inputIndex(id) {
+      let index = this.inputsIndices[id]
+
+      if (index === undefined) {
+        index = 0
+        this.inputsIndices[id] = index
+      }
+
+      return index
+    },
+
+    inputNextIndex(id) {
+      const index = this.inputIndex(id)
+
+      return (index + 1) % this.inputs.length
+    },
+
+    input(id) {
+      return this.inputs[this.inputIndex(id)]
+    },
+
+    nextIcon(id) {
+      return this.inputs[this.inputNextIndex(id)].icon ?? 'mdi-text-short'
+    },
+
+    handleToggleInputs(item) {
+      this.inputsIndices[item.id] = this.inputNextIndex(item.id)
+
+      this.handleClear(item)
+    },
+
+    handleClear(item) {
+      item.value = this.input(item.id).default
     },
 
   },
@@ -80,7 +131,7 @@ export default {
             cursor: move;
           }
 
-          tr[disabled=true] td.can-disable * {
+          tr[disabled=true] .can-disable * {
             opacity: 70%; 
           }
 
@@ -135,7 +186,7 @@ export default {
             />
           </td>
 
-          <td class="can-disable">
+          <td>
             <v-form
               @submit.prevent="handleCreate(index)"
               style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;"
@@ -146,15 +197,39 @@ export default {
 
                 density="compact"
                 hide-details
+
+                class="can-disable"
               />
 
-              <v-text-field
-                v-model="item.value"
-                @update:modelValue="handleEdit"
+              <div style="display: flex; gap: 0.25rem;">
+                <component
+                  :is="input(item.id).tag"
 
-                density="compact"
-                hide-details
-              />
+                  v-model="item.value"
+                  @update:modelValue="handleEdit"
+                  @click:clear="handleClear(item)"
+
+                  :label="input(item.id).label"
+                  :prepend-inner-icon="input(item.id).icon"
+
+                  prepend-icon=""
+                  single-line
+                  density="compact"
+                  hide-details
+
+                  class="can-disable"
+                />
+                <v-btn
+                  v-if="altInputs"
+                  @click="handleToggleInputs(item)"
+
+                  style="height: 100%; padding: 0; min-width: 0; aspect-ratio: 1;"
+                >
+                  <v-icon :icon="nextIcon(item.id)" />
+                </v-btn>
+
+              </div>
+
               <button style="display: none;">never shown, needed to allow Enter to trigger</button>
             </v-form>
           </td>

@@ -14,6 +14,21 @@ export default {
     'delete',
   ],
 
+  computed: {
+
+    altInputs() {
+      return [
+        {
+          tag: 'v-file-input',
+          default: [],
+          label: 'TODO file',
+          icon: 'mdi-paperclip',
+        }
+      ]
+    },
+
+  },
+
   template: `
     <v-textarea 
       v-if="body.mode == 'raw'"
@@ -28,6 +43,7 @@ export default {
       v-else
 
       :items="body.pairs"
+      :altInputs
       
       @create="create"
       @edit="edit"

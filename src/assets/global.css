@@ -7,3 +7,7 @@
 .v-window-item {
   transition: none !important;
 }
+
+.v-field__field input[type=file] {
+  display: none;
+}
