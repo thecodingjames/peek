@@ -15,13 +15,19 @@ export default class BodyModel extends KeyValueModel {
 
   get forFetch() {
     return (async () => {
-      return await ({
+      const body = await ({
         raw: () => {
           return this.raw
         },
 
         form: async () => {
-          const form = this.actives.reduce( (formData, {key, value}) => {
+          const actives = this.actives
+
+          if (actives.length == 0) {
+            return ''
+          }
+
+          const form = actives.reduce( (formData, {key, value}) => {
             formData.append(key, value)
             return formData
           }, new FormData())
@@ -29,6 +35,16 @@ export default class BodyModel extends KeyValueModel {
           return (await new Response(form).text()).trim()
         },
       }[this.mode])()
+
+      let boundary = null
+      if (this.mode == 'form') {
+        boundary = body.split('\n')[0]?.trim()?.substring(2)
+      }
+
+      return {
+        body,
+        boundary,
+      }
     })()
   }
 

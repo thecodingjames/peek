@@ -4,6 +4,13 @@ import KeyValueModel from './details/key-value.model.js'
 
 export default class QueryModel extends KeyValueModel {
 
+  get text() {
+    const parsedUrl = parseUrl(this.url)
+    const params = parsedUrl?.searchParams ?? { size: 0, toString: () => '' }
+
+    return `${params.size > 0 ? '?' : ''}${params.toString()}`
+  }
+
   constructor(url, params) {
     super(params)
 
@@ -51,15 +58,13 @@ export default class QueryModel extends KeyValueModel {
 
     const prefix = newParams.length > 0 ? '?' : ''
 
-    if (parsedUrl) {
-      const paramsRegExp = /\?.*$/
-      const paramsValue = `${prefix}${newParams.join('&')}`
+    const paramsRegExp = /\?.*$/
+    const paramsValue = `${prefix}${newParams.join('&')}`
 
-      if (this.url?.match(paramsRegExp)) {
-        this.url = this.url?.replace(paramsRegExp, paramsValue)
-      } else {
-        this.url += paramsValue
-      }
+    if (this.url?.match(paramsRegExp)) {
+      this.url = this.url?.replace(paramsRegExp, paramsValue)
+    } else {
+      this.url += paramsValue
     }
 
     if (this.onUrlChange instanceof Function) {

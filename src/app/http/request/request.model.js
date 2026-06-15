@@ -52,33 +52,30 @@ export default class RequestModel extends VestModel {
   }
 
   get text() {
-    const params = this.parsedUrl?.searchParams ?? new URLSearchParams()
-    let text = ''
+    return ( async () => {
+      const { body, boundary } = await this.bodyModel.forFetch
 
-    text += `${this.method} ${this.path}${params.size > 0 ? '?'+params.toString() : ''}`
-    text += '\n'
-    text += `host: ${this.host}\n`
+      let text = ''
 
-    Object.entries(this.headersModel.forFetch).forEach(([key, value]) => {
-      text += `${key}: ${value}\n`
-    })
+      text += `${this.method} ${this.path}${this.queryModel.text}`
+      text += '\n'
 
-    return text
+      text += `host: ${this.host}\n`
+      text += this.headersModel.text(boundary)
+
+      if (body.length > 0) {
+        text += '\n'
+        text += body
+      }
+
+      return text
+    })()
   }
 
   get fetchOptions() {
     return (async () => {
-
-      const headers = this.headersModel.forFetch
-      const body = await this.bodyModel.forFetch
-
-      if (this.bodyModel.mode == 'form') {
-        const contentType = Object.keys(headers).find( h => h.toLowerCase() == 'content-type' )
-
-        if (contentType) {
-          headers[contentType] += `;boundary=${body.split('\n')[0].trim().substring(2)}`
-        }
-      }
+      const { body, boundary } = await this.bodyModel.forFetch
+      const headers = this.headersModel.forFetch(boundary)
 
       return {
         url: this.parsedUrl?.toString() ?? '',

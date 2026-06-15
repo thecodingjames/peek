@@ -24,7 +24,7 @@ export default {
   data() {
     return {
       request: TabsService.get(this.tabId).request,
-      rawVisible: false,
+      rawHttp: null,
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
@@ -42,7 +42,15 @@ export default {
   methods: {
 
     handleTogglePanel() {
-      this.rawVisible = !this.rawVisible
+      if (this.rawHttp) {
+        this.rawHttp = null
+      } else {
+        this.refreshRawHttp()
+      }
+    },
+
+    async refreshRawHttp() {
+      this.rawHttp = await this.request.text
     },
 
     send() {
@@ -67,7 +75,7 @@ export default {
     },
 
     handleOpenMethodMenu() {
-      this.methodMenuOpened = this.isActiveTab
+      this.methodMenuOpened = this.isActiveTab && !this.rawHttp
     },
 
   },
@@ -92,6 +100,15 @@ export default {
       }
     },
 
+    request: {
+      handler: function() {
+        if (this.rawHttp) {
+          this.refreshRawHttp()
+        }
+      },
+      deep: true,
+    },
+
   },
 
   mounted() {
@@ -114,19 +131,19 @@ export default {
         <v-btn
           ref="altButton"
           @click="handleTogglePanel()"
-          :icon="rawVisible ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
+          :icon="rawHttp ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
         />
 
         <v-tooltip
-          v-if="!rawVisible"
+          v-if="!rawHttp"
           :text="t.request.rawHttp"
           :activator="$refs.altButton"
           open-delay="1000"
         />
       </div>
 
-      <div v-if="rawVisible">
-        <pre>{{ request.text }}</pre>
+      <div v-if="rawHttp">
+        <pre>{{ rawHttp }}</pre>
       </div>
 
       <div v-else>
