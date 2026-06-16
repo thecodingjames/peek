@@ -67,9 +67,18 @@ export default {
             }
           }),
 
-          modes: BodyModel.Modes,
+          modes: [
+            {
+              name: 'raw',
+              icon: 'mdi-format-color-text',
+            },
+            {
+              name: 'keyValue',
+              icon: 'mdi-format-columns',
+            },
+          ],
           mode: Vue.computed( () => this.request.bodyModel.mode ),
-          create: Vue.computed( () => this.request.bodyModel.mode == 'form' ),
+          create: Vue.computed( () => this.request.bodyModel.isKeyValue ),
 
           active: Vue.computed( () => this.request.bodyModel.active ),
 
@@ -80,7 +89,8 @@ export default {
           },
 
           handleMode: (mode) => {
-            this.request.bodyModel.mode = mode 
+            // only update name, so last form encoding is kept
+            this.request.bodyModel.mode.name = mode
           },
 
         },

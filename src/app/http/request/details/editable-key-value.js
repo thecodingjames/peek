@@ -12,12 +12,13 @@ export default {
   props: [
     'items',
     'altInputs',
+
+    'disabled',
   ],
 
   data() {
     return {
       focusIndex: null,
-      inputsIndices: { },
     }
   },
 
@@ -26,6 +27,7 @@ export default {
     inputs() {
       return [
         {
+          name: 'raw',
           tag: 'v-text-field',
           default: '',
         },
@@ -55,39 +57,32 @@ export default {
       this.$emit('delete', id)
     },
 
-    inputIndex(id) {
-      let index = this.inputsIndices[id]
-
-      if (index === undefined) {
-        index = 0
-        this.inputsIndices[id] = index
-      }
-
-      return index
+    inputIndex(item) {
+      return this.inputs.findIndex( input => input.name == item.mode )
     },
 
-    inputNextIndex(id) {
-      const index = this.inputIndex(id)
+    inputNextIndex(item) {
+      const index = this.inputIndex(item)
 
       return (index + 1) % this.inputs.length
     },
 
-    input(id) {
-      return this.inputs[this.inputIndex(id)]
+    input(item) {
+      return this.inputs.find( i => i.name == item.mode )
     },
 
-    nextIcon(id) {
-      return this.inputs[this.inputNextIndex(id)].icon ?? 'mdi-text-short'
+    nextIcon(item) {
+      return this.inputs[this.inputNextIndex(item)].icon ?? 'mdi-text-short'
     },
 
     handleToggleInputs(item) {
-      this.inputsIndices[item.id] = this.inputNextIndex(item.id)
+      item.mode = this.inputs[this.inputNextIndex(item)].name
 
       this.handleClear(item)
     },
 
     handleClear(item) {
-      item.value = this.input(item.id).default
+      item.value = this.input(item).default
     },
 
   },
@@ -120,135 +115,140 @@ export default {
   },
 
   template: `
-    <v-table
+
+    <div
       v-show="items.length > 0"
-
-      class="_http_request-details_editable-key-value"
     >
-      <component is="style">
-        ._http_request-details_editable-key-value {
-          .sort-handle:hover {
-            cursor: move;
+      <slot name="prepend" />
+
+      <v-table
+        class="_http_request-details_editable-key-value"
+      >
+        <component is="style">
+          ._http_request-details_editable-key-value {
+            .sort-handle:hover {
+              cursor: move;
+            }
+
+            tr[disabled=true] .can-disable * {
+              opacity: 70%;
+            }
+
+            td {
+              padding: 0.5rem;
+            }
+
+            td.min-width {
+              width: 1%;
+            }
+
+            .sortable-chosen {
+              background-color: color-mix(in srgb, lightgray 20%, transparent);
+            }
+
+            .sortable-drag {
+              background-color: color-mix(in srgb, currentColor 20%, transparent);
+            }
+
+            .sortable-drag *:first-child {
+              opacity: 80%;
+            }
+
+            .sortable-ghost * {
+              opacity: 0 !important;
+            }
           }
+        </component>
 
-          tr[disabled=true] .can-disable * {
-            opacity: 70%; 
-          }
+        <tbody ref="items">
+          <tr
+            v-for="(item, index) in items"
+            :key="item.id"
 
-          td {
-            padding: 0.5rem;
-          }
+            :disabled="!item.enabled || item.key.trim() == ''"
+          >
+            <td class="min-width">
+              <v-icon
+                :disabled="items.length <= 1"
+                icon="mdi-drag-vertical"
+                class="sort-handle"
+              />
+            </td>
 
-          td.min-width {
-            width: 1%;
-          }
-
-          .sortable-chosen {
-            background-color: color-mix(in srgb, lightgray 20%, transparent);
-          }
-
-          .sortable-drag {
-            background-color: color-mix(in srgb, currentColor 20%, transparent);
-          }
-
-          .sortable-drag *:first-child {
-            opacity: 80%;
-          }
-
-          .sortable-ghost * {
-            opacity: 0 !important;
-          }
-        }
-      </component>
-
-      <tbody ref="items">
-        <tr
-          v-for="(item, index) in items"
-          :key="item.id"
-
-          :disabled="!item.enabled || item.key.trim() == ''"
-        >
-          <td class="min-width">
-            <v-icon 
-              :disabled="items.length <= 1"
-              icon="mdi-drag-vertical" 
-              class="sort-handle" 
-            />
-          </td>
-
-          <td class="min-width">
-            <v-checkbox
-              v-model="item.enabled"
-              @update:modelValue="handleEdit"
-              hide-details
-
-              style="width: 16px; margin-left: -8px; margin-right: 16px;"
-            />
-          </td>
-
-          <td>
-            <v-form
-              @submit.prevent="handleCreate(index)"
-              style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;"
-            >
-              <v-text-field
-                v-model="item.key"
+            <td class="min-width">
+              <v-checkbox
+                v-model="item.enabled"
                 @update:modelValue="handleEdit"
-
-                density="compact"
                 hide-details
 
-                class="can-disable"
+                style="width: 16px; margin-left: -8px; margin-right: 16px;"
               />
+            </td>
 
-              <div style="display: flex; gap: 0.25rem;">
-                <component
-                  :is="input(item.id).tag"
-
-                  v-model="item.value"
+            <td>
+              <v-form
+                @submit.prevent="handleCreate(index)"
+                style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;"
+              >
+                <v-text-field
+                  v-model="item.key"
                   @update:modelValue="handleEdit"
-                  @click:clear="handleClear(item)"
 
-                  :label="input(item.id).label"
-                  :prepend-inner-icon="input(item.id).icon"
-
-                  prepend-icon=""
-                  single-line
                   density="compact"
                   hide-details
 
                   class="can-disable"
                 />
-                <v-btn
-                  v-if="altInputs"
-                  @click="handleToggleInputs(item)"
 
-                  style="height: 100%; padding: 0; min-width: 0; aspect-ratio: 1;"
-                >
-                  <v-icon :icon="nextIcon(item.id)" />
-                </v-btn>
+                <div style="display: flex; gap: 0.25rem;">
+                  <component
+                    :is="input(item).tag"
 
-              </div>
+                    v-model="item.value"
+                    @update:modelValue="handleEdit"
+                    @click:clear="handleClear(item)"
 
-              <button style="display: none;">never shown, needed to allow Enter to trigger</button>
-            </v-form>
-          </td>
+                    :label="input(item).label"
+                    :prepend-inner-icon="input(item).icon"
 
-          <td class="min-width">
-            <v-btn
-              @click.stop="handleDelete(item.id)"
+                    prepend-icon=""
+                    single-line
+                    density="compact"
+                    hide-details
 
-              color="red"
-              size="x-small"
-              variant="outlined"
-              style="min-width: 0; aspect-ratio: 1;"
-            >
-            ㄨ
-            </v-btn>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
+                    class="can-disable"
+                  />
+                  <v-btn
+                    v-if="altInputs"
+                    @click="handleToggleInputs(item)"
+
+                    style="height: 100%; padding: 0; min-width: 0; aspect-ratio: 1;"
+                  >
+                    <v-icon :icon="nextIcon(item)" />
+                  </v-btn>
+
+                </div>
+
+                <button style="display: none;">never shown, needed to allow Enter to trigger</button>
+              </v-form>
+            </td>
+
+            <td class="min-width">
+              <v-btn
+                @click.stop="handleDelete(item.id)"
+
+                color="red"
+                size="x-small"
+                variant="outlined"
+                style="min-width: 0; aspect-ratio: 1;"
+              >
+              ㄨ
+              </v-btn>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+    </div>
 
     <div
       v-show="items.length == 0"

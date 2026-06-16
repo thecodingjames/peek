@@ -21,6 +21,18 @@ export default {
       return this.detail.modes
     },
 
+    modeIndex() {
+      return this.modes.findIndex( mode => mode.name == this.mode.value.name)
+    },
+
+    modeNextIndex() {
+      return (this.modeIndex + 1) % this.modes.length
+    },
+
+    modeNextIcon() {
+      return this.modes[this.modeNextIndex].icon
+    },
+
     badgeColor() {
       return this.detail.active.value ? 'primary' : 'transparent'
     },
@@ -29,10 +41,9 @@ export default {
 
   methods: {
     handleToggle() {
-      const currentMode = this.modes.findIndex( mode => mode == this.mode.value) 
-      const newIndex = (currentMode + 1) % this.modes.length
+      const newIndex = this.modeNextIndex
 
-      this.$emit('toggle:mode', this.modes[newIndex])
+      this.$emit('toggle:mode', this.modes[newIndex].name)
     }
   },
 
@@ -59,7 +70,7 @@ export default {
         variant="outlined"
         style="margin-right: 1rem; min-width: 0; aspect-ratio: 1;"
       >
-      ⇄
+        <v-icon :icon="modeNextIcon" />
       </v-btn>
 
       <v-btn
@@ -70,7 +81,9 @@ export default {
         variant="outlined"
         :style="{ visibility: (create ? 'visible' : 'hidden') }"
         style="min-width: 0; aspect-ratio: 1; border-radius: 99px; font-size: 1rem; line-height: 19px;"
-      >+</v-btn>
+      >
+        <v-icon icon="mdi-plus" size="x-small" />
+      </v-btn>
     </span>
   `
 }

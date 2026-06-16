@@ -92,7 +92,8 @@ export default {
 
     details: {
       keyValue: {
-        empty: 'No items...'
+        empty: 'No items...',
+        fileValueLabel: 'File...',
       },
 
       query: {
@@ -111,6 +112,7 @@ export default {
     model: {
       invalidPath: 'INVALID PATH',
       invalidHost: 'INVALID HOST',
+      preventBody: 'NO BODY SENT FOR GET/HEAD',
 
       validations: {
         method: 'Method must be one of',

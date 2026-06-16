@@ -3,55 +3,83 @@ import KeyValueModel from './details/key-value.model.js'
 export default class BodyModel extends KeyValueModel {
 
   static get Modes() {
-    return ['raw', 'form']
+    return ['raw', 'keyValue']
+  }
+
+  get isKeyValue() {
+    return this.mode.name == 'keyValue'
+  }
+
+  get actives() {
+    return super.actives.filter( p => {
+      if (p.mode == 'file') {
+        return this.mode.encoding == 'multipart'
+      } else {
+        return true
+      }
+    })
   }
 
   get active() {
-    return {
-      raw: this.raw.length > 0,
-      form: this.actives.length > 0,
-    }[this.mode]
+    if (this.isKeyValue) {
+      return this.actives.length > 0
+    } else {
+      return this.raw.length > 0
+    }
   }
 
   get forFetch() {
     return (async () => {
-      const body = await ({
-        raw: () => {
-          return this.raw
-        },
+      if (this.active) {
+        const body = await ({
+          raw: () => {
+            return this.raw
+          },
 
-        form: async () => {
-          const actives = this.actives
+          keyValue: async () => {
+            const actives = this.actives
 
-          if (actives.length == 0) {
-            return ''
-          }
+            return await {
+              urlencoded: async () => {
+                const data = actives.reduce( (data, {key, value}) => {
+                  data.append(key, value)
+                  return data
+                }, new URLSearchParams())
 
-          const form = actives.reduce( (formData, {key, value}) => {
-            formData.append(key, value)
-            return formData
-          }, new FormData())
+                return data.toString()
+              },
 
-          return (await new Response(form).text()).trim()
-        },
-      }[this.mode])()
+              multipart: async () => {
+                const form = actives.reduce( (formData, {key, value}) => {
+                  formData.append(key, value)
+                  return formData
+                }, new FormData())
 
-      let boundary = null
-      if (this.mode == 'form') {
-        boundary = body.split('\n')[0]?.trim()?.substring(2)
-      }
+                return (await new Response(form).text()).trim()
+              },
+            }[this.mode.encoding]()
+          },
+        }[this.mode.name])()
 
-      return {
-        body,
-        boundary,
+        let boundary = null
+        if (this.mode.name == 'multipart') {
+          boundary = body.split('\n')[0]?.trim()?.substring(2)
+        }
+
+        return {
+          body,
+          boundary,
+        }
+      } else {
+        return { body: null }
       }
     })()
   }
 
   constructor(props = {}) {
-    super(props.form)
+    super(props.pairs)
 
-    this.mode = props.mode ?? BodyModel.Modes[0]
+    this.mode = props.mode ?? { name: BodyModel.Modes[0], encoding: 'urlencoded' }
 
     this.raw = props.raw ?? ''
   }
@@ -60,7 +88,7 @@ export default class BodyModel extends KeyValueModel {
     return {
       mode: this.mode,
       raw: this.raw,
-      form: this.pairs,
+      pairs: super.toJSON(),
     }
   }
 

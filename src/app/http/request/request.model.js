@@ -41,7 +41,7 @@ export default class RequestModel extends VestModel {
 
   get host() {
     const { port, hostname } = this.parsedUrl ?? {
-      hostname: `{ ${t.request.model.invalidHost}  }`,
+      hostname: `{ ${t.request.model.invalidHost} }`,
     }
 
     return `${hostname}${port ? `:${port}` : ''}`
@@ -49,6 +49,10 @@ export default class RequestModel extends VestModel {
 
   get path() {
     return this.parsedUrl?.pathname ?? `{ ${t.request.model.invalidPath} }`
+  }
+
+  get preventBody() {
+    return ['GET', 'HEAD'].includes(this.method)
   }
 
   get text() {
@@ -63,7 +67,10 @@ export default class RequestModel extends VestModel {
       text += `host: ${this.host}\n`
       text += this.headersModel.text(boundary)
 
-      if (body.length > 0) {
+      if (this.preventBody) {
+        text += '\n'
+        text += `{ ${t.request.model.preventBody} }`
+      } else if (body?.length > 0) {
         text += '\n'
         text += body
       }
@@ -81,7 +88,7 @@ export default class RequestModel extends VestModel {
         url: this.parsedUrl?.toString() ?? '',
         method: this.method,
         headers,
-        body,
+        body: this.preventBody ? null : body,
       }
     })()
   }
@@ -144,9 +151,9 @@ export default class RequestModel extends VestModel {
   toJSON() {
     return raw({
       url: this.url,
-      query: this.query,
+      query: this.queryModel.toJSON(),
       method: this.method,
-      headers: this.headers,
+      headers: this.headersModel.toJSON(),
       body: this.bodyModel.toJSON(),
     })
   }

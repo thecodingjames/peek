@@ -92,7 +92,8 @@ export default {
 
     details: {
       keyValue: {
-        empty: 'Aucuns items...'
+        empty: 'Aucuns items...',
+        fileValueLabel: 'Fichier...',
       },
 
       query: {
@@ -111,6 +112,7 @@ export default {
     model: {
       invalidPath: 'CHEMIN INVALIDE',
       invalidHost: 'HÔTE INVALIDE',
+      preventBody: 'AUCUN CORPS AVEC GET/HEAD',
 
       validations: {
         method: 'La méthode doit être parmis',

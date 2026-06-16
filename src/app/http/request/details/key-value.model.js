@@ -6,6 +6,7 @@ export default class KeyValueModel {
       key,
       value,
       enabled: true,
+      mode: 'raw',
     }
   }
 
@@ -43,6 +44,10 @@ export default class KeyValueModel {
   sort(oldIndex, newIndex) {
     const moved = this.pairs.splice(oldIndex, 1)[0]
     this.pairs.splice(newIndex, 0, moved)
+  }
+
+  toJSON() {
+    return this.pairs
   }
 
 }
