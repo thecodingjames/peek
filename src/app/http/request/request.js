@@ -75,7 +75,16 @@ export default {
     },
 
     handleOpenMethodMenu() {
-      this.methodMenuOpened = this.isActiveTab && !this.rawHttp
+      if (this.isActiveTab && !this.rawHttp) {
+        this.methodMenuOpened = Date.now()
+      }
+    },
+
+    handleCloseMethodMenu() {
+      if (Date.now() - this.methodMenuOpened > 66 || this.methodMenuOpened === false) {
+        // reject quick value change, glitch
+        this.methodMenuOpened = false
+      }
     },
 
   },
@@ -172,11 +181,14 @@ export default {
 
             <v-btn
               ref="methodChevron"
+              @click="handleOpenMethodMenu"
+
               icon="mdi-chevron-down"
             />
 
             <v-menu
-              v-model="methodMenuOpened"
+              :model-value="!!methodMenuOpened"
+              @update:model-value="handleCloseMethodMenu"
               :activator="$refs.methodChevron"
               :target="$refs.methodGroup"
               location="bottom"
