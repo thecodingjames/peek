@@ -85,6 +85,10 @@ export default {
       item.value = this.input(item).default
     },
 
+    handleOpenValueDialog(item) {
+      console.log(item)
+    },
+
   },
 
   watch: {
@@ -217,7 +221,19 @@ export default {
                     hide-details
 
                     class="can-disable"
-                  />
+                  >
+                    <template
+                      v-if="item.mode == 'raw'"
+                      v-slot:prepend-inner>
+                      <v-btn
+                        @click="handleOpenValueDialog(item)"
+                        style="margin-left: -0.75rem; aspect-ratio: 1; min-width: 0;"
+                        variant="text"
+                      >
+                        <v-icon icon="mdi-arrow-expand" />
+                      </v-btn>
+                    </template>
+                  </component>
                   <v-btn
                     v-if="altInputs"
                     @click="handleToggleInputs(item)"
