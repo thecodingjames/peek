@@ -134,8 +134,8 @@ export default {
               cursor: move;
             }
 
-            tr[disabled=true] .can-disable * {
-              opacity: 70%;
+            tr[disabled=true] .can-disable>* {
+              opacity: 30%;
             }
 
             td {
