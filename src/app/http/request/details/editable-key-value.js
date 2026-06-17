@@ -1,12 +1,14 @@
 import { forceFocus } from '../../../core/helpers.js'
 
+import DialogMixin from '../../../core/dialog.js'
+
 const ValueDialog = {
-  props: [
-    'item',
+  mixins: [
+    DialogMixin,
   ],
 
-  emits: [
-    'close',
+  props: [
+    'item',
   ],
 
   data() {
@@ -19,46 +21,50 @@ const ValueDialog = {
     item(newItem) {
       if (newItem) {
         this.value = newItem.value
+
+        forceFocus( () => this.$refs.value )
       }
     },
   },
 
   methods: {
-    handleClose(save) {
+
+    handleVisibility(visible, save = false) {
       if (save) {
         this.item.value = this.value
       }
 
-      this.$emit('close')
+      this.$emit('update:modelValue', visible) 
     },
+
   },
 
   template: `
-    <v-dialog
+    <p-dialog
       :model-value="!!item"
-      @update:model-value="handleClose(false)"
+      @update:model-value="handleVisibility"
 
-      max-width="500"
+      :title="item?.key"
+      style="width: 100%; max-width: 768px;"
     >
-      <template v-slot>
-        <v-card title="Dialog">
-          <v-card-text>
-            <v-textarea 
-              v-model="value"
-            />
-          </v-card-text>
 
-          <v-card-actions>
-            <v-spacer></v-spacer>
+      <v-textarea 
+        ref="value"
+        v-model="value"
 
-            <v-btn
-              @click="handleClose(true)"
-              text="Save"
-            ></v-btn>
-          </v-card-actions>
-        </v-card>
-      </template>
-    </v-dialog>
+        variant="outlined"
+        hide-details
+      />
+
+      <div style="text-align: center; margin-top: 1rem;">
+        <v-btn
+          @click="handleVisibility(false, true)"
+          :text="t.request.details.keyValue.save"
+          color="success"
+        ></v-btn>
+      </div>
+
+    </p-dialog>
   `
 }
 
@@ -157,6 +163,12 @@ export default {
       this.dialogItem = item
     },
 
+    handleClose() {
+      this.dialogItem = null
+
+      this.handleEdit()
+    },
+
   },
 
   watch: {
@@ -188,7 +200,7 @@ export default {
 
   template: `
 
-    <value-dialog :item="dialogItem" @close="dialogItem = null" />
+    <value-dialog :item="dialogItem" :model-value="!!dialogItem" @update:model-value="handleClose" />
 
     <div
       v-show="items.length > 0"

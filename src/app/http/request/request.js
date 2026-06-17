@@ -75,14 +75,16 @@ export default {
     },
 
     handleOpenMethodMenu() {
-      if (this.isActiveTab && !this.rawHttp) {
+      const dialogOpen = document.querySelector('.v-overlay-container [role=dialog]')
+
+      if (this.isActiveTab && !this.rawHttp && !dialogOpen) {
         this.methodMenuOpened = Date.now()
       }
     },
 
     handleCloseMethodMenu() {
       if (Date.now() - this.methodMenuOpened > 66 || this.methodMenuOpened === false) {
-        // reject quick value change, glitch
+        // reject quick value change, glitch :(
         this.methodMenuOpened = false
       }
     },

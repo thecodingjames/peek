@@ -22,7 +22,7 @@ export default {
     },
 
     modeIndex() {
-      return this.modes.findIndex( mode => mode.name == this.mode.value.name)
+      return this.modes.findIndex( mode => mode.name == this.mode.value.name )
     },
 
     modeNextIndex() {

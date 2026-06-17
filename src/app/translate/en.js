@@ -94,6 +94,7 @@ export default {
       keyValue: {
         empty: 'No items...',
         fileValueLabel: 'File...',
+        save: 'Save',
       },
 
       query: {
