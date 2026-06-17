@@ -1,6 +1,72 @@
 import { forceFocus } from '../../../core/helpers.js'
 
+const ValueDialog = {
+  props: [
+    'item',
+  ],
+
+  emits: [
+    'close',
+  ],
+
+  data() {
+    return {
+      value: null,
+    }
+  },
+
+  watch: {
+    item(newItem) {
+      if (newItem) {
+        this.value = newItem.value
+      }
+    },
+  },
+
+  methods: {
+    handleClose(save) {
+      if (save) {
+        this.item.value = this.value
+      }
+
+      this.$emit('close')
+    },
+  },
+
+  template: `
+    <v-dialog
+      :model-value="!!item"
+      @update:model-value="handleClose(false)"
+
+      max-width="500"
+    >
+      <template v-slot>
+        <v-card title="Dialog">
+          <v-card-text>
+            <v-textarea 
+              v-model="value"
+            />
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn
+              @click="handleClose(true)"
+              text="Save"
+            ></v-btn>
+          </v-card-actions>
+        </v-card>
+      </template>
+    </v-dialog>
+  `
+}
+
 export default {
+
+  components: {
+    ValueDialog,
+  },
 
   emits: [
     'create',
@@ -19,6 +85,8 @@ export default {
   data() {
     return {
       focusIndex: null,
+
+      dialogItem: null,
     }
   },
 
@@ -86,7 +154,7 @@ export default {
     },
 
     handleOpenValueDialog(item) {
-      console.log(item)
+      this.dialogItem = item
     },
 
   },
@@ -120,9 +188,12 @@ export default {
 
   template: `
 
+    <value-dialog :item="dialogItem" @close="dialogItem = null" />
+
     <div
       v-show="items.length > 0"
     >
+
       <slot name="prepend" />
 
       <v-table
