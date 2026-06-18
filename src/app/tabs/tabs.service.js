@@ -1,51 +1,68 @@
+import db from '../core/db.js'
+import { STORE } from './tabs.db.js'
+
+import { raw } from '../core/helpers.js'
 import t from '../translate/translate.service.js'
 
 import SettingsService from '../drawers/settings/settings.service.js'
 
 import RequestModel from '../http/request/request.model.js'
 
-const KEY = 'tabs'
+const KEY = 'currentTab'
+
+const tabWatchers = new Map()
 
 function Tab(id, title, request = new RequestModel()) {
-  return {
+  const newTab = Vue.reactive({
     id,
     title,
     request,
-  }
+  })
+
+  tabWatchers.set(id, Vue.watch(
+    newTab,
+    (value) => {
+      db[STORE].writer('id').then( index => {
+        index.openCursor(IDBKeyRange.only(value.id)).onsuccess = (cursor) => {
+          event.target.result.update(raw(value))
+        }
+      })
+    }
+  ))
+
+  return newTab
 }
 
 const defaultTab = Tab('default', t.tabs.defaultRequestName)
 
-const loadedTabs = JSON.parse(localStorage.getItem(KEY) ?? '{}')
-if (loadedTabs.tabs) {
-  loadedTabs.tabs = loadedTabs.tabs.map( item => {
-    return {
-      ...item,
-      request: new RequestModel(item.request),
-    }
+const loadedCurrentTab = localStorage.getItem(KEY)
+let loadedTabs = await (async () => {
+  const loaded = (await db[STORE].getAll({ direction: 'prev' })).map( item => {
+    return Tab(
+      item.id,
+      item.title,
+      new RequestModel(item.request)
+    )
   })
-} else {
-  loadedTabs.tabs = [
-    defaultTab,
-  ]
-}
 
-// TODO !!! :(
-let count = loadedTabs.tabs?.length ?? 0
+  if (loaded.length > 0) {
+    return loaded
+  } else {
+    return [
+      defaultTab,
+    ]
+  }
+})()
 
-const tabs = Vue.reactive(loadedTabs.tabs)
-const current = Vue.ref(loadedTabs.current ?? defaultTab.id)
+let count = 0 // TODO computed dynamically according to existing data?
+
+const tabs = Vue.reactive(loadedTabs)
+const current = Vue.ref(loadedCurrentTab ?? defaultTab.id)
 
 Vue.watch(
-  () => [tabs, current.value],
-  ([tabs, current]) => {
-    localStorage.setItem(KEY, JSON.stringify({
-      tabs,
-      current
-    }))
-  },
-  {
-    deep: true,
+  current,
+  (newCurrent) => {
+    localStorage.setItem(KEY, newCurrent)
   }
 )
 
@@ -55,17 +72,21 @@ export default {
   tabs: Vue.readonly(tabs),
 
   new(request = new RequestModel()) {
-    count = count + Number(tabs.length > 1 || count > 0)
-    const id = crypto.randomUUID()
+    const tabNumber = (tabs.length > 1 || count > 0) ? count : 0
+    count++
 
     let titleParts = [t.tabs.newRequest]
-
-    if (count > 0) {
-      titleParts.push(count)
+    if (tabNumber > 0) {
+      titleParts.push(tabNumber)
     }
 
-    tabs.unshift(Tab(id, titleParts.join(' '), request))
+    const id = crypto.randomUUID()
+    const newTab = Tab(id, titleParts.join(' '), request)
+
+    tabs.unshift(newTab)
     current.value = id
+
+    db[STORE].put(raw(newTab))
   },
 
   get(id) {
@@ -95,6 +116,15 @@ export default {
       const substituteIndex = Math.min(Math.max(index, 0), tabs.length - 1)
       current.value = tabs[substituteIndex].id
     }
+
+    db[STORE].writer('id').then( index => {
+      index.openCursor(IDBKeyRange.only(id)).onsuccess = (cursor) => {
+        event.target.result.delete()
+      }
+    })
+
+    tabWatchers.get(id)()
+    tabWatchers.delete(id)
   },
 
   step(direction) {
