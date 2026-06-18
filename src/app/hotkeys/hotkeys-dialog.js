@@ -1,4 +1,4 @@
-import DialogMixin from '../core/dialog.js'
+import DialogMixin from '../core/dialog.mixin.js'
 
 import HotkeysService from './hotkeys.service.js'
 

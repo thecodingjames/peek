@@ -83,7 +83,7 @@ export default {
     },
 
     handleCloseMethodMenu() {
-      if (Date.now() - this.methodMenuOpened > 66 || this.methodMenuOpened === false) {
+      if (Date.now() - this.methodMenuOpened > 77 || this.methodMenuOpened === false) {
         // reject quick value change, glitch :(
         this.methodMenuOpened = false
       }
@@ -158,16 +158,16 @@ export default {
       </div>
 
       <div v-else>
-        <form @submit.prevent="handleSend" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
           <!-- Needed dependency with request.query to trigger re-render of url... :( -->
           <span v-show="false">{{ request.query }}</span>
           <v-text-field
             v-model="request.url"
             ref="url"
+
             :rules="request.rules('url')"
 
             label="URL"
-            required
             hide-details
           />
 
@@ -207,7 +207,7 @@ export default {
             </v-menu>
 
           </v-btn-group>
-        </form>
+        </v-form>
       </div>
 
       <request-details :request />

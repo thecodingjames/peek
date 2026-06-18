@@ -80,7 +80,7 @@ export default {
 }
 
 /*
-import DialogMixin from '../core/dialog.js'
+import DialogMixin from '../core/dialog.mixin.js'
 
 export default {
   

@@ -1,72 +1,6 @@
-import { forceFocus } from '../../../core/helpers.js'
+import { forceFocus } from '../../../../core/helpers.js'
 
-import DialogMixin from '../../../core/dialog.js'
-
-const ValueDialog = {
-  mixins: [
-    DialogMixin,
-  ],
-
-  props: [
-    'item',
-  ],
-
-  data() {
-    return {
-      value: null,
-    }
-  },
-
-  watch: {
-    item(newItem) {
-      if (newItem) {
-        this.value = newItem.value
-
-        forceFocus( () => this.$refs.value )
-      }
-    },
-  },
-
-  methods: {
-
-    handleVisibility(visible, save = false) {
-      if (save) {
-        this.item.value = this.value
-      }
-
-      this.$emit('update:modelValue', visible) 
-    },
-
-  },
-
-  template: `
-    <p-dialog
-      :model-value="!!item"
-      @update:model-value="handleVisibility"
-
-      :title="item?.key"
-      style="width: 100%; max-width: 768px;"
-    >
-
-      <v-textarea 
-        ref="value"
-        v-model="value"
-
-        variant="outlined"
-        hide-details
-      />
-
-      <div style="text-align: center; margin-top: 1rem;">
-        <v-btn
-          @click="handleVisibility(false, true)"
-          :text="t.request.details.keyValue.save"
-          color="success"
-        ></v-btn>
-      </div>
-
-    </p-dialog>
-  `
-}
+import ValueDialog from './value-dialog.js'
 
 export default {
 
@@ -209,10 +143,10 @@ export default {
       <slot name="prepend" />
 
       <v-table
-        class="_http_request-details_editable-key-value"
+        class="_http_request-details_key-value"
       >
         <component is="style">
-          ._http_request-details_editable-key-value {
+          ._http_request-details_key-value {
             .sort-handle:hover {
               cursor: move;
             }

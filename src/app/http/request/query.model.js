@@ -1,6 +1,6 @@
 import { parseUrl } from '../url.helpers.js'
 
-import KeyValueModel from './details/key-value.model.js'
+import KeyValueModel from './details/key-value/key-value.model.js'
 
 export default class QueryModel extends KeyValueModel {
 

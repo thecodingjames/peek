@@ -1,6 +1,6 @@
 import Title from './title.js'
 
-import EditableKeyValue from './editable-key-value.js'
+import EditableKeyValue from './key-value/key-value.js'
 import Body from './body.js'
 
 import BodyModel from '../body.model.js'
