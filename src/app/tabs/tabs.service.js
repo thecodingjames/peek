@@ -1,4 +1,4 @@
-import db from '../core/db.js'
+import db from '../db/db.js'
 import { STORE } from './tabs.db.js'
 
 import { raw } from '../core/helpers.js'

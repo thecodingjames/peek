@@ -81,6 +81,20 @@ class DB {
     const thisDb = this.db
     const thisStore = store
 
+    const toPromise = (request) => {
+      return new Promise( async (resolve, reject) => {
+        const r = await request()
+
+        r.onsuccess = (event) => {
+          resolve(event.target.result)  
+        }
+
+        r.onerror = (event) => {
+          resolve(event)
+        }
+      })
+    }
+
     return {
       async runner(mode, key = null) {
         const objectStore = (await thisDb).transaction([thisStore], mode).objectStore(thisStore)
@@ -101,17 +115,8 @@ class DB {
       },
 
       getAll(options = {}) {
-        return new Promise( async (resolve, reject) => {
-          const request = (await this.reader()).getAll(options)
+          return toPromise( async ()=> (await this.reader()).getAll(options) )
 
-          request.onsuccess = (event) => {
-            resolve(event.target.result)  
-          }
-
-          request.onerror = (event) => {
-            resolve(event)
-          }
-        })
       },
 
       put(data) {
