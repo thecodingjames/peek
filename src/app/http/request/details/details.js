@@ -232,7 +232,7 @@ export default {
               v-for="detail of details"
               :value="detail.name"
               class="rounded-b"
-              style="background-color: rgb(33,33,33); padding-top: 0.5rem;"
+              style="padding-top: 0.5rem;"
             >
               <component :is="detail.component"></component>
             </v-tabs-window-item>

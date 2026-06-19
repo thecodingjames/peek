@@ -181,7 +181,7 @@ export default {
           }
         </component>
 
-        <tbody ref="items">
+        <tbody ref="items" style="background-color: rgb(var(--v-theme-background));">
           <tr
             v-for="(item, index) in items"
             :key="item.id"
