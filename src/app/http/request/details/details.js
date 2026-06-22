@@ -1,9 +1,9 @@
 import Title from './title.js'
 
 import EditableKeyValue from './key-value/key-value.js'
-import Body from './body.js'
+import Body from './body/body.js'
 
-import BodyModel from '../body.model.js'
+import BodyModel from './body/body.model.js'
 
 export default {
 

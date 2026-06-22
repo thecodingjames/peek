@@ -4,9 +4,9 @@ import { parseUrl } from '../url.helpers.js'
 import VestModel from '../../core/vest.model.js'
 import t from '../../translate/translate.service.js'
 
-import QueryModel from './query.model.js'
-import HeadersModel from './headers.model.js'
-import BodyModel from './body.model.js'
+import QueryModel from './details/query.model.js'
+import HeadersModel from './details/headers.model.js'
+import BodyModel from './details/body/body.model.js'
 
 export default class RequestModel extends VestModel {
 

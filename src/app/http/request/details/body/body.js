@@ -1,4 +1,4 @@
-import EditableKeyValue from './key-value/key-value.js'
+import EditableKeyValue from '../key-value/key-value.js'
 
 export default {
   components: {

@@ -1,4 +1,4 @@
-import KeyValueModel from './details/key-value/key-value.model.js'
+import KeyValueModel from './key-value/key-value.model.js'
 
 export default class HeadersModel extends KeyValueModel {
 
