@@ -28,7 +28,11 @@
       import App from './app/app.js'
       import translate from './app/translate/translate.service.js'
 
+      import FileInput from './app/http/request/details/body/file-input.js'
+
       const app = Vue.createApp(App)
+      app.component('FileInput', FileInput)
+
       app.use(Vuetify.createVuetify())
 
       const electronApp = await electron.app()

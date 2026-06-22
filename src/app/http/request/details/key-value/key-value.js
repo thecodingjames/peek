@@ -186,7 +186,7 @@ export default {
             v-for="(item, index) in items"
             :key="item.id"
 
-            :disabled="!item.enabled || item.key.trim() == ''"
+            :disabled="disabled?.(item) || !item.enabled || item.key.trim() == ''"
           >
             <td class="min-width">
               <v-icon

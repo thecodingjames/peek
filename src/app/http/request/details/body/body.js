@@ -20,7 +20,7 @@ export default {
       return [
         {
           name: 'file',
-          tag: 'v-file-input',
+          tag: 'file-input',
           default: [],
           label: this.t.request.details.keyValue.fileValueLabel,
           icon: 'mdi-paperclip',
@@ -42,9 +42,7 @@ export default {
     },
 
     disabled(item) {
-      const d =  this.body.mode.name == 'urlencoded' && item.value instanceof File
-      console.log(d)
-      return d
+      return this.body.mode.encoding == 'urlencoded' && item.mode == 'file'
     },
 
   },
