@@ -48,31 +48,7 @@ export default {
   },
 
   template: `
-    <v-badge
-      :color="badgeColor"
-      :dot="true"
-
-      tag="span"
-      floating
-      location="top right"
-      style="margin-right: 1rem; text-transform: uppercase; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.01rem;"
-    >
-      {{ t.request.details[detail.name].name }}
-    </v-badge>
-
-    <span>
-      <v-btn
-        v-if="!!modes"
-
-        @click.stop="handleToggle"
-
-        size="x-small"
-        variant="outlined"
-        style="margin-right: 1rem; min-width: 0; aspect-ratio: 1;"
-      >
-        <v-icon :icon="modeNextIcon" />
-      </v-btn>
-
+    <div style="margin-left: -1.25rem; padding-left: 0.25rem; display: flex; gap: 0.5rem; align-items: center;">
       <v-btn
         @click.stop="$emit('create')"
 
@@ -84,6 +60,33 @@ export default {
       >
         <v-icon icon="mdi-plus" size="x-small" />
       </v-btn>
-    </span>
+
+      <v-badge
+        :color="badgeColor"
+        :dot="true"
+
+        tag="span"
+        floating
+        location="top right"
+        style="margin-right: 0.5rem; text-transform: uppercase; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.01rem;"
+      >
+        {{ t.request.details[detail.name].name }}
+      </v-badge>
+
+      <span>
+        <v-btn
+          v-if="!!modes"
+
+          @click.stop="handleToggle"
+
+          size="x-small"
+          variant="outlined"
+          style="min-width: 0; aspect-ratio: 1;"
+        >
+          <v-icon :icon="modeNextIcon" />
+        </v-btn>
+
+      </span>
+    </div>
   `
 }
