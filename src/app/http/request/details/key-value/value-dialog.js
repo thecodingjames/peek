@@ -20,7 +20,7 @@ export default {
   watch: {
     item(newItem) {
       if (newItem) {
-        this.value = newItem.value
+        this.value = newItem.value.content
 
         forceFocus( () => this.$refs.value )
       }
@@ -31,7 +31,7 @@ export default {
 
     handleVisibility(visible, save = false) {
       if (save) {
-        this.item.value = this.value
+        this.item.value.content = this.value
       }
 
       this.$emit('update:modelValue', visible) 

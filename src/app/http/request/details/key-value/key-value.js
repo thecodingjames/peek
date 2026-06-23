@@ -38,6 +38,12 @@ export default {
           name: 'raw',
           tag: 'v-text-field',
           default: '',
+          modelValue(item) {
+            return item.value.content
+          },
+          updateModelValue(item, value) {
+            item.value.content = value
+          },
         },
         ...(this.altInputs ?? []),
       ]
@@ -66,7 +72,7 @@ export default {
     },
 
     inputIndex(item) {
-      return this.inputs.findIndex( input => input.name == item.mode )
+      return this.inputs.findIndex( input => input.name == item.value.mode )
     },
 
     inputNextIndex(item) {
@@ -76,7 +82,7 @@ export default {
     },
 
     input(item) {
-      return this.inputs.find( i => i.name == item.mode )
+      return this.inputs.find( i => i.name == item.value.mode )
     },
 
     nextIcon(item) {
@@ -84,13 +90,16 @@ export default {
     },
 
     handleToggleInputs(item) {
-      item.mode = this.inputs[this.inputNextIndex(item)].name
+      item.value.mode = this.inputs[this.inputNextIndex(item)].name
 
       this.handleClear(item)
     },
 
     handleClear(item) {
-      item.value = this.input(item).default
+      item.value = {
+        mode: item.value.mode,
+        content: this.input(item).default,
+      }
     },
 
     handleOpenValueDialog(item) {
@@ -225,8 +234,8 @@ export default {
                   <component
                     :is="input(item).tag"
 
-                    v-model="item.value"
-                    @update:modelValue="handleEdit"
+                    :modelValue="input(item).modelValue(item)"
+                    @update:modelValue="input(item).updateModelValue(item, $event); handleEdit();"
                     @click:clear="handleClear(item)"
 
                     :label="input(item).label"
@@ -240,7 +249,7 @@ export default {
                     class="can-disable"
                   >
                     <template
-                      v-if="item.mode == 'raw'"
+                      v-if="item.value.mode == 'raw'"
                       v-slot:prepend-inner>
                       <v-btn
                         @click="handleOpenValueDialog(item)"
@@ -285,7 +294,7 @@ export default {
 
     <div
       v-show="items.length == 0"
-      style="margin-left: 1.5rem; padding: 0.5rem 0; font-style: italic;"
+      style="margin-left: 0.75rem; padding: 0.5rem 0; font-style: italic;"
     >
       <span>{{ t.request.details.keyValue.empty }}</span>
     </div>

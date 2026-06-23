@@ -11,6 +11,7 @@ export default {
   ],
 
   emits: [
+    'update:modelValue',
     'click:clear',
   ],
 
@@ -18,7 +19,26 @@ export default {
 
     handleClick() {
       this.$refs.picker.click()
-    }
+    },
+
+    handleFileSelect(event) {
+      const file = event.target.files[0]
+      const reader = new FileReader()
+
+      reader.addEventListener("load", () => {
+        this.$emit('update:modelValue',  {
+          content: reader.result,
+          filename: file.name,
+          type: file.type,
+        })
+      })
+
+      reader.readAsText(file)
+    },
+
+    handleClear() {
+      this.$emit('click:clear')
+    },
 
   },
 
@@ -38,11 +58,16 @@ export default {
       <input 
         ref="picker" 
 
+        @change="handleFileSelect"
+
         type="file" 
         hidden
       >
       
       <v-text-field 
+        :modelValue
+        @click:clear="handleClear"
+
         readonly
 
         clearable

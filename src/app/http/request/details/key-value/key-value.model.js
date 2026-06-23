@@ -4,9 +4,11 @@ export default class KeyValueModel {
     return {
       id: crypto.randomUUID(),
       key,
-      value,
       enabled: true,
-      mode: 'raw',
+      value: {
+        content: value,
+        mode: 'raw',
+      },
     }
   }
 

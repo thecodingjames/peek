@@ -21,9 +21,23 @@ export default {
         {
           name: 'file',
           tag: 'file-input',
-          default: [],
+          default: null,
           label: this.t.request.details.keyValue.fileValueLabel,
           icon: 'mdi-paperclip',
+
+          modelValue(item) {
+            if (item.value.content) {
+              return item.value.filename
+            }
+          },
+          updateModelValue(item, file) {
+            item.value = {
+              ...item.value,
+              content: file.content,
+              filename: file.filename,
+              type: file.type,
+            }
+          },
         }
       ]
     },
@@ -42,7 +56,7 @@ export default {
     },
 
     disabled(item) {
-      return this.body.mode.encoding == 'urlencoded' && item.mode == 'file'
+      return this.body.mode.encoding == 'urlencoded' && item.value.mode == 'file'
     },
 
   },

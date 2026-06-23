@@ -12,7 +12,7 @@ export default class BodyModel extends KeyValueModel {
 
   get actives() {
     return super.actives.filter( p => {
-      if (p.mode == 'file') {
+      if (p.value.mode == 'file') {
         return this.mode.encoding == 'multipart'
       } else {
         return true
@@ -42,7 +42,7 @@ export default class BodyModel extends KeyValueModel {
             return await {
               urlencoded: async () => {
                 const data = actives.reduce( (data, {key, value}) => {
-                  data.append(key, value)
+                  data.append(key, value.content)
                   return data
                 }, new URLSearchParams())
 
@@ -51,7 +51,16 @@ export default class BodyModel extends KeyValueModel {
 
               multipart: async () => {
                 const form = actives.reduce( (formData, {key, value}) => {
-                  formData.append(key, value)
+                  let content = null
+
+                  if (value.mode == 'file' && value.content) {
+                    content = new File([value.content], value.filename, { type: value.type })
+                  } else {
+                    content = value.content ?? ''
+                  }
+
+                  formData.append(key, content)
+
                   return formData
                 }, new FormData())
 

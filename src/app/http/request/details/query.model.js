@@ -53,7 +53,7 @@ export default class QueryModel extends KeyValueModel {
       const matchingIndex = matchingParams.findIndex( p => p.id == id )
       const equal = (matchingParamsInUrl[matchingIndex]?.at(-1) == '=' || value != '') ? '=' : ''
 
-      return `${key}${equal}${value}`
+      return `${key}${equal}${value.content}`
     })
 
     const prefix = newParams.length > 0 ? '?' : ''
@@ -97,9 +97,10 @@ export default class QueryModel extends KeyValueModel {
       if(cursor.key == key) {
         this.pairs.splice(0, 1)[0]
 
+        cursor.value.content = value
+
         merged.push({
           ...cursor,
-          value,
         })
       } else {
         merged.push(KeyValueModel.create(key, value))
