@@ -66,8 +66,6 @@ export default {
     handleMethodChange(method) {
       this.request.method = method
       this.methodMenuOpened = false
-
-      // this.send()
     },
 
     handleMenuEnter() {
