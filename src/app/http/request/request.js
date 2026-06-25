@@ -67,7 +67,7 @@ export default {
       this.request.method = method
       this.methodMenuOpened = false
 
-      this.send()
+      // this.send()
     },
 
     handleMenuEnter() {
@@ -130,6 +130,10 @@ export default {
 
     HotkeysService.set('request.method', () => {
       this.handleOpenMethodMenu()
+    })
+
+    HotkeysService.set('request.send', () => {
+      this.handleSend()
     })
 
   },
