@@ -12,33 +12,34 @@ const KEY = 'currentTab'
 
 const tabWatchers = new Map()
 
-function Tab(id, title, request = new RequestModel()) {
-  const newTab = Vue.reactive({
+function CreateTab(id, title, request = new RequestModel()) {
+  const tab = Vue.reactive({
     id,
     title,
     request,
   })
 
   tabWatchers.set(id, Vue.watch(
-    newTab,
+    tab,
     (value) => {
-      db[STORE].writer('id').then( index => {
-        index.openCursor(IDBKeyRange.only(value.id)).onsuccess = (cursor) => {
-          event.target.result.update(raw(value))
-        }
+      const data = raw(value)
+
+      db[STORE].update('id', IDBKeyRange.only(value.id), data).catch( result => {
+       db[STORE].put(data)
       })
+    },
+    {
+      immediate: true,
     }
   ))
 
-  return newTab
+  return tab
 }
-
-const defaultTab = Tab('default', t.tabs.defaultRequestName)
 
 const loadedCurrentTab = localStorage.getItem(KEY)
 let loadedTabs = await (async () => {
   const loaded = (await db[STORE].getAll({ direction: 'prev' })).map( item => {
-    return Tab(
+    return CreateTab(
       item.id,
       item.title,
       new RequestModel(item.request)
@@ -49,7 +50,7 @@ let loadedTabs = await (async () => {
     return loaded
   } else {
     return [
-      defaultTab,
+      CreateTab('default', t.tabs.defaultRequestName)
     ]
   }
 })()
@@ -57,12 +58,15 @@ let loadedTabs = await (async () => {
 let count = 0 // TODO computed dynamically according to existing data?
 
 const tabs = Vue.reactive(loadedTabs)
-const current = Vue.ref(loadedCurrentTab ?? defaultTab.id)
+const current = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
 
 Vue.watch(
   current,
   (newCurrent) => {
     localStorage.setItem(KEY, newCurrent)
+  },
+  {
+    immediate: true,
   }
 )
 
@@ -81,12 +85,10 @@ export default {
     }
 
     const id = crypto.randomUUID()
-    const newTab = Tab(id, titleParts.join(' '), request)
+    const newTab = CreateTab(id, titleParts.join(' '), request)
 
     tabs.unshift(newTab)
     current.value = id
-
-    db[STORE].put(raw(newTab))
   },
 
   get(id) {
@@ -117,13 +119,9 @@ export default {
       current.value = tabs[substituteIndex].id
     }
 
-    db[STORE].writer('id').then( index => {
-      index.openCursor(IDBKeyRange.only(id)).onsuccess = (cursor) => {
-        event.target.result.delete()
-      }
-    })
+    db[STORE].delete('id', IDBKeyRange.only(id))
 
-    tabWatchers.get(id)()
+    tabWatchers.get(id)() // run clean up function
     tabWatchers.delete(id)
   },
 

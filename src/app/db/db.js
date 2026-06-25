@@ -83,14 +83,18 @@ class DB {
 
     const toPromise = (request) => {
       return new Promise( async (resolve, reject) => {
-        const r = await request()
+        try {
+          const r = await request()
 
-        r.onsuccess = (event) => {
-          resolve(event.target.result)  
-        }
+          r.onsuccess = (event) => {
+            resolve(event.target.result)  
+          }
 
-        r.onerror = (event) => {
-          resolve(event)
+          r.onerror = (event) => {
+            reject(event)
+          }
+        } catch (err) {
+          reject(err)
         }
       })
     }
@@ -115,36 +119,32 @@ class DB {
       },
 
       getAll(options = {}) {
-          return toPromise( async ()=> (await this.reader()).getAll(options) )
+        return toPromise( async ()=> (await this.reader()).getAll(options) )
 
       },
 
       put(data) {
-        return new Promise( async (resolve, reject) => {
-          const request = (await this.writer()).put(data)
-
-          request.onsuccess = (event) => {
-            resolve(event.target.result)  
-          }
-
-          request.onerror = (event) => {
-            resolve(event)
-          }
-        })
+        return toPromise( async ()=> (await this.writer()).put(data) )
       },
 
-      delete(key) {
-        return new Promise( async (resolve, reject) => {
-          const request = (await this.writer()).delete(key)
-
-          request.onsuccess = (event) => {
-            resolve(event.target.result)  
-          }
-
-          request.onerror = (event) => {
-            resolve(event)
-          }
+      async update(key, range, data) {
+        const cursor = await toPromise( async ()=> {
+          return (await this.writer(key)).openCursor(range)
         })
+
+        // TODO might want to handle range return multiple values
+        // map data to array then Promise.all ?
+        return toPromise( async ()=> cursor.update(data) )
+      },
+
+      async delete(key, range) {
+        const cursor = await toPromise( async ()=> {
+          return (await this.writer(key)).openCursor(range)
+        })
+
+        // TODO might want to handle range return multiple values
+        // map data to array then Promise.all ?
+        return toPromise( async ()=> cursor.delete() )
       },
 
     }

@@ -6,7 +6,7 @@ export default {
     if (!db.objectStoreNames.contains(STORE)) {
       const store = db.createObjectStore(STORE, { autoIncrement: true });
 
-      store.createIndex('id', 'id', { unique: false });
+      store.createIndex('id', 'id', { unique: true });
     }
   },
 
