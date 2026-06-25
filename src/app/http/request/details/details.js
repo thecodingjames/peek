@@ -70,7 +70,7 @@ export default {
           modes: [
             {
               name: 'raw',
-              icon: 'mdi-format-color-text',
+              icon: 'mdi-format-letter-case',
             },
             {
               name: 'keyValue',
