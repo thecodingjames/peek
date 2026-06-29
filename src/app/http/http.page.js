@@ -38,6 +38,8 @@ export default {
   template: `
     <component is="style">
       .http_http-page {
+        height: 100%;
+
         display: grid;
         gap: 2rem;
         grid-template-columns: 1fr;
@@ -48,7 +50,6 @@ export default {
           text-align: start;
           text-transform: uppercase;
           font-size: 0.8rem;
-          margin-bottom: 1rem;
           letter-spacing: 0.03rem;
         }
       }

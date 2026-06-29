@@ -37,7 +37,7 @@ export default {
   },
 
   template: `
-    <div>
+    <div style="height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 1.5rem;">
 
       <div style="display: flex; align-items: baseline; gap: 0.5rem;">
         <div class="section-title">
@@ -56,7 +56,11 @@ export default {
         </v-chip>
       </div>
 
-      <div v-if="response">
+      <div
+        v-if="response"
+
+        style="height: 100%;"
+      >
         <v-tabs v-model="tab">
           <v-tab 
             value="body" 
@@ -72,7 +76,11 @@ export default {
 
         <v-divider></v-divider>
 
-        <v-tabs-window v-model="tab">
+        <v-tabs-window
+          v-model="tab"
+
+          style="overflow: auto;"
+        >
           <v-tabs-window-item value="body">
             <pre style="user-select: text; cursor: text;">{{ response.blob }}</pre>
           </v-tabs-window-item>

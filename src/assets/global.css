@@ -1,3 +1,7 @@
+body, #app {
+  height: 100dvh;
+}
+
 *:not(.v-list *, .v-expansion-panels *, .v-input *, .v-btn, .v-btn *) {
     -webkit-user-select: none;
     user-select: none;

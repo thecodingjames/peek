@@ -137,7 +137,10 @@ export default {
   },
 
   template: `
-    <div class="_http_request">
+    <div
+      class="_http_request"
+      style="height: 100%; overflow-y: hidden; display: flex; flex-direction: column; gap: 1rem;"
+    >
 
       <div class="section-title">
         {{ t.request.title }}
@@ -155,12 +158,17 @@ export default {
         />
       </div>
 
-      <div v-if="rawHttp">
-        <pre>{{ rawHttp }}</pre>
-      </div>
+      <pre
+        v-if="rawHttp"
+
+        v-html="rawHttp"
+
+        class="border rounded-md"
+        style="flex-shrink: 0; margin: 0; max-height: 44%; overflow: auto; height: max-content; padding: 0.5rem;"
+      ></pre>
 
       <div v-else>
-        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
           <!-- Needed dependency with request.query to trigger re-render of url... :( -->
           <span v-show="false">{{ request.query }}</span>
           <v-text-field
@@ -212,7 +220,7 @@ export default {
         </v-form>
       </div>
 
-      <request-details :request />
+      <request-details :request style="overflow-y: auto; height: 100%;"/>
     </div>
   `
 }
