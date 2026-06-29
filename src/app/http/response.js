@@ -21,7 +21,7 @@ export default {
 
     html() {
       // TODO add more content types detection
-      return this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}">`);
+      return this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}/">`); // trailing slash matters
     },
 
     tooltipText() {
