@@ -114,7 +114,7 @@ export default {
           }
 
           .v-field__input {
-            padding: 0 0 0 0.5rem;
+            padding: 0 0.5rem;
           }
 
         }
