@@ -37,7 +37,22 @@ export default {
   },
 
   template: `
-    <div style="height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 1.5rem;">
+    <div
+      class="_http_response"
+      style="height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 1.5rem;"
+    >
+
+      <component is="style">
+        ._http_response {
+          .v-tabs-window-item {
+            overflow: hidden;
+          }
+          .v-tabs-window-item :first-child {
+            overflow: auto;
+            height: 100%;
+          }
+        }
+      </component>
 
       <div style="display: flex; align-items: baseline; gap: 0.5rem;">
         <div class="section-title">
@@ -59,9 +74,13 @@ export default {
       <div
         v-if="response"
 
-        style="height: 100%;"
+        style="overflow: hidden; display: flex; flex-direction: column; flex-grow: 1;"
       >
-        <v-tabs v-model="tab">
+        <v-tabs
+          v-model="tab"
+
+          style="flex-shrink: 0;"
+        >
           <v-tab 
             value="body" 
             v-tooltip="{ text: tooltipText, openDelay: 300}"
@@ -79,10 +98,10 @@ export default {
         <v-tabs-window
           v-model="tab"
 
-          style="overflow: auto;"
+          style="overflow: hidden;"
         >
           <v-tabs-window-item value="body">
-            <pre style="user-select: text; cursor: text;">{{ response.blob }}</pre>
+            <pre style="margin: 0; padding: 0.25rem; user-select: text; cursor: text;">{{ response.blob }}</pre>
           </v-tabs-window-item>
 
           <v-tabs-window-item value="headers">
@@ -103,7 +122,7 @@ export default {
             <iframe 
               v-if="response" 
               :srcdoc="html" frameborder="0"
-              style="width: 100%; height: 100dvh;"
+              style="width: 100%; height: 100%;"
             ></iframe>
           </v-tabs-window-item>
 
