@@ -12,7 +12,7 @@ export default class HeadersModel extends KeyValueModel {
     const headers = this.actives.reduce( (result, header) => {
       return {
         ...result,
-        [header.key]: header.value.content,
+        [header.key]: header.value.content.replace(/[\r\n]+/g, ''),
       }
     }, {})
 
