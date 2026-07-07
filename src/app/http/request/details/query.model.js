@@ -59,7 +59,7 @@ export default class QueryModel extends KeyValueModel {
     const prefix = newParams.length > 0 ? '?' : ''
 
     const paramsRegExp = /\?.*$/
-    const paramsValue = `${prefix}${newParams.join('&')}`
+    const paramsValue = encodeURI(`${prefix}${newParams.join('&')}`)
 
     if (this.url?.match(paramsRegExp)) {
       this.url = this.url?.replace(paramsRegExp, paramsValue)
