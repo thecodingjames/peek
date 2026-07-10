@@ -167,6 +167,14 @@ export default {
       <component is="style">
         ._http_request_details {
 
+          .v-field__input {
+            padding: 0 0.5rem;
+          }
+
+          textarea.v-field__input {
+            padding: 0.5rem;
+          }
+
           .v-tab,.v-expansion-panel {
             --c: color-mix(in srgb, currentColor calc(var(--v-activated-opacity) * 100%), transparent);
             background-color: var(--c);

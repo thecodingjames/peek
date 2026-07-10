@@ -112,17 +112,6 @@ export default {
               background-color: color-mix(in srgb, currentColor calc(var(--opacity) * 100%), transparent);
             }
           }
-
-          .v-field__input {
-            padding: 0 0.5rem;
-            mask-image: none;
-          }
-
-          textarea.v-field__input {
-            padding: 0.5rem;
-            mask-image: none;
-          }
-
         }
       </component>
 

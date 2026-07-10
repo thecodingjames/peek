@@ -28,6 +28,8 @@ export default {
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
+
+      dialogUrl: null,
     }
   },
 
@@ -51,6 +53,20 @@ export default {
 
     async refreshRawHttp() {
       this.rawHttp = await this.request.text
+    },
+
+    handleOpenUrlDialog() {
+      this.dialogUrl = this.request.url
+    },
+
+    handleSaveUrl(newUrl) {
+      this.request.url = newUrl.replace(/[\r\n]+/g, '')
+
+      this.handleCloseUrlDialog()
+    },
+
+    handleCloseUrlDialog() {
+      this.dialogUrl = null
     },
 
     send() {
@@ -168,12 +184,26 @@ export default {
       ></pre>
 
       <div v-else>
+        <dialog-editable
+          :model-value="!!dialogUrl"
+          @update:model-value="handleCloseUrlDialog"
+
+          title="URL"
+          :content="dialogUrl"
+          @save="handleSaveUrl($event)"
+        />
+
         <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
           <!-- Needed dependency with request.query to trigger re-render of url... :( -->
           <span v-show="false">{{ request.query }}</span>
-          <v-text-field
-            v-model="request.url"
+
+          <dialog-editable-input
             ref="url"
+
+            :modelValue="request.url"
+            @update:modelValue="handleSaveUrl($event)"
+
+            @openDialog="handleOpenUrlDialog()"
 
             :rules="request.rules('url')"
 
@@ -200,6 +230,7 @@ export default {
 
             <v-menu
               :model-value="!!methodMenuOpened"
+
               @update:model-value="handleCloseMethodMenu"
               :activator="$refs.methodChevron"
               :target="$refs.methodGroup"

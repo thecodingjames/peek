@@ -1,12 +1,6 @@
 import { forceFocus } from '../../../../core/helpers.js'
 
-import ValueDialog from './value-dialog.js'
-
 export default {
-
-  components: {
-    ValueDialog,
-  },
 
   emits: [
     'create',
@@ -36,7 +30,7 @@ export default {
       return [
         {
           name: 'raw',
-          tag: 'v-text-field',
+          tag: 'dialog-editable-input',
           default: '',
           modelValue(item) {
             return item.value.content
@@ -143,7 +137,15 @@ export default {
 
   template: `
 
-    <value-dialog :item="dialogItem" :model-value="!!dialogItem" @update:model-value="handleClose" />
+    <dialog-editable
+      :model-value="!!dialogItem"
+      @update:model-value="handleClose"
+
+      :title="dialogItem?.key"
+      :content="dialogItem?.value?.content"
+
+      @save="dialogItem.value.content = $event"
+    />
 
     <div
       v-show="items.length > 0"
@@ -238,6 +240,8 @@ export default {
                     @update:modelValue="input(item).updateModelValue(item, $event); handleEdit();"
                     @click:clear="handleClear(item)"
 
+                    @openDialog="handleOpenValueDialog(item)"
+
                     :label="input(item).label"
                     :prepend-inner-icon="input(item).icon"
 
@@ -247,19 +251,7 @@ export default {
                     hide-details
 
                     class="can-disable"
-                  >
-                    <template
-                      v-if="item.value.mode == 'raw'"
-                      v-slot:prepend-inner>
-                      <v-btn
-                        @click="handleOpenValueDialog(item)"
-                        style="margin-left: -0.75rem; aspect-ratio: 1; min-width: 0;"
-                        variant="text"
-                      >
-                        <v-icon icon="mdi-arrow-expand" />
-                      </v-btn>
-                    </template>
-                  </component>
+                  />
                   <v-btn
                     v-if="altInputs"
                     @click="handleToggleInputs(item)"

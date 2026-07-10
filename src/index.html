@@ -29,9 +29,13 @@
       import translate from './app/translate/translate.service.js'
 
       import FileInput from './app/http/request/details/body/file-input.js'
+      import DialogEditableInput from './app/http/request/dialog-editable/dialog-editable-input.js'
+      import DialogEditable from './app/http/request/dialog-editable/dialog-editable.js'
 
       const app = Vue.createApp(App)
       app.component('FileInput', FileInput)
+      app.component('DialogEditableInput', DialogEditableInput)
+      app.component('DialogEditable', DialogEditable)
 
       app.use(Vuetify.createVuetify())
 
