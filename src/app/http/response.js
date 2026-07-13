@@ -1,4 +1,5 @@
 import ResponseModel from './response.model.js'
+import SettingsService from '../drawers/settings/settings.service.js'
 
 import TabMixin from '../tabs/tab.mixin.js'
 
@@ -14,6 +15,8 @@ export default {
   data() {
     return {
       tab: 'body',
+
+      previewTimestamp: null,
     }
   },
 
@@ -21,7 +24,14 @@ export default {
 
     html() {
       // TODO add more content types detection
-      return this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}/">`); // trailing slash matters
+      const html = this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}/">`);
+      // trailing slash matters
+
+      return `
+        ${html}
+        <!-- ${ this.previewTimestamp } -->
+      `
+      // previewTimestamp forces re-render when iframeSandbox changes
     },
 
     tooltipText() {
@@ -32,7 +42,29 @@ export default {
 
     statusColor() {
       return `text-${ResponseModel.statusColor(this.response.code)}`
-    }
+    },
+
+    iframeSandbox() {
+      let sandbox = 'allow-same-origin'
+      // needed to access iframe's content document height
+
+      if (SettingsService.http.previewAllowScripts) {
+        sandbox += ' allow-scripts'
+      }
+
+      return sandbox
+    },
+
+  },
+
+  watch: {
+
+    iframeSandbox() {
+      Vue.nextTick(() => {
+        // let iframe get correct sandbox attribute, then re-render
+        this.previewTimestamp = Date.now()
+      })
+    },
 
   },
 
@@ -148,11 +180,11 @@ export default {
                   @load="iframeLoad()"
 
                   :srcdoc="html"
-                  sandbox="allow-same-origin"
+                  :sandbox="iframeSandbox"
 
                   frameborder="0"
                   style="width: 100%; height: 100%;"
-                ></iframe> <!-- allow-same-origin enable computing size from contentDocument -->
+                ></iframe>
 
                 <div style="position: absolute; inset: 0; background: transparent;"></div>
               </div>

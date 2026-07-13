@@ -13,6 +13,7 @@ export default {
     settings: {
       title: 'Settings',
       followRedirect: 'Follow redirects',
+      previewAllowScripts: 'Allow JavaScript in preview',
       alwaysShowTabs: 'Always show tabs',
       appearance: 'Appearance',
       theme: 'Theme',

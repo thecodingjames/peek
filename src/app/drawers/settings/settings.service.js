@@ -18,6 +18,7 @@ const defaultSettings = {
 
   http: {
     followRedirect: true,
+    previewAllowScripts: false,
   },
 
   ui: {

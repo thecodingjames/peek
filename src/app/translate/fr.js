@@ -13,6 +13,7 @@ export default {
     settings: {
       title: 'Configuration',
       followRedirect: 'Suivre les redirections',
+      previewAllowScripts: 'Autoriser JavaScript dans l\'aperçu',
       appearance: 'Visuel',
       alwaysShowTabs: 'Toujours afficher les onglets',
       theme: 'Thème',
