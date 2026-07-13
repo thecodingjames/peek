@@ -13,8 +13,18 @@ export default {
     'openDialog',
   ],
 
+  methods: {
+
+    focus() {
+      this.$refs.textfield.$el.querySelector('input').focus()
+    },
+
+  },
+
   template: `
     <v-text-field
+      ref="textfield"
+
       :modelValue
       @update:modelValue="$emit('update:modelValue', $event)"
 
