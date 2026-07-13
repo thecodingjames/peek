@@ -100,7 +100,10 @@ export default {
         ._tabs__tabs {
 
           height: 100%;
-          .v-window, .v-window-item {
+          display: flex;
+          flex-direction: column;
+
+          .v-window__container, .v-window-item {
             height: 100%;
           }
 
@@ -124,6 +127,7 @@ export default {
         @update:model-value="handleSelect"
 
         class="nav_tabs"
+        style="flex-shrink: 0;"
       >
         <v-tab
           v-for="item in tabs"
@@ -150,12 +154,14 @@ export default {
         </v-tab>
       </v-tabs>
 
-      <v-window v-model="current">
+      <v-window
+        v-model="current"
+        style="padding: 1rem; flex-grow: 1;"
+      >
         <v-tabs-window-item
           v-for="item in tabs"
           :key="item.id" 
           :value="item.id"
-          style="padding: 1rem;"
         >
           <http-page :tabId="item.id"/>
         </v-tabs-window-item>

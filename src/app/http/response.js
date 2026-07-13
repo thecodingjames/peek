@@ -13,7 +13,7 @@ export default {
 
   data() {
     return {
-      tab: 'body'
+      tab: 'body',
     }
   },
 
@@ -36,6 +36,22 @@ export default {
 
   },
 
+  methods: {
+
+    iframeLoad() {
+      this.$refs.iframe.style.height = ''
+      // clear height to get new srcdoc rendered size
+
+      const content = this.$refs.iframe.contentDocument
+      const height = content.documentElement.scrollHeight + 1
+      // + 1 to avoid scrollbars when height is decimal
+
+      this.$refs.iframeWrapper.style.height = `${height}px`
+      this.$refs.iframe.style.height = '100%'
+    },
+
+  },
+
   template: `
     <div
       class="_http_response"
@@ -47,7 +63,7 @@ export default {
           .v-tabs-window-item {
             overflow: hidden;
           }
-          .v-tabs-window-item :first-child {
+          .v-tabs-window-item > :first-child {
             overflow: auto;
             height: 100%;
           }
@@ -98,7 +114,7 @@ export default {
         <v-tabs-window
           v-model="tab"
 
-          style="overflow: hidden;"
+          style="overflow: hidden; height: 100%;"
         >
           <v-tabs-window-item value="body">
             <pre style="margin: 0; padding: 0.25rem; user-select: text; cursor: text;">{{ response.blob }}</pre>
@@ -119,11 +135,29 @@ export default {
           </v-tabs-window-item>
 
           <v-tabs-window-item value="preview">
-            <iframe 
-              v-if="response" 
-              :srcdoc="html" frameborder="0"
-              style="width: 100%; height: 100%;"
-            ></iframe>
+            <div> <!-- preview scroll container -->
+              <div
+                ref="iframeWrapper"
+
+                style="position: relative;"
+              > <!-- iframe wrapper -->
+                <iframe
+                  v-if="response"
+
+                  ref="iframe"
+                  @load="iframeLoad()"
+
+                  :srcdoc="html"
+                  sandbox="allow-same-origin"
+
+                  frameborder="0"
+                  style="width: 100%; height: 100%;"
+                ></iframe> <!-- allow-same-origin enable computing size from contentDocument -->
+
+                <div style="position: absolute; inset: 0; background: transparent;"></div>
+              </div>
+            </div>
+
           </v-tabs-window-item>
 
         </v-tabs-window>
