@@ -116,6 +116,10 @@ export default {
             }
           }
         }
+
+        .rename-card input {
+          padding: 0 0.5rem;
+        }
       </component>
 
       <v-tabs
@@ -177,7 +181,7 @@ export default {
         :close-on-content-click="false"
         location="bottom"
       >
-        <v-card min-width="300">
+        <v-card min-width="300" class="rename-card">
           <form
             @submit.prevent="handleRenameSubmit()"
             style="display: flex; align-items: center;"

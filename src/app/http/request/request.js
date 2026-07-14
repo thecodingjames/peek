@@ -214,6 +214,8 @@ export default {
           <v-btn-group
             ref="methodGroup"
             divided
+            variant="outlined"
+            style="--v-border-opacity: 0.33;"
           >
             <v-btn
               :text="request.method"
@@ -244,6 +246,8 @@ export default {
                 navigationStrategy="track"
                 @update:selected="handleMethodChange($event[0])"
                 @keydown.enter.exact="handleMenuEnter()"
+
+                style="padding: 0;"
               />
             </v-menu>
 
