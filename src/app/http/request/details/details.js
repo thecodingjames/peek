@@ -5,6 +5,7 @@ import Body from './body/body.js'
 
 import BodyModel from './body/body.model.js'
 
+
 export default {
 
   components: {
@@ -71,10 +72,12 @@ export default {
             {
               name: 'raw',
               icon: 'mdi-format-letter-case',
+              tooltip: this.t.request.details.body.raw,
             },
             {
               name: 'keyValue',
               icon: 'mdi-format-columns',
+              tooltip: this.t.request.details.body.keyValue,
             },
           ],
           mode: Vue.computed( () => this.request.bodyModel.mode ),

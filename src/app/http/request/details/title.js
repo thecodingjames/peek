@@ -33,6 +33,10 @@ export default {
       return this.modes[this.modeNextIndex].icon
     },
 
+    modeNextTooltip() {
+      return this.modes[this.modeNextIndex].tooltip
+    },
+
     badgeColor() {
       return this.detail.active.value ? 'primary' : 'transparent'
     },
@@ -78,6 +82,8 @@ export default {
           v-if="!!modes"
 
           @click.stop="handleToggle"
+
+          v-tooltip="{text: modeNextTooltip, openDelay: 1000}"
 
           size="x-small"
           variant="outlined"

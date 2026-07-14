@@ -104,6 +104,8 @@ export default {
 
       body: {
         name: 'body',
+        raw: 'Raw text',
+        keyValue: 'Key-Value pairs',
       },
 
       headers: {
