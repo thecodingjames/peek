@@ -4,6 +4,8 @@ import TabsService from './tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 import SettingsService from '../drawers/settings/settings.service.js'
 
+import { forceFocus } from '../core/helpers.js'
+
 export default {
   components: {
     HttpPage
@@ -33,6 +35,14 @@ export default {
       TabsService.select(id)
     },
 
+    titleEllipsis(title) {
+      if (title == '' || title.length > 20) {
+        return `${title.slice(0, 7)}...${title.slice(-7)}`
+      } else {
+        return title
+      }
+    },
+
     handleRenamePopup(event, tabId) {
       const tab = TabsService.get(tabId)
 
@@ -51,11 +61,7 @@ export default {
 
       this.showRenamingPopup = true
 
-      Vue.nextTick(() => {
-        setTimeout(() => {
-          this.$refs.renameInput.controlRef.focus()
-        }, 200)
-      })
+      forceFocus( () => this.$refs.renameInput.controlRef )
     },
 
     handleRenameSubmit() {
@@ -137,7 +143,7 @@ export default {
           v-for="item in tabs"
           :key="item.id"
 
-          :text="item.title"
+          :text="titleEllipsis(item.title)"
           :value="item.id"
 
           @dblclick="handleRenamePopup($event, item.id)"

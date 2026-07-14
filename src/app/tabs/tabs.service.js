@@ -103,7 +103,7 @@ export default {
 
   rename(id, title) {
     const tab = this.get(id)
-    tab.title = title
+    tab.title = title.trim()
   },
 
   remove(id) {
