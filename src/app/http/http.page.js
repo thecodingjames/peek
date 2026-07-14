@@ -1,6 +1,6 @@
 import Request from './request/request.js'
 import Response from './response.js'
-import http from './http.service.js'
+import HttpService from './http.service.js'
 import ResponseModel from './response.model.js'
 
 import TabMixin from '../tabs/tab.mixin.js'
@@ -24,7 +24,13 @@ export default {
   methods: {
     async handleRequest(request) {
       try {
-        this.response = ResponseModel.instantiate(await http(request))
+        const result = await this.http.execute(request)
+
+        if (result?.code) {
+          this.response = ResponseModel.instantiate(result)
+        }
+
+        this.$refs.request.done()
       } catch (e) {
         this.response = null
 
@@ -32,7 +38,16 @@ export default {
           console.error(e)
         }
       }
-    }
+    },
+
+    handleCancelRequest() {
+      this.http.cancel()
+    },
+
+  },
+
+  created() {
+    this.http = new HttpService()
   },
 
   template: `
@@ -63,9 +78,19 @@ export default {
     </component>
 
     <div class="http_http-page">
-      <request @send="handleRequest" :tabId />
+      <request
+        ref="request"
+        :tabId
 
-      <response :response :tabId />
+        @send="handleRequest"
+        @cancel="handleCancelRequest"
+      />
+
+      <response
+        :tabId
+
+        :response
+      />
     </div>
   `
 }

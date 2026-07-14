@@ -19,12 +19,16 @@ export default {
 
   emits: [
     'send',
+    'cancel',
   ],
 
   data() {
     return {
       request: TabsService.get(this.tabId).request,
       rawHttp: null,
+
+      loading: false,
+      loadingStopTimeout: null,
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
@@ -71,12 +75,27 @@ export default {
 
     send() {
       if (!this.request.hasErrors()) {
+        clearTimeout(this.loadingStopTimeout)
+        this.loading = true
+
         this.$emit('send', this.request)
       }
     },
 
     async handleSend() {
       this.send()
+    },
+
+    done() {
+      this.loadingStopTimeout = setTimeout(() => {
+        this.loading = false
+      }, 150)
+    },
+
+    handleCancelRequest() {
+      this.done()
+
+      this.$emit('cancel')
     },
 
     handleMethodChange(method) {
@@ -218,12 +237,32 @@ export default {
             style="--v-border-opacity: 0.33;"
           >
             <v-btn
-              :text="request.method"
               type="submit"
-              width="96"
+              width="104"
+            >
+              {{ request.method }}
+
+              <v-progress-circular
+                v-if="loading"
+
+                indeterminate
+                size="16"
+                width="2"
+
+                style="margin-left: 0.5rem;"
+              />
+            </v-btn>
+
+            <v-btn
+              v-if="loading"
+
+              @click="handleCancelRequest"
+              icon="mdi-close-octagon-outline"
             />
 
             <v-btn
+              v-if="!loading"
+
               ref="methodChevron"
               @click="handleOpenMethodMenu"
 
