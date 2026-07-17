@@ -29,14 +29,14 @@ export default {
         if (result?.code) {
           this.response = ResponseModel.instantiate(result)
         }
-
-        this.$refs.request.done()
       } catch (e) {
         this.response = null
 
         if (this.app.development) {
           console.error(e)
         }
+      } finally {
+        this.$refs.request.done()
       }
     },
 
