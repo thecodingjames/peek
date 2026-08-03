@@ -22,16 +22,41 @@ export default {
 
   computed: {
 
-    html() {
-      // TODO add more content types detection
-      const html = this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}/">`);
-      // trailing slash matters
+    body() {
+      return new TextDecoder().decode(this.response.blob)
+    },
 
-      return `
-        ${html}
-        <!-- ${ this.previewTimestamp } -->
-      `
-      // previewTimestamp forces re-render when iframeSandbox changes
+    html() {
+      debugger
+
+      const contentType = this.response?.headers?.['content-type']
+
+
+      if (contentType?.startsWith('image/')) {
+        const blob = new Blob([this.response.blob], { type: "image/png" });
+  const url = URL.createObjectURL(blob);
+        return `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <title></title>
+          </head>
+          <body>
+            <img src="${url}" alt="">
+          </body>
+          </html>
+        `
+      } else {
+        const html = this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}/">`);
+        // trailing slash matters
+
+        return `
+          ${html}
+          <!-- ${ this.previewTimestamp } -->
+        `
+        // previewTimestamp forces re-render when iframeSandbox changes
+      }
     },
 
     tooltipText() {
@@ -149,7 +174,7 @@ export default {
           style="overflow: hidden; height: 100%;"
         >
           <v-tabs-window-item value="body">
-            <pre style="margin: 0; padding: 0.25rem; user-select: text; cursor: text;">{{ response.blob }}</pre>
+            <pre style="margin: 0; padding: 0.25rem; user-select: text; cursor: text;">{{ body }}</pre>
           </v-tabs-window-item>
 
           <v-tabs-window-item value="headers">
