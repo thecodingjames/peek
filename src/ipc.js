@@ -6,8 +6,7 @@ function registerHttp() {
     try {
       const response = await fetch(url, options)
 
-      const b = await response.blob()
-      const blob = await b.bytes()
+      const blob = await response.blob().arrayBuffer()
 
       return {
         options,

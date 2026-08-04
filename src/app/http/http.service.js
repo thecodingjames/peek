@@ -23,8 +23,6 @@ export default class Http {
       redirect,
     }))
 
-    debugger
-
     if (this.#current === null) {
       // cancelled
       return { }

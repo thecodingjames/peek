@@ -27,28 +27,36 @@ export default {
     },
 
     html() {
-      debugger
-
       const contentType = this.response?.headers?.['content-type']
 
-
       if (contentType?.startsWith('image/')) {
-        const blob = new Blob([this.response.blob], { type: "image/png" });
-  const url = URL.createObjectURL(blob);
+        const blob = new Blob([this.response.blob], { type: contentType });
+        const url = URL.createObjectURL(blob);
+
         return `
           <!DOCTYPE html>
           <html lang="en">
           <head>
             <meta charset="UTF-8">
-            <title></title>
+
+            <style>
+              body, html {
+                margin: 0;
+                height: 100%;
+                width: 100%;
+              }
+
+              body {
+               background-image: url(${url});
+              }
+            </style>
           </head>
           <body>
-            <img src="${url}" alt="">
           </body>
           </html>
         `
       } else {
-        const html = this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}/">`);
+        const html = this.body.replace('<head>', `<head><base href="${this.response?.url}/">`);
         // trailing slash matters
 
         return `
@@ -103,9 +111,12 @@ export default {
       const height = content.documentElement.scrollHeight + 1
       // + 1 to avoid scrollbars when height is decimal
 
+      // TODO wip image preview size
+      // const height = this.$refs.iframe.closest('.v-window-item').getBoundingClientRect().height
+
       this.$refs.iframeWrapper.style.height = `${height}px`
       this.$refs.iframe.style.height = '100%'
-    },
+    }
 
   },
 
