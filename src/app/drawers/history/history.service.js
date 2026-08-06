@@ -21,7 +21,9 @@ export default {
 
   add(request, result) {
     const newHistory = new HistoryModel(request, result)
-    requests.splice(0, 0, newHistory)
+
+    requests.unshift(newHistory)
+    // requests.splice(1000)
 
     db[STORE].put(raw(newHistory))
   },
