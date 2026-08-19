@@ -47,6 +47,8 @@ export default {
               }
 
               body {
+               background-size: contain;
+               background-repeat: no-repeat;
                background-image: url(${url});
               }
             </style>
