@@ -7,16 +7,9 @@ export default {
 
   data() {
     return {
+      requests: HistoryService.requests,
+      virtualizer: null,
     }
-  },
-
-  watch: {
-    'requests.length'(count) {
-      this.virtualizer.setOptions({
-        ...this.virtualizer.options,
-        count: this.requests.length
-      })
-    },
   },
 
   methods: {
@@ -41,41 +34,19 @@ export default {
 
   },
 
-  setup() {
-    const scrollElement = Vue.ref()
+  mounted() {
 
-    const requests = HistoryService.requests
-
-    const virtualizer = VueVirtual.useVirtualizer({
-      count: requests.length,
+    this.virtualizer = VueVirtual.useVirtualizer({
+      count: this.requests.length,
       getScrollElement: () => { 
-        debugger
-        return scrollElement.value
+        return this.$refs.scrollElement
       },
       estimateSize: () => 75,
       overscan: 5
     })
 
-    const virtualRows = Vue.computed(() =>
-      virtualizer.value.getVirtualItems()
-    )
-     
-    const totalSize = Vue.computed(() =>
-      virtualizer.value.getTotalSize()
-    )
-
-    return {
-      requests,
-      scrollElement,
-      virtualizer,
-      virtualRows,
-      totalSize,
-    }
   },
 
-
-  // TODO
-  // https://tanstack.com/virtual/latest/docs/framework/vue/examples/fixed?path=examples%2Fvue%2Ffixed%2Fsrc%2Fcomponents%2FRowVirtualizerFixed.vue
 
   template: `
     <div>
@@ -88,13 +59,11 @@ export default {
         style="height: 300px; overflow: auto; border: 1px solid blue;"
       >
         <v-list 
-          :style="{ border: '1px solid red', height: totalSize+'px', width: '100%', position: 'relative' }"
+          :style="{ border: '1px solid red', height: virtualizer?.getTotalSize()+'px', width: '100%', position: 'relative' }"
         >
-          {{ requests.length }}
-          {{ totalSize }}
 
-          <template 
-            v-for="row in virtualRows"
+          <div 
+            v-for="row in virtualizer?.getVirtualItems()"
             :key="row.index"
             :style="{
               position: 'absolute',
@@ -145,7 +114,7 @@ export default {
             </v-list-item>
 
             <v-divider v-if="row.index != requests.length - 1"></v-divider>
-          </template>
+          </div>
 
         </v-list>
       </div>
