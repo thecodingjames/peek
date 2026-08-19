@@ -9,6 +9,7 @@ export default {
     return {
       requests: HistoryService.requests,
       virtualizer: null,
+      scrollHeight: 0,
     }
   },
 
@@ -45,21 +46,24 @@ export default {
       overscan: 5
     })
 
+    this.scrollHeight = this.$refs.scrollElement.closest('#_history_root').parentElement.getBoundingClientRect().height
+
   },
 
 
   template: `
-    <div>
+    <div id="_history_root">
       <p v-if="requests.length == 0" style="font-style: italic; padding-left: 1rem;">{{ t.drawers.history.empty }}</p>
 
       <div 
         v-else
 
         ref="scrollElement"
-        style="height: 300px; overflow: auto; border: 1px solid blue;"
+        style="overflow: auto;"
+        :style="{ height: scrollHeight+'px' }"
       >
         <v-list 
-          :style="{ border: '1px solid red', height: virtualizer?.getTotalSize()+'px', width: '100%', position: 'relative' }"
+          :style="{ height: virtualizer?.getTotalSize()+'px', width: '100%', position: 'relative' }"
         >
 
           <div 
