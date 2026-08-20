@@ -33,39 +33,46 @@ export default {
         const blob = new Blob([this.response.blob], { type: contentType });
         const url = URL.createObjectURL(blob);
 
-        return `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
+        return {
+          type: 'image',
+          content: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
 
-            <style>
-              body, html {
-                margin: 0;
-                height: 100%;
-                width: 100%;
-              }
+              <style>
+                body, html {
+                  margin: 0;
+                  height: 100%;
+                  width: 100%;
+                  overflow: hidden;
+                }
 
-              body {
-               background-size: contain;
-               background-repeat: no-repeat;
-               background-image: url(${url});
-              }
-            </style>
-          </head>
-          <body>
-          </body>
-          </html>
-        `
+                img {
+                  max-width: 100%;
+                  max-height: 100%;
+                }
+              </style>
+            </head>
+            <body>
+              <img src="${url}" alt="">
+            </body>
+            </html>
+          `
+        }
       } else {
         const html = this.body.replace('<head>', `<head><base href="${this.response?.url}/">`);
         // trailing slash matters
 
-        return `
-          ${html}
-          <!-- ${ this.previewTimestamp } -->
-        `
-        // previewTimestamp forces re-render when iframeSandbox changes
+        return {
+          type: 'html',
+          content: `
+            ${html}
+            <!-- ${ this.previewTimestamp } -->
+          `
+          // previewTimestamp forces re-render when iframeSandbox changes
+        }
       }
     },
 
@@ -109,15 +116,20 @@ export default {
       this.$refs.iframe.style.height = ''
       // clear height to get new srcdoc rendered size
 
-      const content = this.$refs.iframe.contentDocument
-      const height = content.documentElement.scrollHeight + 1
-      // + 1 to avoid scrollbars when height is decimal
+      Vue.nextTick(() => {
+        let height;
 
-      // TODO wip image preview size
-      // const height = this.$refs.iframe.closest('.v-window-item').getBoundingClientRect().height
+        if (this.html.type == 'html') {
+          const content = this.$refs.iframe.contentDocument
+          height = content.documentElement.scrollHeight + 1
+          // + 1 to avoid scrollbars when height is decimal
+        } else {
+          height = this.$refs.iframe.closest('.v-window-item').getBoundingClientRect().height - 8
+        }
 
-      this.$refs.iframeWrapper.style.height = `${height}px`
-      this.$refs.iframe.style.height = '100%'
+        this.$refs.iframeWrapper.style.height = `${height}px`
+        this.$refs.iframe.style.height = `${height}px`
+      })
     }
 
   },
@@ -187,7 +199,7 @@ export default {
           style="overflow: hidden; height: 100%;"
         >
           <v-tabs-window-item value="body">
-            <pre style="margin: 0; padding: 0.25rem; user-select: text; cursor: text;">{{ body }}</pre>
+            <pre style="margin: 0; padding: 0.25rem; user-select: text; cursor: text; text-wrap: auto;">{{ body }}</pre>
           </v-tabs-window-item>
 
           <v-tabs-window-item value="headers">
@@ -217,7 +229,7 @@ export default {
                   ref="iframe"
                   @load="iframeLoad()"
 
-                  :srcdoc="html"
+                  :srcdoc="html.content"
                   :sandbox="iframeSandbox"
 
                   frameborder="0"
