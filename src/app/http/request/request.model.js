@@ -4,8 +4,9 @@ import { parseUrl } from '../url.helpers.js'
 import VestModel from '../../core/vest.model.js'
 import t from '../../translate/translate.service.js'
 
-import QueryModel from './query.model.js'
-import HeadersModel from './headers.model.js'
+import QueryModel from './details/query.model.js'
+import HeadersModel from './details/headers.model.js'
+import BodyModel from './details/body/body.model.js'
 
 export default class RequestModel extends VestModel {
 
@@ -40,7 +41,7 @@ export default class RequestModel extends VestModel {
 
   get host() {
     const { port, hostname } = this.parsedUrl ?? {
-      hostname: `{ ${t.request.model.invalidHost}  }`,
+      hostname: `{ ${t.request.model.invalidHost} }`,
     }
 
     return `${hostname}${port ? `:${port}` : ''}`
@@ -50,27 +51,46 @@ export default class RequestModel extends VestModel {
     return this.parsedUrl?.pathname ?? `{ ${t.request.model.invalidPath} }`
   }
 
+  get preventBody() {
+    return ['GET', 'HEAD'].includes(this.method)
+  }
+
   get text() {
-    const params = this.parsedUrl?.searchParams ?? new URLSearchParams()
-    let text = ''
+    return ( async () => {
+      const { body, boundary } = await this.bodyModel.forFetch
 
-    text += `${this.method} ${this.path}${params.size > 0 ? '?'+params.toString() : ''}`
-    text += '\n'
-    text += `host: ${this.host}\n`
+      let text = ''
 
-    Object.entries(this.headersModel.forFetch).forEach(([key, value]) => {
-      text += `${key}: ${value}\n`
-    })
+      text += `${this.method} ${this.path}${this.queryModel.text}`
+      text += '\n'
 
-    return text
+      text += `host: ${this.host}\n`
+      text += this.headersModel.text(boundary)
+
+      if (this.preventBody) {
+        text += '\n'
+        text += `{ ${t.request.model.preventBody} }`
+      } else if (body?.length > 0) {
+        text += '\n'
+        text += body
+      }
+
+      return text
+    })()
   }
 
   get fetchOptions() {
-    return {
-      url: this.parsedUrl?.toString() ?? '',
-      method: this.method,
-      headers: this.headersModel.forFetch,
-    }
+    return (async () => {
+      const { body, boundary } = await this.bodyModel.forFetch
+      const headers = this.headersModel.forFetch(boundary)
+
+      return {
+        url: this.parsedUrl?.toString() ?? '',
+        method: this.method,
+        headers,
+        body: this.preventBody ? null : body,
+      }
+    })()
   }
 
   get url() {
@@ -106,6 +126,8 @@ export default class RequestModel extends VestModel {
     }
 
     this.headersModel = new HeadersModel(props.headers)
+
+    this.bodyModel = new BodyModel(props.body)
   }
 
   vestSuite() {
@@ -129,9 +151,10 @@ export default class RequestModel extends VestModel {
   toJSON() {
     return raw({
       url: this.url,
-      query: this.query,
+      query: this.queryModel.toJSON(),
       method: this.method,
-      headers: this.headers,
+      headers: this.headersModel.toJSON(),
+      body: this.bodyModel.toJSON(),
     })
   }
 

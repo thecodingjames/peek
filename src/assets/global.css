@@ -1,3 +1,7 @@
+body, #app {
+  height: 100dvh;
+}
+
 *:not(.v-list *, .v-expansion-panels *, .v-input *, .v-btn, .v-btn *) {
     -webkit-user-select: none;
     user-select: none;
@@ -6,4 +10,8 @@
 
 .v-window-item {
   transition: none !important;
+}
+
+.v-field__field input[type=file] {
+  display: none;
 }

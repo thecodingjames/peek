@@ -1,51 +1,72 @@
+import db from '../db/db.js'
+import { STORE } from './tabs.db.js'
+
+import { raw } from '../core/helpers.js'
 import t from '../translate/translate.service.js'
 
 import SettingsService from '../drawers/settings/settings.service.js'
 
 import RequestModel from '../http/request/request.model.js'
 
-const KEY = 'tabs'
+const KEY = 'currentTab'
 
-function Tab(id, title, request = new RequestModel()) {
-  return {
+const tabWatchers = new Map()
+
+function CreateTab(id, title, request = new RequestModel()) {
+  const tab = Vue.reactive({
     id,
     title,
     request,
-  }
-}
-
-const defaultTab = Tab('default', t.tabs.defaultRequestName)
-
-const loadedTabs = JSON.parse(localStorage.getItem(KEY) ?? '{}')
-if (loadedTabs.tabs) {
-  loadedTabs.tabs = loadedTabs.tabs.map( item => {
-    return {
-      ...item,
-      request: new RequestModel(item.request),
-    }
   })
-} else {
-  loadedTabs.tabs = [
-    defaultTab,
-  ]
+
+  tabWatchers.set(id, Vue.watch(
+    tab,
+    (value) => {
+      const data = raw(value)
+
+      db[STORE].update('id', IDBKeyRange.only(value.id), data).catch( result => {
+       db[STORE].put(data)
+      })
+    },
+    {
+      immediate: true,
+    }
+  ))
+
+  return tab
 }
 
-// TODO !!! :(
-let count = loadedTabs.tabs?.length ?? 0
+const loadedCurrentTab = localStorage.getItem(KEY)
+let loadedTabs = await (async () => {
+  const loaded = (await db[STORE].getAll({ direction: 'prev' })).map( item => {
+    return CreateTab(
+      item.id,
+      item.title,
+      new RequestModel(item.request)
+    )
+  })
 
-const tabs = Vue.reactive(loadedTabs.tabs)
-const current = Vue.ref(loadedTabs.current ?? defaultTab.id)
+  if (loaded.length > 0) {
+    return loaded
+  } else {
+    return [
+      CreateTab('default', t.tabs.defaultRequestName)
+    ]
+  }
+})()
+
+let count = 0 // TODO computed dynamically according to existing data?
+
+const tabs = Vue.reactive(loadedTabs)
+const current = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
 
 Vue.watch(
-  () => [tabs, current.value],
-  ([tabs, current]) => {
-    localStorage.setItem(KEY, JSON.stringify({
-      tabs,
-      current
-    }))
+  current,
+  (newCurrent) => {
+    localStorage.setItem(KEY, newCurrent)
   },
   {
-    deep: true,
+    immediate: true,
   }
 )
 
@@ -55,16 +76,18 @@ export default {
   tabs: Vue.readonly(tabs),
 
   new(request = new RequestModel()) {
-    count = count + Number(tabs.length > 1 || count > 0)
-    const id = crypto.randomUUID()
+    const tabNumber = (tabs.length > 1 || count > 0) ? count : 0
+    count++
 
     let titleParts = [t.tabs.newRequest]
-
-    if (count > 0) {
-      titleParts.push(count)
+    if (tabNumber > 0) {
+      titleParts.push(tabNumber)
     }
 
-    tabs.unshift(Tab(id, titleParts.join(' '), request))
+    const id = crypto.randomUUID()
+    const newTab = CreateTab(id, titleParts.join(' '), request)
+
+    tabs.unshift(newTab)
     current.value = id
   },
 
@@ -80,7 +103,7 @@ export default {
 
   rename(id, title) {
     const tab = this.get(id)
-    tab.title = title
+    tab.title = title.trim()
   },
 
   remove(id) {
@@ -95,6 +118,11 @@ export default {
       const substituteIndex = Math.min(Math.max(index, 0), tabs.length - 1)
       current.value = tabs[substituteIndex].id
     }
+
+    db[STORE].delete('id', IDBKeyRange.only(id))
+
+    tabWatchers.get(id)() // run clean up function
+    tabWatchers.delete(id)
   },
 
   step(direction) {

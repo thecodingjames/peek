@@ -1,8 +1,15 @@
-import { parseUrl } from '../url.helpers.js'
+import { parseUrl } from '../../url.helpers.js'
 
-import KeyValueModel from './details/key-value.model.js'
+import KeyValueModel from './key-value/key-value.model.js'
 
 export default class QueryModel extends KeyValueModel {
+
+  get text() {
+    const parsedUrl = parseUrl(this.url)
+    const params = parsedUrl?.searchParams ?? { size: 0, toString: () => '' }
+
+    return `${params.size > 0 ? '?' : ''}${params.toString()}`
+  }
 
   constructor(url, params) {
     super(params)
@@ -46,20 +53,18 @@ export default class QueryModel extends KeyValueModel {
       const matchingIndex = matchingParams.findIndex( p => p.id == id )
       const equal = (matchingParamsInUrl[matchingIndex]?.at(-1) == '=' || value != '') ? '=' : ''
 
-      return `${key}${equal}${value}`
+      return `${key}${equal}${value.content}`
     })
 
     const prefix = newParams.length > 0 ? '?' : ''
 
-    if (parsedUrl) {
-      const paramsRegExp = /\?.*$/
-      const paramsValue = `${prefix}${newParams.join('&')}`
+    const paramsRegExp = /\?.*$/
+    const paramsValue = encodeURI(`${prefix}${newParams.join('&')}`)
 
-      if (this.url?.match(paramsRegExp)) {
-        this.url = this.url?.replace(paramsRegExp, paramsValue)
-      } else {
-        this.url += paramsValue
-      }
+    if (this.url?.match(paramsRegExp)) {
+      this.url = this.url?.replace(paramsRegExp, paramsValue)
+    } else {
+      this.url += paramsValue
     }
 
     if (this.onUrlChange instanceof Function) {
@@ -92,9 +97,10 @@ export default class QueryModel extends KeyValueModel {
       if(cursor.key == key) {
         this.pairs.splice(0, 1)[0]
 
+        cursor.value.content = value
+
         merged.push({
           ...cursor,
-          value,
         })
       } else {
         merged.push(KeyValueModel.create(key, value))

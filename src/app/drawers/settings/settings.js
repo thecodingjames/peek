@@ -66,6 +66,13 @@ export default {
           :hide-details="true"
         ></v-switch>
 
+        <v-switch
+          v-model="SettingsService.http.previewAllowScripts"
+          :label="t.drawers.settings.previewAllowScripts"
+          color="primary"
+          :hide-details="true"
+        ></v-switch>
+
         <h2>{{ t.drawers.settings.appearance }}</h2>
 
         <v-switch

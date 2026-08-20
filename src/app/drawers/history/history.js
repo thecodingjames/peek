@@ -7,7 +7,9 @@ export default {
 
   data() {
     return {
-      requests: HistoryService.requests
+      requests: HistoryService.requests,
+      virtualizer: null,
+      scrollHeight: 0,
     }
   },
 
@@ -33,56 +35,93 @@ export default {
 
   },
 
+  mounted() {
+
+    this.virtualizer = VueVirtual.useVirtualizer({
+      count: this.requests.length,
+      getScrollElement: () => { 
+        return this.$refs.scrollElement
+      },
+      estimateSize: () => 75,
+      overscan: 5
+    })
+
+    this.scrollHeight = this.$refs.scrollElement.closest('#_history_root').parentElement.getBoundingClientRect().height
+
+  },
+
+
   template: `
-    <div>
+    <div id="_history_root">
       <p v-if="requests.length == 0" style="font-style: italic; padding-left: 1rem;">{{ t.drawers.history.empty }}</p>
 
-      <v-list v-else>
+      <div 
+        v-else
 
-        <template v-for="(request, index) of requests">
-          <v-list-item 
-            link
-            :appendIcon="alertIcon(request)"
-            @click="handleItemClick(request)"
+        ref="scrollElement"
+        style="overflow: auto;"
+        :style="{ height: scrollHeight+'px' }"
+      >
+        <v-list 
+          :style="{ height: virtualizer?.getTotalSize()+'px', width: '100%', position: 'relative' }"
+        >
+
+          <div 
+            v-for="row in virtualizer?.getVirtualItems()"
+            :key="row.index"
+            :style="{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: row.size+'px',
+              transform: 'translateY('+row.start+'px)',
+            }"
           >
-            <v-list-item-title style="display: flex; gap: 0.5rem; align-items: baseline;">
-              <span class="text-label-large">{{ request.method }}</span>
-              <span>{{ request.path }}</span>
-            </v-list-item-title>
-
-            <v-list-item-title></v-list-item-title>
-
-            <v-list-item-subtitle>{{ request.host }}</v-list-item-subtitle>
-
-            <div 
-              v-if="request.response"
-              style="margin-top: 0.25rem; display: flex; gap: 1rem;"
+            <v-list-item 
+              link
+              :appendIcon="alertIcon(requests[row.index])"
+              @click="handleItemClick(requests[row.index])"
             >
-              <v-chip 
-                :append-icon="request.response.redirected ? 'mdi-chevron-double-right' : null"
-                :text="request.response.code"
-                :color="statusColor(request.response.code)"
-                label
-                variant="tonal"
-                size="small"
-                density="comfortable"
-              />
+              <v-list-item-title style="display: flex; gap: 0.5rem; align-items: baseline;">
+                <span class="text-label-large">{{ requests[row.index].method }}</span>
+                <span>{{ requests[row.index].path }}</span>
+              </v-list-item-title>
 
-              <v-chip 
-                :text="request.formattedDuration "
-                color="gray"
-                label
-                variant="tonal"
-                size="small"
-                density="comfortable"
-              />
-            </div>
-          </v-list-item>
+              <v-list-item-title></v-list-item-title>
 
-          <v-divider v-if="index != requests.length - 1"></v-divider>
-        </template>
+              <v-list-item-subtitle>{{ requests[row.index].host }}</v-list-item-subtitle>
 
-      </v-list>
+              <div 
+                v-if="requests[row.index].response"
+                style="margin-top: 0.25rem; display: flex; gap: 1rem;"
+              >
+                <v-chip 
+                  :append-icon="requests[row.index].response.redirected ? 'mdi-chevron-double-right' : null"
+                  :text="requests[row.index].response.code"
+                  :color="statusColor(requests[row.index].response.code)"
+                  label
+                  variant="tonal"
+                  size="small"
+                  density="comfortable"
+                />
+
+                <v-chip 
+                  :text="requests[row.index].formattedDuration "
+                  color="gray"
+                  label
+                  variant="tonal"
+                  size="small"
+                  density="comfortable"
+                />
+              </div>
+            </v-list-item>
+
+            <v-divider v-if="row.index != requests.length - 1"></v-divider>
+          </div>
+
+        </v-list>
+      </div>
     </div>
   `
 }

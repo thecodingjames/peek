@@ -1,4 +1,5 @@
 import ResponseModel from './response.model.js'
+import SettingsService from '../drawers/settings/settings.service.js'
 
 import TabMixin from '../tabs/tab.mixin.js'
 
@@ -13,15 +14,66 @@ export default {
 
   data() {
     return {
-      tab: 'body'
+      tab: 'body',
+
+      previewTimestamp: null,
     }
   },
 
   computed: {
 
+    body() {
+      return new TextDecoder().decode(this.response.blob)
+    },
+
     html() {
-      // TODO add more content types detection
-      return this.response?.blob?.replace('<head>', `<head><base href="${this.response?.url}">`);
+      const contentType = this.response?.headers?.['content-type']
+
+      if (contentType?.startsWith('image/')) {
+        const blob = new Blob([this.response.blob], { type: contentType });
+        const url = URL.createObjectURL(blob);
+
+        return {
+          type: 'image',
+          content: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+
+              <style>
+                body, html {
+                  margin: 0;
+                  height: 100%;
+                  width: 100%;
+                  overflow: hidden;
+                }
+
+                img {
+                  max-width: 100%;
+                  max-height: 100%;
+                }
+              </style>
+            </head>
+            <body>
+              <img src="${url}" alt="">
+            </body>
+            </html>
+          `
+        }
+      } else {
+        const html = this.body.replace('<head>', `<head><base href="${this.response?.url}/">`);
+        // trailing slash matters
+
+        return {
+          type: 'html',
+          content: `
+            ${html}
+            <!-- ${ this.previewTimestamp } -->
+          `
+          // previewTimestamp forces re-render when iframeSandbox changes
+        }
+      }
     },
 
     tooltipText() {
@@ -32,12 +84,73 @@ export default {
 
     statusColor() {
       return `text-${ResponseModel.statusColor(this.response.code)}`
+    },
+
+    iframeSandbox() {
+      let sandbox = 'allow-same-origin'
+      // needed to access iframe's content document height
+
+      if (SettingsService.http.previewAllowScripts) {
+        sandbox += ' allow-scripts'
+      }
+
+      return sandbox
+    },
+
+  },
+
+  watch: {
+
+    iframeSandbox() {
+      Vue.nextTick(() => {
+        // let iframe get correct sandbox attribute, then re-render
+        this.previewTimestamp = Date.now()
+      })
+    },
+
+  },
+
+  methods: {
+
+    iframeLoad() {
+      this.$refs.iframe.style.height = ''
+      // clear height to get new srcdoc rendered size
+
+      Vue.nextTick(() => {
+        let height;
+
+        if (this.html.type == 'html') {
+          const content = this.$refs.iframe.contentDocument
+          height = content.documentElement.scrollHeight + 1
+          // + 1 to avoid scrollbars when height is decimal
+        } else {
+          height = this.$refs.iframe.closest('.v-window-item').getBoundingClientRect().height - 8
+        }
+
+        this.$refs.iframeWrapper.style.height = `${height}px`
+        this.$refs.iframe.style.height = `${height}px`
+      })
     }
 
   },
 
   template: `
-    <div>
+    <div
+      class="_http_response"
+      style="height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 1.5rem;"
+    >
+
+      <component is="style">
+        ._http_response {
+          .v-tabs-window-item {
+            overflow: hidden;
+          }
+          .v-tabs-window-item > :first-child {
+            overflow: auto;
+            height: 100%;
+          }
+        }
+      </component>
 
       <div style="display: flex; align-items: baseline; gap: 0.5rem;">
         <div class="section-title">
@@ -56,8 +169,16 @@ export default {
         </v-chip>
       </div>
 
-      <div v-if="response">
-        <v-tabs v-model="tab">
+      <div
+        v-if="response"
+
+        style="overflow: hidden; display: flex; flex-direction: column; flex-grow: 1;"
+      >
+        <v-tabs
+          v-model="tab"
+
+          style="flex-shrink: 0;"
+        >
           <v-tab 
             value="body" 
             v-tooltip="{ text: tooltipText, openDelay: 300}"
@@ -72,9 +193,13 @@ export default {
 
         <v-divider></v-divider>
 
-        <v-tabs-window v-model="tab">
+        <v-tabs-window
+          v-model="tab"
+
+          style="overflow: hidden; height: 100%;"
+        >
           <v-tabs-window-item value="body">
-            <pre style="user-select: text; cursor: text;">{{ response.blob }}</pre>
+            <pre style="margin: 0; padding: 0.25rem; user-select: text; cursor: text; text-wrap: auto;">{{ body }}</pre>
           </v-tabs-window-item>
 
           <v-tabs-window-item value="headers">
@@ -92,11 +217,29 @@ export default {
           </v-tabs-window-item>
 
           <v-tabs-window-item value="preview">
-            <iframe 
-              v-if="response" 
-              :srcdoc="html" frameborder="0"
-              style="width: 100%; height: 100dvh;"
-            ></iframe>
+            <div> <!-- preview scroll container -->
+              <div
+                ref="iframeWrapper"
+
+                style="position: relative;"
+              > <!-- iframe wrapper -->
+                <iframe
+                  v-if="response"
+
+                  ref="iframe"
+                  @load="iframeLoad()"
+
+                  :srcdoc="html.content"
+                  :sandbox="iframeSandbox"
+
+                  frameborder="0"
+                  style="width: 100%; height: 100%;"
+                ></iframe>
+
+                <div style="position: absolute; inset: 0; background: transparent;"></div>
+              </div>
+            </div>
+
           </v-tabs-window-item>
 
         </v-tabs-window>

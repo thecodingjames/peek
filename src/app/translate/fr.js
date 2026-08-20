@@ -13,6 +13,7 @@ export default {
     settings: {
       title: 'Configuration',
       followRedirect: 'Suivre les redirections',
+      previewAllowScripts: 'Autoriser JavaScript dans l\'aperçu',
       appearance: 'Visuel',
       alwaysShowTabs: 'Toujours afficher les onglets',
       theme: 'Thème',
@@ -92,7 +93,9 @@ export default {
 
     details: {
       keyValue: {
-        empty: 'Aucuns items...'
+        empty: 'Aucuns items...',
+        fileValueLabel: 'Fichier...',
+        save: 'Sauvegarder',
       },
 
       query: {
@@ -101,6 +104,8 @@ export default {
 
       body: {
         name: 'corps',
+        raw: 'Texte brut',
+        keyValue: 'Paires clé-valeur',
       },
 
       headers: {
@@ -111,6 +116,7 @@ export default {
     model: {
       invalidPath: 'CHEMIN INVALIDE',
       invalidHost: 'HÔTE INVALIDE',
+      preventBody: 'AUCUN CORPS AVEC GET/HEAD',
 
       validations: {
         method: 'La méthode doit être parmis',

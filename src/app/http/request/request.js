@@ -19,15 +19,21 @@ export default {
 
   emits: [
     'send',
+    'cancel',
   ],
 
   data() {
     return {
       request: TabsService.get(this.tabId).request,
-      rawVisible: false,
+      rawHttp: null,
+
+      loading: false,
+      loadingStopTimeout: null,
 
       methodMenuOpened: false,
       methodPickerNavIndex: 0,
+
+      dialogUrl: null,
     }
   },
 
@@ -42,11 +48,36 @@ export default {
   methods: {
 
     handleTogglePanel() {
-      this.rawVisible = !this.rawVisible
+      if (this.rawHttp) {
+        this.rawHttp = null
+      } else {
+        this.refreshRawHttp()
+      }
+    },
+
+    async refreshRawHttp() {
+      this.rawHttp = await this.request.text
+    },
+
+    handleOpenUrlDialog() {
+      this.dialogUrl = this.request.url
+    },
+
+    handleSaveUrl(newUrl) {
+      this.request.url = newUrl.replace(/[\r\n]+/g, '')
+
+      this.handleCloseUrlDialog()
+    },
+
+    handleCloseUrlDialog() {
+      this.dialogUrl = null
     },
 
     send() {
       if (!this.request.hasErrors()) {
+        clearTimeout(this.loadingStopTimeout)
+        this.loading = true
+
         this.$emit('send', this.request)
       }
     },
@@ -55,11 +86,21 @@ export default {
       this.send()
     },
 
+    done() {
+      this.loadingStopTimeout = setTimeout(() => {
+        this.loading = false
+      }, 150)
+    },
+
+    handleCancelRequest() {
+      this.done()
+
+      this.$emit('cancel')
+    },
+
     handleMethodChange(method) {
       this.request.method = method
       this.methodMenuOpened = false
-
-      this.send()
     },
 
     handleMenuEnter() {
@@ -67,7 +108,18 @@ export default {
     },
 
     handleOpenMethodMenu() {
-      this.methodMenuOpened = this.isActiveTab
+      const dialogOpen = document.querySelector('.v-overlay-container [role=dialog]')
+
+      if (this.isActiveTab && !this.rawHttp && !dialogOpen) {
+        this.methodMenuOpened = Date.now()
+      }
+    },
+
+    handleCloseMethodMenu() {
+      if (Date.now() - this.methodMenuOpened > 77 || this.methodMenuOpened === false) {
+        // reject quick value change, glitch :(
+        this.methodMenuOpened = false
+      }
     },
 
   },
@@ -92,6 +144,15 @@ export default {
       }
     },
 
+    request: {
+      handler: function() {
+        if (this.rawHttp) {
+          this.refreshRawHttp()
+        }
+      },
+      deep: true,
+    },
+
   },
 
   mounted() {
@@ -104,62 +165,114 @@ export default {
       this.handleOpenMethodMenu()
     })
 
+    HotkeysService.set('request.send', () => {
+      this.handleSend()
+    })
+
   },
 
   template: `
-    <div class="_http_request">
+    <div
+      class="_http_request"
+      style="height: 100%; overflow-y: hidden; display: flex; flex-direction: column; gap: 1rem;"
+    >
 
       <div class="section-title">
         {{ t.request.title }}
         <v-btn
           ref="altButton"
           @click="handleTogglePanel()"
-          :icon="rawVisible ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
+          :icon="rawHttp ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
         />
 
         <v-tooltip
-          v-if="!rawVisible"
+          v-if="!rawHttp"
           :text="t.request.rawHttp"
           :activator="$refs.altButton"
           open-delay="1000"
         />
       </div>
 
-      <div v-if="rawVisible">
-        <pre>{{ request.text }}</pre>
-      </div>
+      <pre
+        v-if="rawHttp"
+
+        v-html="rawHttp"
+
+        class="border rounded-md"
+        style="flex-shrink: 0; margin: 0; max-height: 44%; overflow: auto; height: max-content; padding: 0.5rem;"
+      ></pre>
 
       <div v-else>
-        <form @submit.prevent="handleSend" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <dialog-editable
+          :model-value="!!dialogUrl"
+          @update:model-value="handleCloseUrlDialog"
+
+          title="URL"
+          :content="dialogUrl"
+          @save="handleSaveUrl($event)"
+        />
+
+        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
           <!-- Needed dependency with request.query to trigger re-render of url... :( -->
           <span v-show="false">{{ request.query }}</span>
-          <v-text-field
-            v-model="request.url"
+
+          <dialog-editable-input
             ref="url"
+
+            :modelValue="request.url"
+            @update:modelValue="handleSaveUrl($event)"
+
+            @openDialog="handleOpenUrlDialog()"
+
             :rules="request.rules('url')"
 
             label="URL"
-            required
             hide-details
           />
 
           <v-btn-group
             ref="methodGroup"
             divided
+            variant="outlined"
+            style="--v-border-opacity: 0.33;"
           >
             <v-btn
-              :text="request.method"
               type="submit"
-              width="96"
+              width="104"
+            >
+              {{ request.method }}
+
+              <v-progress-circular
+                v-if="loading"
+
+                indeterminate
+                size="16"
+                width="2"
+
+                style="margin-left: 0.5rem;"
+              />
+            </v-btn>
+
+            <v-btn
+              v-if="loading"
+
+              @click="handleCancelRequest"
+              icon="mdi-close-octagon-outline"
             />
 
             <v-btn
+              v-if="!loading"
+
               ref="methodChevron"
+              @click="handleOpenMethodMenu"
+
               icon="mdi-chevron-down"
             />
 
             <v-menu
-              v-model="methodMenuOpened"
+              :model-value="!!methodMenuOpened"
+
+              @update:model-value="handleCloseMethodMenu"
               :activator="$refs.methodChevron"
               :target="$refs.methodGroup"
               location="bottom"
@@ -172,14 +285,16 @@ export default {
                 navigationStrategy="track"
                 @update:selected="handleMethodChange($event[0])"
                 @keydown.enter.exact="handleMenuEnter()"
+
+                style="padding: 0;"
               />
             </v-menu>
 
           </v-btn-group>
-        </form>
+        </v-form>
       </div>
 
-      <request-details :request />
+      <request-details :request style="overflow-y: auto; height: 100%;"/>
     </div>
   `
 }

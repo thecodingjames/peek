@@ -4,8 +4,11 @@ export default class KeyValueModel {
     return {
       id: crypto.randomUUID(),
       key,
-      value,
       enabled: true,
+      value: {
+        content: value,
+        mode: 'raw',
+      },
     }
   }
 
@@ -43,6 +46,10 @@ export default class KeyValueModel {
   sort(oldIndex, newIndex) {
     const moved = this.pairs.splice(oldIndex, 1)[0]
     this.pairs.splice(newIndex, 0, moved)
+  }
+
+  toJSON() {
+    return this.pairs
   }
 
 }

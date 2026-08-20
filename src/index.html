@@ -12,14 +12,17 @@
 
     <link rel="stylesheet" href="assets/global.css" />
 
+    <script src="vendor/sortable-1.15.7.js"></script>
+
     <script type="module">
       import * as Vest from './vendor/vest-6.3.2.js'
+      import * as VueVirtual from './vendor/tanstack-virtual-vue.js'
 
-      window.Vest = Vest
       // Make it global to mirror Vue/VueRouter/Vuetify behavior
+      window.Vest = Vest
+      window.VueVirtual = VueVirtual
     </script>
 
-    <script src="vendor/sortable-1.15.7.js"></script>
   </head>
   <body>
     <div id="app"></div>
@@ -28,7 +31,15 @@
       import App from './app/app.js'
       import translate from './app/translate/translate.service.js'
 
+      import FileInput from './app/http/request/details/body/file-input.js'
+      import DialogEditableInput from './app/http/request/dialog-editable/dialog-editable-input.js'
+      import DialogEditable from './app/http/request/dialog-editable/dialog-editable.js'
+
       const app = Vue.createApp(App)
+      app.component('FileInput', FileInput)
+      app.component('DialogEditableInput', DialogEditableInput)
+      app.component('DialogEditable', DialogEditable)
+
       app.use(Vuetify.createVuetify())
 
       const electronApp = await electron.app()

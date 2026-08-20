@@ -1,17 +1,11 @@
+import DialogMixin from '../core/dialog.mixin.js'
+
 import HotkeysService from './hotkeys.service.js'
 
 export default {
-
-  model: {
-    prop: 'visible',
-  },
-
-  emits: [
-    'update:modelValue'
-  ],
-
-  props: [
-    'visible'
+  
+  mixins: [
+    DialogMixin,
   ],
 
   data() {
@@ -35,7 +29,7 @@ export default {
         this.editing = null
       }
 
-      this.$emit('update:modelValue', visible)
+      this.$emit('update:modelValue', visible) 
     },
 
     bindingForPlatform(binding) {
@@ -71,12 +65,14 @@ export default {
   },
 
   template: `
-    <v-dialog
+    <p-dialog
       :model-value="visible"
-      @update:model-value="handleVisibility($event)"
+      @update:model-value="handleVisibility"
 
+      :title="t.hotkeys.dialog.title"
+
+      class="hotkeys_hotkeys-dialog-card"
     >
-
       <component is="style">
         .hotkeys_hotkeys-dialog-card {
           tbody tr:hover {
@@ -100,87 +96,72 @@ export default {
         }
       </component>
 
-      <v-card class="hotkeys_hotkeys-dialog-card">
-        <template v-slot:title>
-          <div style="display: flex; justify-content: space-between;">
-            <div class="text-headline-large">{{ t.hotkeys.dialog.title }}</div>
+      <div v-for="(items, category) in hotkeys">
+        <v-table>
+          <thead>
+            <tr>
+              <th colspan="2" style="font-weight: bold;">
+                {{ t.hotkeys[category].title }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(binding, name) in items"
+              :key="name"
+            >
+              <td>{{ t.hotkeys[category][name].title }}</td>
+              <td style="text-align: right; width: 0; white-space: nowrap;" >
 
-            <v-btn
-              @click="handleVisibility(false)"
-              icon="mdi-close"
-              variant="outlined"
-              size="small"
-            />
-          </div>
-        </template>
-        <v-card-text style="overflow-y: scroll;" >
-          <div v-for="(items, category) in hotkeys">
-            <v-table>
-              <thead>
-                <tr>
-                  <th colspan="2" style="font-weight: bold;">
-                    {{ t.hotkeys[category].title }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(binding, name) in items"
-                  :key="name"
+                <form
+                  v-if="editing?.id == currentId(category, name)"
+                  @submit.prevent="handleSaveBinding(category, name)"
                 >
-                  <td>{{ t.hotkeys[category][name].title }}</td>
-                  <td style="text-align: right; width: 0; white-space: nowrap;" >
+                  <v-text-field
+                    :model-value="bindingForPlatform(binding)"
+                    @update:model-value="editing.binding = $event"
 
-                    <form
-                      v-if="editing?.id == currentId(category, name)"
-                      @submit.prevent="handleSaveBinding(category, name)"
-                    >
-                      <v-text-field
-                        :model-value="bindingForPlatform(binding)"
-                        @update:model-value="editing.binding = $event"
-
-                        style="text-align: center;"
-                        width="256"
-                        :hide-details="true"
+                    style="text-align: center;"
+                    width="256"
+                    :hide-details="true"
+                    density="compact"
+                    variant="outlined"
+                  >
+                    <template v-slot:append>
+                      <v-btn
+                        type="submit"
+                        icon="mdi-check"
+                        base-color="green"
                         density="compact"
-                        variant="outlined"
-                      >
-                        <template v-slot:append>
-                          <v-btn
-                            type="submit"
-                            icon="mdi-check"
-                            base-color="green"
-                            density="compact"
-                            variant="tonal"
-                          />
-                        </template>
-                      </v-text-field>
-                    </form>
+                        variant="tonal"
+                      />
+                    </template>
+                  </v-text-field>
+                </form>
 
+                <span 
+                  v-else
+                  @click="handleEditBinding(category, name)"
+                  class="binding"
+                >
+                  <template 
+                    v-for="(key, index) in bindingForPlatform(binding).split('+')"
+                  >
                     <span 
-                      v-else
-                      @click="handleEditBinding(category, name)"
-                      class="binding"
-                    >
-                      <template 
-                        v-for="(key, index) in bindingForPlatform(binding).split('+')"
-                      >
-                        <span 
-                          v-if="index > 0" 
-                          style="padding: 0 4px;"
-                          v-text="'+'"
-                        />
-                        <v-kbd>{{ key }}</v-kbd>
-                      </template>
-                    </span>
+                      v-if="index > 0" 
+                      style="padding: 0 4px;"
+                      v-text="'+'"
+                    />
+                    <v-kbd>{{ key }}</v-kbd>
+                  </template>
+                </span>
 
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
+      </div>
+
+    </p-dialog>
   `
 }

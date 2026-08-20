@@ -4,32 +4,55 @@ import ResponseModel from './response.model.js'
 
 import HistoryService from '../drawers/history/history.service.js'
 
-export default async function http(request) {
-  const redirect = SettingsService.http.followRedirect ? 'follow' : 'manual'
+export default class Http {
 
-  const start = Date.now()
+  #current = null
 
-  const { error, ...result } = await window.electron.http(raw({
-    ...request.fetchOptions,
-    redirect,
-  }))
+  async execute(request) {
+    const requestId = crypto.randomUUID()
+    this.#current = requestId
 
-  let response = null
-  if (Object.keys(result).length > 0) {
-    response = {
-      ...result, 
-      duration: (Date.now() - start),
+    const redirect = SettingsService.http.followRedirect ? 'follow' : 'manual'
+
+    const start = Date.now()
+
+    const options = await request.fetchOptions
+
+    const { error, ...result } = await window.electron.http(raw({
+      ...options,
+      redirect,
+    }))
+
+    if (this.#current === null) {
+      // cancelled
+      return { }
+    } else if (this.#current != requestId) {
+      // new request replaced existing
+      return null
+    } else {
+      // completed
+      let response = null
+      if (Object.keys(result).length > 0) {
+        response = {
+          ...result,
+          duration: (Date.now() - start),
+        }
+      }
+
+      HistoryService.add(
+        request,
+        response
+      )
+
+      if (error) {
+        throw new Error(error)
+      } else {
+        return response
+      }
     }
   }
 
-  HistoryService.add(
-    request,
-    response
-  )
-
-  if (error) {
-    throw new Error(error)
-  } else {
-    return response
+  cancel() {
+    this.#current = null
   }
 }

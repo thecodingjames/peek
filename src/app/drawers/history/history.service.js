@@ -1,3 +1,7 @@
+import db from '../../db/db.js'
+import { STORE } from './history.db.js'
+import { raw } from '../../core/helpers.js'
+
 import TabsService from '../../tabs/tabs.service.js'
 
 import RequestModel from '../../http/request/request.model.js'
@@ -6,24 +10,22 @@ import HistoryModel from './history.model.js'
 
 const KEY = 'history'
 
-const loadedHistory = JSON.parse(localStorage.getItem(KEY) ?? '[]').map( item => {
+let loadedHistory = (await db[STORE].getAll({ direction: 'prev' })).map( item => {
   return new HistoryModel(item, item.response)
 })
 
 const requests = Vue.reactive(loadedHistory)
 
-Vue.watch(
-  requests,
-  (value) => {
-    localStorage.setItem(KEY, JSON.stringify(requests))
-  }
-)
-
 export default {
   requests: Vue.readonly(requests),
 
   add(request, result) {
-    requests.splice(0, 0, new HistoryModel(request, result))
+    const newHistory = new HistoryModel(request, result)
+
+    requests.unshift(newHistory)
+    // requests.splice(1000)
+
+    db[STORE].put(raw(newHistory))
   },
 
   openTab(historyModel) {

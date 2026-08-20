@@ -13,6 +13,7 @@ export default {
     settings: {
       title: 'Settings',
       followRedirect: 'Follow redirects',
+      previewAllowScripts: 'Allow JavaScript in preview',
       alwaysShowTabs: 'Always show tabs',
       appearance: 'Appearance',
       theme: 'Theme',
@@ -92,7 +93,9 @@ export default {
 
     details: {
       keyValue: {
-        empty: 'No items...'
+        empty: 'No items...',
+        fileValueLabel: 'File...',
+        save: 'Save',
       },
 
       query: {
@@ -101,6 +104,8 @@ export default {
 
       body: {
         name: 'body',
+        raw: 'Raw text',
+        keyValue: 'Key-Value pairs',
       },
 
       headers: {
@@ -111,6 +116,7 @@ export default {
     model: {
       invalidPath: 'INVALID PATH',
       invalidHost: 'INVALID HOST',
+      preventBody: 'NO BODY SENT FOR GET/HEAD',
 
       validations: {
         method: 'Method must be one of',

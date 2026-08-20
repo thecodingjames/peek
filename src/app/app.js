@@ -45,7 +45,7 @@ export default {
 
   template: `
     <v-defaults-provider :defaults >
-      <v-app :theme="SettingsService.ui.theme">
+      <v-app :theme="SettingsService.ui.theme" style="height: 100%;">
         <div 
           v-if="app.development"
           class="bg-red"
