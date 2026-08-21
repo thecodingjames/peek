@@ -110,15 +110,21 @@ export default {
 
   watch: {
 
-    items(items) {
-      if (this.focusIndex) {
-        const index = this.focusIndex
+    'items.length'(length, previous) {
+        const index = this.focusIndex ?? (() =>{
+          if (length > previous) {
+            return length - 1
+          }
+        })()
+
         this.focusIndex = null
 
-        forceFocus(() => this.$refs.items.children[index]?.querySelector('input[type=text]'))
-      }
-    }
+        if (index >= 0) {
+          const id = this.items[index].id
 
+          forceFocus(() => this.$refs.items.querySelector(`[id="${id}"]`))
+        }
+      },
   },
 
   mounted() {
@@ -223,6 +229,8 @@ export default {
                 style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;"
               >
                 <v-text-field
+                  :id="item.id"
+
                   v-model="item.key"
                   @update:modelValue="handleEdit"
 
