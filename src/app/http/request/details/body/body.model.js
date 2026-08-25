@@ -71,7 +71,7 @@ export default class BodyModel extends KeyValueModel {
         }[this.mode.name])()
 
         let boundary = null
-        if (this.mode.name == 'multipart') {
+        if (this.mode.encoding == 'multipart') {
           boundary = body.split('\n')[0]?.trim()?.substring(2)
         }
 
