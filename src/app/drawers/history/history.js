@@ -31,8 +31,17 @@ export default {
 
     handleItemClick(request) {
       HistoryService.openTab(request)
-    }
+    },
 
+  },
+
+  watch: {
+    'requests.length'() {
+      this.virtualizer.setOptions({
+        ...this.virtualizer.options,
+        count: this.requests.length,
+      })
+    },
   },
 
   mounted() {
@@ -46,17 +55,16 @@ export default {
       overscan: 5
     })
 
-    this.scrollHeight = this.$refs.scrollElement.closest('#_history_root').parentElement.getBoundingClientRect().height
-
+    this.scrollHeight = this.$refs.historyRoot.parentElement.getBoundingClientRect().height
   },
 
 
   template: `
-    <div id="_history_root">
+    <div ref="historyRoot" id="_history_root">
       <p v-if="requests.length == 0" style="font-style: italic; padding-left: 1rem;">{{ t.drawers.history.empty }}</p>
 
       <div 
-        v-else
+        v-show="requests.length > 0"
 
         ref="scrollElement"
         style="overflow: auto;"
