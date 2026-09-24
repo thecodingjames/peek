@@ -61,6 +61,22 @@ export default {
             </html>
           `
         }
+      } else if (contentType?.endsWith('json')) {
+        return {
+          type: 'html',
+          content: `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8">
+              <title></title>
+            </head>
+            <body>
+              <pre>${JSON.stringify(JSON.parse(this.body), null, 2)}</pre>  
+            </body>
+            </html>
+          `
+        }
       } else {
         const html = this.body.replace('<head>', `<head><base href="${this.response?.url}/">`);
         // trailing slash matters
