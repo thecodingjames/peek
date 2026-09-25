@@ -14,6 +14,18 @@
 
     <script src="vendor/sortable-1.15.7.js"></script>
 
+    <!-- https://cdnjs.com/libraries/highlight.js -->
+    <link rel="stylesheet" href="./vendor/highlight.css">
+    <script type="module">
+      import hljs from './vendor/highlight.js';
+      import json from './vendor/highlight-json.js';
+
+      // Make it global to mirror Vue/VueRouter/Vuetify behavior
+      window.hljs = hljs
+      hljs.registerLanguage('json', json);
+    </script>
+
+
     <script type="module">
       import * as Vest from './vendor/vest-6.3.2.js'
       import * as VueVirtual from './vendor/tanstack-virtual-vue.js'

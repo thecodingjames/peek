@@ -62,17 +62,19 @@ export default {
           `
         }
       } else if (contentType?.endsWith('json')) {
+        const highlightedJson = window.hljs.highlightAuto(JSON.stringify(JSON.parse(this.body), null, 2)).value
+
         return {
-          type: 'html',
+          type: 'json',
           content: `
             <!DOCTYPE html>
             <html lang="en">
             <head>
               <meta charset="UTF-8">
-              <title></title>
+              <link rel="stylesheet" href="./vendor/highlight.css">
             </head>
             <body>
-              <pre>${JSON.stringify(JSON.parse(this.body), null, 2)}</pre>  
+              <pre>${ highlightedJson }</pre>  
             </body>
             </html>
           `
