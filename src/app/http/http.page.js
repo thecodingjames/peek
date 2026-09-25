@@ -1,7 +1,7 @@
 import Request from './request/request.js'
-import Response from './response.js'
+import Response from './response/response.js'
 import HttpService from './http.service.js'
-import ResponseModel from './response.model.js'
+import ResponseModel from './response/response.model.js'
 
 import TabMixin from '../tabs/tab.mixin.js'
 

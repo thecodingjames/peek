@@ -1,5 +1,5 @@
-import VestModel from '../core/vest.model.js'
-import t from '../translate/translate.service.js'
+import VestModel from '../../core/vest.model.js'
+import t from '../../translate/translate.service.js'
 
 export default class Response extends VestModel {
   
@@ -7,6 +7,8 @@ export default class Response extends VestModel {
     super()
 
     Object.assign(this, props)
+
+    this._body = new TextDecoder().decode(this.blob)
   }
 
   static instantiate(data) {
@@ -33,6 +35,10 @@ export default class Response extends VestModel {
 
   static formattedDuration(duration) {
     return `${duration ?? 'N/A'}ms`
+  }
+
+  get body() {
+    return this._body
   }
 
   get formattedDuration() {

@@ -1,7 +1,7 @@
 import t from '../../translate/translate.service.js'
 
 import RequestModel from '../../http/request/request.model.js'
-import ResponseModel from '../../http/response.model.js'
+import ResponseModel from '../../http/response/response.model.js'
 
 export default class HistoryModel extends RequestModel {
 
