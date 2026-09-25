@@ -1,5 +1,7 @@
 import SettingsService from '../../../drawers/settings/settings.service.js'
 
+import wrapUtil from './wrap.helper.js'
+
 export default {
 
   props: [ 'body' ],
@@ -7,7 +9,7 @@ export default {
   computed: {
 
     wrap() {
-      return SettingsService.http.bodyWrapText ? 'wrap' : 'nowrap'
+      return wrapUtil(SettingsService.http.bodyWrapText)
     },
 
   },
@@ -19,10 +21,8 @@ export default {
         padding: 0.25rem;
         user-select: text;
         cursor: text;
-        word-wrap: anywhere;
       "
-
-      :style="{ textWrap: wrap }"
+      :style="wrap"
     >{{ body }}</pre>
   `
 }

@@ -1,5 +1,7 @@
 import SettingsService from '../../../drawers/settings/settings.service.js'
 
+import wrapUtil from './wrap.helper.js'
+
 export default {
   
   props: [ 'response' ],
@@ -22,12 +24,17 @@ export default {
       return sandbox
     },
 
-    textWrap() {
-      return SettingsService.http.previewWrapText ? 'wrap' : 'nowrap'
+    wrap() {
+      return wrapUtil(SettingsService.http.previewWrapText)
     },
 
     preview() {
       const contentType = this.response?.headers?.['content-type']
+
+      let json = null
+      try {
+          json = JSON.parse(this.response?.body)
+      } catch { }
 
       if (contentType?.startsWith('image/')) {
         const blob = new Blob([this.response.blob], { type: contentType });
@@ -61,9 +68,9 @@ export default {
             </html>
           `
         }
-      } else if (contentType?.endsWith('json')) {
+      } else if (json) {
         const highlightedJson = window.hljs.highlight(
-          JSON.stringify(JSON.parse(this.response?.body), null, 2),
+          JSON.stringify(json, null, 2),
           {
             language: 'json',
           }
@@ -80,16 +87,23 @@ export default {
             </head>
             <body style="margin: 0;">
               <div class="hljs">
-                <pre style="margin: 0; word-wrap: anywhere; text-wrap: ${this.textWrap};">${ highlightedJson }</pre>  
+                <pre style="margin: 0; ${this.wrap}">${ highlightedJson }</pre>
               </div>
             </body>
             </html>
           `
         }
       } else {
-        const html = this.response?.body
+        let html = this.response?.body
           .replace('<head>', `<head><base href="${this.response?.url}/">`)// trailing slash matters
           .replace('<head>', `<head><style>html * { pointer-events: none !important; }</style>`);
+
+        const wrappingBody = `<body style="${this.textWrap}">`
+        const wrapped = html.replace('<body>', wrappingBody)
+
+        if (html == wrapped) {
+          html = `${wrappingBody}${html}</body>`
+        }
 
         return {
           type: 'html',
