@@ -18,6 +18,10 @@ const defaultSettings = {
 
   http: {
     followRedirect: true,
+
+    bodyWrapText: false,
+    previewWrapText: false,
+
     previewAllowScripts: false,
   },
 

@@ -59,9 +59,27 @@ export default {
       <div class="nav_drawers_settings">
         <h2>HTTP</h2>
 
+        <h3>{{ t.drawers.settings.request }}</h3>
+
         <v-switch
           v-model="SettingsService.http.followRedirect"
           :label="t.drawers.settings.followRedirect"
+          color="primary"
+          :hide-details="true"
+        ></v-switch>
+
+        <h3>{{ t.drawers.settings.response }}</h3>
+
+        <v-switch
+          v-model="SettingsService.http.bodyWrapText"
+          :label="t.drawers.settings.bodyWrapText"
+          color="primary"
+          :hide-details="true"
+        ></v-switch>
+
+        <v-switch
+          v-model="SettingsService.http.previewWrapText"
+          :label="t.drawers.settings.previewWrapText"
           color="primary"
           :hide-details="true"
         ></v-switch>

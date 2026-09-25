@@ -12,8 +12,15 @@ export default {
 
     settings: {
       title: 'Configuration',
+
+      request: 'Requête',
       followRedirect: 'Suivre les redirections',
+
+      response: 'Réponse',
+      bodyWrapText: 'Corps retour à la ligne automatique',
+      previewWrapText: 'Aperçu retour à la ligne automatique',
       previewAllowScripts: 'Autoriser JavaScript dans l\'aperçu',
+
       appearance: 'Visuel',
       alwaysShowTabs: 'Toujours afficher les onglets',
       theme: 'Thème',

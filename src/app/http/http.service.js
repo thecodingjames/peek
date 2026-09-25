@@ -1,6 +1,6 @@
 import { raw } from '../core/helpers.js'
 import SettingsService from '../drawers/settings/settings.service.js'
-import ResponseModel from './response.model.js'
+import ResponseModel from './response/response.model.js'
 
 import HistoryService from '../drawers/history/history.service.js'
 

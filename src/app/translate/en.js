@@ -12,8 +12,15 @@ export default {
 
     settings: {
       title: 'Settings',
+
+      request: 'Request',
       followRedirect: 'Follow redirects',
+
+      response: 'Response',
+      bodyWrapText: 'Body text-wrap',
+      previewWrapText: 'Preview text-wrap',
       previewAllowScripts: 'Allow JavaScript in preview',
+
       alwaysShowTabs: 'Always show tabs',
       appearance: 'Appearance',
       theme: 'Theme',

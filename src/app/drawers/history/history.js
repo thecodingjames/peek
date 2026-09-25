@@ -1,7 +1,7 @@
 import HistoryService from './history.service.js'
 import HistoryModel from './history.model.js'
 
-import ResponseModel from '../../http/response.model.js'
+import ResponseModel from '../../http/response/response.model.js'
 
 export default {
 
