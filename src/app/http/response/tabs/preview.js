@@ -1,6 +1,6 @@
 import SettingsService from '../../../drawers/settings/settings.service.js'
 
-import wrapUtil from './wrap.helper.js'
+import { wrap as wrapUtil, background as backgroundUtil } from './styles.helper.js'
 
 export default {
   
@@ -49,6 +49,10 @@ export default {
               <meta charset="UTF-8">
 
               <style>
+                html {
+                  background: red;
+                }
+
                 body, html {
                   margin: 0;
                   height: 100%;
@@ -84,6 +88,9 @@ export default {
             <head>
               <meta charset="UTF-8">
               <link rel="stylesheet" href="./vendor/highlight.css">
+              <style> 
+                ${ backgroundUtil('html') }
+              </style>
             </head>
             <body style="margin: 0;">
               <div class="hljs">
@@ -139,6 +146,8 @@ export default {
       :sandbox="iframeSandbox"
 
       frameborder="0"
+
+      class="border border-t-0 rounded-t-0 rounded-md"
       style="width: 100%; height: 100%;"
     ></iframe>
   `
