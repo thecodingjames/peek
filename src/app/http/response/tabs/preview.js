@@ -1,5 +1,7 @@
 import SettingsService from '../../../drawers/settings/settings.service.js'
 
+import { wrap as wrapUtil, background as backgroundUtil } from './styles.helper.js'
+
 export default {
   
   props: [ 'response' ],
@@ -22,12 +24,42 @@ export default {
       return sandbox
     },
 
-    textWrap() {
-      return SettingsService.http.previewWrapText ? 'wrap' : 'nowrap'
+    wrap() {
+      return wrapUtil(SettingsService.http.previewWrapText)
     },
 
     preview() {
       const contentType = this.response?.headers?.['content-type']
+
+      const htmlWrap = (body, bodyStyle = null) => {
+        return `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+
+            <style>
+              ${ backgroundUtil('html') }
+            </style>
+
+            <style>
+              body {
+                ${bodyStyle ?? ''}
+                margin: 0;
+              }
+            </style>
+          </head>
+          <body>
+            ${ body }
+          </body>
+          </html>
+        `
+      }
+
+      let json = null
+      try {
+          json = JSON.parse(this.response?.body)
+      } catch { }
 
       if (contentType?.startsWith('image/')) {
         const blob = new Blob([this.response.blob], { type: contentType });
@@ -35,35 +67,19 @@ export default {
 
         return {
           type: 'image',
-          content: `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-
-              <style>
-                body, html {
-                  margin: 0;
-                  height: 100%;
-                  width: 100%;
-                  overflow: hidden;
-                }
-
-                img {
-                  max-width: 100%;
-                  max-height: 100%;
-                }
-              </style>
-            </head>
-            <body>
-              <img src="${url}" alt="">
-            </body>
-            </html>
-          `
+          content: htmlWrap(
+            `<img src="${url}" style="max-width: 100%; max-height: 100%;">`,
+            `
+              margin: 0;
+              height: 100%;
+              width: 100%;
+              overflow: hidden;
+            `
+          )
         }
-      } else if (contentType?.endsWith('json')) {
+      } else if (json) {
         const highlightedJson = window.hljs.highlight(
-          JSON.stringify(JSON.parse(this.response?.body), null, 2),
+          JSON.stringify(json, null, 2),
           {
             language: 'json',
           }
@@ -71,25 +87,47 @@ export default {
 
         return {
           type: 'json',
-          content: `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-              <meta charset="UTF-8">
-              <link rel="stylesheet" href="./vendor/highlight.css">
-            </head>
-            <body style="margin: 0;">
-              <div class="hljs">
-                <pre style="margin: 0; word-wrap: anywhere; text-wrap: ${this.textWrap};">${ highlightedJson }</pre>  
-              </div>
-            </body>
-            </html>
-          `
+          content: htmlWrap(`
+            <link rel="stylesheet" href="./vendor/highlight.css">
+            <div class="hljs">
+              <pre style="margin: 0; font-size: 1rem; padding: 0.5rem; ${this.wrap}">${ highlightedJson }</pre>
+            </div>
+          `)
         }
       } else {
-        const html = this.response?.body
+        let html = this.response?.body
           .replace('<head>', `<head><base href="${this.response?.url}/">`)// trailing slash matters
           .replace('<head>', `<head><style>html * { pointer-events: none !important; }</style>`);
+
+        const style = `${this.wrap} overflow: auto;`
+        if (html.match('</body>')) {
+          html = html.replace(
+            '</body>',
+            `
+              <style>
+                body {
+                  ${style}
+                }
+              <style>
+              </body>
+            `
+          )
+        } else {
+          html = htmlWrap(
+            html,
+            `
+              ${style}
+              padding: 0.5rem;
+
+              @media (prefers-color-scheme: light) {
+                color: black;
+              }
+              @media (prefers-color-scheme: dark) {
+                color: white;
+              }
+            `
+          )
+        }
 
         return {
           type: 'html',
@@ -125,6 +163,8 @@ export default {
       :sandbox="iframeSandbox"
 
       frameborder="0"
+
+      class="border border-t-0 rounded-t-0 rounded-md"
       style="width: 100%; height: 100%;"
     ></iframe>
   `
