@@ -18,6 +18,9 @@ export default {
 
       renaming: null,
       showRenamingPopup: false,
+
+      contextMenu: null,
+      showContextMenu: false,
     }
   },
 
@@ -60,6 +63,7 @@ export default {
       }
 
       this.showRenamingPopup = true
+      this.showContextMenu = false
 
       forceFocus( () => this.$refs.renameInput.controlRef )
     },
@@ -73,6 +77,16 @@ export default {
 
     handleClose(id) {
       TabsService.remove(id)
+    },
+
+    handleContextMenu(event, id) {
+      this.contextMenu = {
+        element: event.currentTarget,
+        id,
+      }
+
+      this.showContextMenu = true
+      this.showRenamingPopup = false
     },
 
   },
@@ -147,6 +161,7 @@ export default {
           :value="item.id"
 
           @dblclick="handleRenamePopup($event, item.id)"
+          @contextmenu.prevent="handleContextMenu($event, item.id)"
         >
 
           <template v-slot:append>
@@ -215,6 +230,71 @@ export default {
               style="margin-right: 0.5rem;"
             />
           </form>
+        </v-card>
+      </v-menu>
+
+      <v-menu
+        ref="contextMenu"
+
+        :model-value="showContextMenu"
+        @update:model-value="showContextMenu = false"
+
+        :target="contextMenu?.element"
+        :close-on-content-click="false"
+        location="bottom"
+      >
+        <v-card min-width="300" class="context-menu-card">
+          <v-list>
+            <v-list-item link>
+              <v-list-item-title>Duplicate</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item link>
+              <v-list-item-title>Close</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item link>
+              <v-list-item-title>Close Others</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item link>
+              <v-list-item-title>Close All</v-list-item-title>
+            </v-list-item>
+
+            <v-list-subheader>Rename</v-list-subheader>
+
+            <v-list-item>{{ contextMenu.id }}</v-list-item>
+
+          </v-list>
+          <!--
+          <form
+            @submit.prevent="handleRenameSubmit()"
+            style="display: flex; align-items: center;"
+          >
+            <v-text-field
+              ref="renameInput"
+
+              :model-value="renaming?.title"
+              @update:model-value="renaming ? (renaming.title = $event) : 'no-op'"
+
+              placeholder="Title"
+
+              :hide-details="true"
+              density="comfortable"
+              variant="plain"
+              tile
+            />
+
+            <v-btn
+              type="submit"
+              icon="mdi-check"
+              color="green"
+              variant="tonal"
+              density="compact"
+              style="margin-right: 0.5rem;"
+            />
+          </form>
+          -->
         </v-card>
       </v-menu>
     </div>
