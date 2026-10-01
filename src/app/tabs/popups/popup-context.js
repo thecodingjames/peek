@@ -12,36 +12,70 @@ export default {
   },
 
   template: `
-    <Popup :context >
-      <v-list>
+      <Popup :source>
+        <div class="_tabs_popup_context_popup">
+          <component is="style">
+            ._tabs_popup_context_popup { 
 
-        <v-list-item link>
-          <v-list-item-title>Duplicate</v-list-item-title>
-        </v-list-item>
+              .v-list {
+                padding-top: 0;
+                padding-bottom: 0.75rem;
+              }
 
-        <v-list-item link>
-          <v-list-item-title>Close</v-list-item-title>
-        </v-list-item>
+              .v-list-item {
+                padding: 0 0.5rem;
+              }
 
-        <v-list-item link>
-          <v-list-item-title>Close Others</v-list-item-title>
-        </v-list-item>
+              .v-list-item-title {
+                font-size: 0.9rem !important;
+              }
 
-        <v-list-item link>
-          <v-list-item-title>Close All</v-list-item-title>
-        </v-list-item>
+              ._tabs_popup_rename-form {
 
-        <v-list-subheader>Rename</v-list-subheader>
+                align-items: end !important;
+                
+                input, button {
+                  margin: 0 !important;
+                }
 
-        <v-list-item>
-          <RenameForm
-            :title="context.title"
+                input {
+                  padding-top: 1rem;
+                }
 
-            @submit="handleRename"
-          />
-        </v-list-item>
+                .v-input {
+                  margin-right: 0.5rem;
+                }
+              }
+            }
+          </component>
 
-      </v-list>
-    </Popup>
+          <v-list>
+
+            <v-list-item link>
+              <v-list-item-title>Duplicate</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item link>
+              <v-list-item-title>Close Others</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item link>
+              <v-list-item-title>Close All</v-list-item-title>
+            </v-list-item>
+
+            <v-list-item style="padding-top: 0.5rem;">
+              <RenameForm
+                :title="source.title"
+
+                variant="underlined"
+                :autofocus="false"
+
+                @submit="handleRename"
+              />
+            </v-list-item>
+
+          </v-list>
+        </div>
+      </Popup>
   `
 }

@@ -12,12 +12,24 @@ export default {
   },
 
   template: `
-    <Popup :context >
-      <RenameForm
-        :title="context.title"
+      <Popup :source >
+        <div class="_tabs_popup_rename_popup">
+          <component is="style">
+            ._tabs_popup_rename_popup ._tabs_popup_rename-form {
+              
+              input {
+                margin: 0 0.5rem;
+              }
 
-        @submit="handleRename"
-      />
-    </Popup>
+            }
+          </component>
+
+          <RenameForm
+            :title="source.title"
+
+            @submit="handleRename"
+          />
+        </div>
+      </Popup>
   `
 }

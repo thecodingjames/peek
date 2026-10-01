@@ -1,6 +1,6 @@
 export const mixin = {
   props: [
-    'context',
+    'source',
   ],
 
   emits: [
@@ -32,10 +32,10 @@ export default {
     <v-menu
       ref="menu"
 
-      :model-value="context.visible"
-      @update:model-value="context.visible = false"
+      :model-value="source.visible"
+      @update:model-value="source.visible = false"
 
-      :target="context.element"
+      :target="source.element"
       :close-on-content-click="false"
       location="bottom"
     >

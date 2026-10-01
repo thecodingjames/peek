@@ -195,13 +195,13 @@ export default {
       </v-window>
 
       <PopUpRename
-        :context="renaming"
+        :source="renaming"
 
         @rename="handleRename($event, renaming)"
       />
 
       <PopUpContext
-        :context="context"
+        :source="context"
 
         @rename="handleRename($event, context)"
       />

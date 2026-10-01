@@ -4,6 +4,8 @@ export default {
 
   props: [
     'title',
+    'variant',
+    'autofocus',
   ],
 
   emits: [
@@ -16,6 +18,14 @@ export default {
     }
   },
 
+  watch: {
+
+    title(newTitle) {
+      this.value = newTitle
+    },
+
+  },
+
   methods: {
 
     handleSubmit() {
@@ -25,11 +35,24 @@ export default {
   },
 
   mounted() {
-    forceFocus( () => this.$refs.input.controlRef )
+    if (this.autofocus) {
+      forceFocus( () => this.$refs.input.controlRef )
+    }
   },
 
   template: `
+    <component is="style">
+      ._tabs_popup_rename-form {
+        
+        input {
+          padding: 0;
+        }
+      }
+    </component>
+
     <form
+      class="_tabs_popup_rename-form"
+
       @submit.prevent="handleSubmit()"
       style="display: flex; align-items: center;"
     >
@@ -39,10 +62,12 @@ export default {
         v-model="value"
 
         placeholder="Title"
+        :label="variant ? 'Rename' : ''"
 
+        :persistent-placeholder="true"
         :hide-details="true"
+        :variant="variant ?? 'plain'"
         density="comfortable"
-        variant="plain"
         tile
       />
 
