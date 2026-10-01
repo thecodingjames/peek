@@ -4,11 +4,14 @@ import TabsService from './tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 import SettingsService from '../drawers/settings/settings.service.js'
 
-import { forceFocus } from '../core/helpers.js'
+import PopUpRename from './popups/popup-rename.js'
+import PopUpContext from './popups/popup-context.js'
 
 export default {
   components: {
-    HttpPage
+    HttpPage,
+    PopUpRename,
+    PopUpContext,
   },
 
   data() {
@@ -16,11 +19,19 @@ export default {
       current: TabsService.current,
       tabs: TabsService.tabs,
 
-      renaming: null,
-      showRenamingPopup: false,
+      renaming: {
+        visible: false,
+        id: null,
+        title: null,
+        element: null,
+      },
 
-      contextMenu: null,
-      showContextMenu: false,
+      context: {
+        visible: false,
+        id: null,
+        title: null,
+        element: null,
+      },
     }
   },
 
@@ -46,47 +57,40 @@ export default {
       }
     },
 
-    handleRenamePopup(event, tabId) {
+    showPopup(tabId) {
       const tab = TabsService.get(tabId)
-
-      if (!tab) {
-        // double clicked on X to delete
-        return
-      }
 
       const {id, title} = tab
 
-      this.renaming = {
+      return {
+        visible: true,
+
         element: event.currentTarget,
         id,
         title,
       }
-
-      this.showRenamingPopup = true
-      this.showContextMenu = false
-
-      forceFocus( () => this.$refs.renameInput.controlRef )
     },
 
-    handleRenameSubmit() {
-      this.showRenamingPopup = false
-      const { id, title } = this.renaming
+    handleRenamePopup(event, tabId) {
+      this.renaming = this.showPopup(tabId)
 
-      TabsService.rename(id, title)
+      this.context.visible = false
+    },
+
+    handleContextMenu(event, tabId) {
+      this.context = this.showPopup(tabId)
+
+      this.renaming.visible = false
+    },
+
+    handleRename(name, source) {
+      source.visible = false
+
+      TabsService.rename(source.id, name)
     },
 
     handleClose(id) {
       TabsService.remove(id)
-    },
-
-    handleContextMenu(event, id) {
-      this.contextMenu = {
-        element: event.currentTarget,
-        id,
-      }
-
-      this.showContextMenu = true
-      this.showRenamingPopup = false
     },
 
   },
@@ -108,10 +112,6 @@ export default {
     HotkeysService.set('tabs.previous', () => {
       TabsService.goPrevious()
     })
-
-    this.$refs.renamePopup.animateClick = () => {
-      this.renaming = null
-    }
   },
 
   template: `
@@ -165,9 +165,11 @@ export default {
         >
 
           <template v-slot:append>
+            <!-- stop propagation on dblclick on delete -->
             <v-btn
               v-if="tabs.length > 1"
-              @click.prevent="handleClose(item.id)"
+              @click="handleClose(item.id)"
+              @dblclick.stop=""
 
               color="error"
               size="x-small"
@@ -192,111 +194,18 @@ export default {
         </v-tabs-window-item>
       </v-window>
 
-      <v-menu
-        ref="renamePopup"
+      <PopUpRename
+        :context="renaming"
 
-        :model-value="showRenamingPopup"
-        @update:model-value="showRenamingPopup = false"
+        @rename="handleRename($event, renaming)"
+      />
 
-        :target="renaming?.element"
-        :close-on-content-click="false"
-        location="bottom"
-      >
-        <v-card min-width="300" class="rename-card">
-          <form
-            @submit.prevent="handleRenameSubmit()"
-            style="display: flex; align-items: center;"
-          >
-            <v-text-field
-              ref="renameInput"
+      <PopUpContext
+        :context="context"
 
-              :model-value="renaming?.title"
-              @update:model-value="renaming ? (renaming.title = $event) : 'no-op'"
+        @rename="handleRename($event, context)"
+      />
 
-              placeholder="Title"
-
-              :hide-details="true"
-              density="comfortable"
-              variant="plain"
-              tile
-            />
-
-            <v-btn
-              type="submit"
-              icon="mdi-check"
-              color="green"
-              variant="tonal"
-              density="compact"
-              style="margin-right: 0.5rem;"
-            />
-          </form>
-        </v-card>
-      </v-menu>
-
-      <v-menu
-        ref="contextMenu"
-
-        :model-value="showContextMenu"
-        @update:model-value="showContextMenu = false"
-
-        :target="contextMenu?.element"
-        :close-on-content-click="false"
-        location="bottom"
-      >
-        <v-card min-width="300" class="context-menu-card">
-          <v-list>
-            <v-list-item link>
-              <v-list-item-title>Duplicate</v-list-item-title>
-            </v-list-item>
-
-            <v-list-item link>
-              <v-list-item-title>Close</v-list-item-title>
-            </v-list-item>
-
-            <v-list-item link>
-              <v-list-item-title>Close Others</v-list-item-title>
-            </v-list-item>
-
-            <v-list-item link>
-              <v-list-item-title>Close All</v-list-item-title>
-            </v-list-item>
-
-            <v-list-subheader>Rename</v-list-subheader>
-
-            <v-list-item>{{ contextMenu.id }}</v-list-item>
-
-          </v-list>
-          <!--
-          <form
-            @submit.prevent="handleRenameSubmit()"
-            style="display: flex; align-items: center;"
-          >
-            <v-text-field
-              ref="renameInput"
-
-              :model-value="renaming?.title"
-              @update:model-value="renaming ? (renaming.title = $event) : 'no-op'"
-
-              placeholder="Title"
-
-              :hide-details="true"
-              density="comfortable"
-              variant="plain"
-              tile
-            />
-
-            <v-btn
-              type="submit"
-              icon="mdi-check"
-              color="green"
-              variant="tonal"
-              density="compact"
-              style="margin-right: 0.5rem;"
-            />
-          </form>
-          -->
-        </v-card>
-      </v-menu>
     </div>
   `
 }
