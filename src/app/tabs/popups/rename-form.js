@@ -62,7 +62,7 @@ export default {
         v-model="value"
 
         placeholder="Title"
-        :label="variant ? 'Rename' : ''"
+        :label="variant ? t.tabs.rename : ''"
 
         :persistent-placeholder="true"
         :hide-details="true"

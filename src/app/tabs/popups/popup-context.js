@@ -1,8 +1,6 @@
 import Popup, { mixin } from './popup.js'
 import RenameForm from './rename-form.js'
 
-import TabsService from '../tabs.service.js'
-
 export default {
   mixins: [
     mixin,
@@ -17,16 +15,14 @@ export default {
     'actions',
   ],
 
+  emits: [
+    'click',
+  ],
+
   methods: {
-    
-    handleDuplicate() {
-    },
 
-    handleCloseOthers() {
-    },
-
-    handleCloseAll() {
-      TabsService.removeAll()
+    handleAction(action) {
+      this.$emit('click', { action, tabId: this.source.id })
     },
 
   },
@@ -34,9 +30,6 @@ export default {
   template: `
       <Popup :source>
         <div class="_tabs_popup_context_popup">
-
-          {{ Object.entries(actions.at(0) ?? {a:1})[0][1] }}
-
           <component is="style">
             ._tabs_popup_context_popup { 
 
@@ -74,16 +67,15 @@ export default {
 
           <v-list>
 
-            <v-list-item link>
-              <v-list-item-title>Duplicate</v-list-item-title>
-            </v-list-item>
+            <v-list-item 
+              v-for="(active, action) in actions"
 
-            <v-list-item link>
-              <v-list-item-title>Close Others</v-list-item-title>
-            </v-list-item>
+              :disabled="!active"
 
-            <v-list-item link @click="handleCloseAll()">
-              <v-list-item-title>Close All</v-list-item-title>
+              @click="handleAction(action)"
+              link
+            >
+              <v-list-item-title>{{ t.tabs.context[action] }}</v-list-item-title>
             </v-list-item>
 
             <v-list-item style="padding-top: 0.5rem;">

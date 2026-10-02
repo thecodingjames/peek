@@ -58,10 +58,10 @@ let loadedTabs = await (async () => {
 let count = 0 // TODO computed dynamically according to existing data?
 
 const tabs = Vue.reactive(loadedTabs)
-const current = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
+const currentTab = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
 
 Vue.watch(
-  current,
+  currentTab,
   (newCurrent) => {
     localStorage.setItem(KEY, newCurrent)
   },
@@ -71,7 +71,7 @@ Vue.watch(
 )
 
 export default {
-  current: Vue.readonly(current),
+  current: Vue.readonly(currentTab),
 
   tabs: Vue.readonly(tabs),
 
@@ -88,7 +88,10 @@ export default {
     const newTab = CreateTab(id, titleParts.join(' '), request)
 
     tabs.unshift(newTab)
-    current.value = id
+
+    Vue.nextTick(() => {
+      currentTab.value = id
+    })
   },
 
   get(id) {
@@ -97,7 +100,7 @@ export default {
 
   select(id) {
     if (id) {
-      current.value = id
+      currentTab.value = id
     }
   },
 
@@ -114,9 +117,9 @@ export default {
     const index = tabs.findIndex( t => t.id == id )
     tabs.splice(index, 1)
 
-    if (id == current.value) {
+    if (id == currentTab.value) {
       const substituteIndex = Math.min(Math.max(index, 0), tabs.length - 1)
-      current.value = tabs[substituteIndex].id
+      currentTab.value = tabs[substituteIndex].id
     }
 
     db[STORE].delete('id', IDBKeyRange.only(id))
@@ -125,22 +128,56 @@ export default {
     tabWatchers.delete(id)
   },
 
+  duplicate(id) {
+    const duplicated = this.get(id)
+
+    this.new(duplicated.request) 
+  },
+
+  removeOthers(id) {
+    
+    (async () => {
+      (await db[STORE].writer('id')).openCursor().onsuccess = (event) => {
+        const cursor = event.target.result;
+
+        if (cursor) {
+          if (cursor.value.id != id) {
+            cursor.delete()
+          }
+
+          cursor.continue()
+        }
+      }
+    })()
+
+    count = 0
+
+    const keptTab = this.get(id)
+    tabs.splice(0, tabs.length, keptTab)
+
+    Vue.nextTick(() => {
+      currentTab.value = id
+    })
+  },
+
   removeAll() {
-    tabWatchers.forEach( (fn) => fn() )
+    tabWatchers.forEach( (cleanUp) => cleanUp() )
     tabWatchers.clear()
     
     db[STORE].clear()
 
+    count = 0
     tabs.splice(0, tabs.length)
+
     this.new() 
   },
 
   step(direction) {
-    const currentIndex = tabs.findIndex( t => t.id == current.value )
+    const currentIndex = tabs.findIndex( t => t.id == currentTab.value )
     const length = tabs.length
     const destinationIndex = Math.max(currentIndex + direction, 0) % length
 
-    current.value = tabs[destinationIndex].id
+    currentTab.value = tabs[destinationIndex].id
   },
 
   goNext() {

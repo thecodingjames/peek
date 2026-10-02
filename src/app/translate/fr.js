@@ -35,6 +35,12 @@ export default {
   tabs: {
     defaultRequestName: 'Requête',
     newRequest: 'Nouvelle requête',
+    context: {
+      duplicate: 'Dupliquer',
+      closeOthers: 'Fermer les autres',
+      closeAll: 'Fermer tous',
+    },
+    rename: 'Renommer',
   },
 
   hotkeys: {

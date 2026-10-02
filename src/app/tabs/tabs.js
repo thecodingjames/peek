@@ -41,6 +41,44 @@ export default {
       return SettingsService.ui.alwaysShowTabs || this.tabs.length > 1
     },
 
+    contextActions() {
+      const closeMenu = () => {
+        this.context.visible = false
+      }
+
+      let actions = {
+        duplicate: (tabId) => { 
+          TabsService.duplicate(tabId)
+
+          closeMenu()
+        },
+
+        closeOthers: false,
+
+        closeAll: false,
+      }
+
+      if (TabsService.tabs.length > 1) {
+        actions = {
+          ...actions, 
+
+          closeOthers: (tabId) => {
+            TabsService.removeOthers(tabId)
+
+            closeMenu()
+          },
+
+          closeAll: () => {
+            TabsService.removeAll()
+
+            closeMenu()
+          },
+        }
+      }
+
+      return actions
+    },
+
   },
 
   methods: {
@@ -81,6 +119,10 @@ export default {
       this.context = this.showPopup(tabId)
 
       this.renaming.visible = false
+    },
+
+    handleContextAction({ action, tabId }) {
+      this.contextActions[action](tabId)
     },
 
     handleRename(name, source) {
@@ -160,6 +202,8 @@ export default {
           :text="titleEllipsis(item.title)"
           :value="item.id"
 
+          v-tooltip="{ text: (item.title != titleEllipsis(item.title) ? item.title : ''), location: 'bottom', openDelay: 1000 }"
+
           @dblclick="handleRenamePopup($event, item.id)"
           @contextmenu.prevent="handleContextMenu($event, item.id)"
         >
@@ -202,9 +246,10 @@ export default {
 
       <PopUpContext
         :source="context"
-        :actions="[ { duplicate: t.request.title }]"
+        :actions="contextActions"
 
         @rename="handleRename($event, context)"
+        @click="handleContextAction($event)"
       />
 
     </div>
