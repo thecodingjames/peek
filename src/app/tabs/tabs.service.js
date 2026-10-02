@@ -125,6 +125,16 @@ export default {
     tabWatchers.delete(id)
   },
 
+  removeAll() {
+    tabWatchers.forEach( (fn) => fn() )
+    tabWatchers.clear()
+    
+    db[STORE].clear()
+
+    tabs.splice(0, tabs.length)
+    this.new() 
+  },
+
   step(direction) {
     const currentIndex = tabs.findIndex( t => t.id == current.value )
     const length = tabs.length

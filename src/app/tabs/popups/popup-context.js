@@ -1,6 +1,8 @@
 import Popup, { mixin } from './popup.js'
 import RenameForm from './rename-form.js'
 
+import TabsService from '../tabs.service.js'
+
 export default {
   mixins: [
     mixin,
@@ -11,9 +13,30 @@ export default {
     RenameForm,
   },
 
+  props: [
+    'actions',
+  ],
+
+  methods: {
+    
+    handleDuplicate() {
+    },
+
+    handleCloseOthers() {
+    },
+
+    handleCloseAll() {
+      TabsService.removeAll()
+    },
+
+  },
+
   template: `
       <Popup :source>
         <div class="_tabs_popup_context_popup">
+
+          {{ Object.entries(actions.at(0) ?? {a:1})[0][1] }}
+
           <component is="style">
             ._tabs_popup_context_popup { 
 
@@ -59,7 +82,7 @@ export default {
               <v-list-item-title>Close Others</v-list-item-title>
             </v-list-item>
 
-            <v-list-item link>
+            <v-list-item link @click="handleCloseAll()">
               <v-list-item-title>Close All</v-list-item-title>
             </v-list-item>
 

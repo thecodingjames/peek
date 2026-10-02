@@ -202,6 +202,7 @@ export default {
 
       <PopUpContext
         :source="context"
+        :actions="[ { duplicate: t.request.title }]"
 
         @rename="handleRename($event, context)"
       />
