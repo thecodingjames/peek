@@ -103,19 +103,19 @@ export default {
       return {
         visible: true,
 
-        element: event.currentTarget,
+        element: document.querySelector(`button.v-tab[value="${tabId}"]`),
         id,
         title,
       }
     },
 
-    handleRenamePopup(event, tabId) {
+    handleRenamePopup(tabId) {
       this.renaming = this.showPopup(tabId)
 
       this.context.visible = false
     },
 
-    handleContextMenu(event, tabId) {
+    handleContextMenu(tabId) {
       this.context = this.showPopup(tabId)
 
       this.renaming.visible = false
@@ -143,8 +143,24 @@ export default {
       TabsService.new()
     })
 
+    HotkeysService.set('tabs.rename', () => {
+      this.handleRenamePopup(this.current)
+    })
+
     HotkeysService.set('tabs.close', () => {
       TabsService.remove(this.current)
+    })
+
+    HotkeysService.set('tabs.close-all', () => {
+      TabsService.removeAll(this.current)
+    })
+
+    HotkeysService.set('tabs.close-others', () => {
+      TabsService.removeOthers(this.current)
+    })
+
+    HotkeysService.set('tabs.duplicate', () => {
+      TabsService.duplicate(this.current)
     })
 
     HotkeysService.set('tabs.next', () => {
@@ -204,8 +220,8 @@ export default {
 
           v-tooltip="{ text: (item.title != titleEllipsis(item.title) ? item.title : ''), location: 'bottom', openDelay: 1000 }"
 
-          @dblclick="handleRenamePopup($event, item.id)"
-          @contextmenu.prevent="handleContextMenu($event, item.id)"
+          @dblclick="handleRenamePopup(item.id)"
+          @contextmenu.prevent="handleContextMenu(item.id)"
         >
 
           <template v-slot:append>

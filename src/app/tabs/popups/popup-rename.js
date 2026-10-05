@@ -26,6 +26,7 @@ export default {
 
           <RenameForm
             :title="source.title"
+            :autofocus="true"
 
             @submit="handleRename"
           />

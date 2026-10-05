@@ -71,8 +71,24 @@ export default {
         title: 'New tab'
       },
 
+      rename: {
+        title: 'Rename current tab'
+      },
+
       close: {
         title: 'Close current tab'
+      },
+
+      ['close-all']: {
+        title: 'Close all tabs'
+      },
+
+      ['close-others']: {
+        title: 'Close other tabs'
+      },
+
+      duplicate: {
+        title: 'Duplicate current tab'
       },
 
       next: {
