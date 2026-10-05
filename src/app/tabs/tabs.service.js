@@ -131,7 +131,7 @@ export default {
   duplicate(id) {
     const duplicated = this.get(id)
 
-    this.new(duplicated.request) 
+    this.new(duplicated.request.clone())
   },
 
   removeOthers(id) {

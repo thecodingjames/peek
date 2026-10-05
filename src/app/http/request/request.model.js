@@ -148,6 +148,10 @@ export default class RequestModel extends VestModel {
     })
   }
 
+  clone() {
+    return new RequestModel(this.toJSON())
+  }
+
   toJSON() {
     return raw({
       url: this.url,
