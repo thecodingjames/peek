@@ -141,7 +141,11 @@ export default {
   response: {
     title: 'Réponse',
     pending: 'En attente d\'une requête...',
-    error: 'Hôte distant inaccessible',
+    error: {
+      unknown: 'Requête ou réponse invalide...',
+      host: 'Hôte inaccessible',
+      status: 'Code HTTP de la réponse invalide',
+    },
 
     tabs: {
       raw: {

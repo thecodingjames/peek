@@ -45,7 +45,21 @@ export default class Http {
       )
 
       if (error) {
-        throw new Error(error)
+        let message = 'unknown'
+
+        if (error.message.includes('getaddrinfo ENOTFOUND')) {
+          message = 'host'
+        } else if (error.message.includes('Invalid status code')) {
+          message = 'status'
+        }
+
+        let cause = null
+
+        cause = new Error(
+          JSON.stringify(error.extras, null, 2)
+        )
+
+        throw new Error(message, { cause })
       } else {
         return response
       }

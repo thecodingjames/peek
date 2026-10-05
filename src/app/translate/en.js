@@ -141,7 +141,11 @@ export default {
   response: {
     title: 'Response',
     pending: 'Waiting for request...',
-    error: 'Remote host unavailable',
+    error: {
+      unknown: 'Invalid request or response...',
+      host: 'Host unreachable',
+      status: 'Invalid response status code',
+    },
 
     tabs: {
       raw: {
