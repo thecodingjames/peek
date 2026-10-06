@@ -5,9 +5,14 @@ export const mixin = {
 
   emits: [
     'rename',
+    'hide',
   ],
   
   methods: {
+
+    handleHide() {
+      this.$emit('hide')
+    },
 
     handleRename(name) {
       this.$emit('rename', name)
@@ -22,18 +27,12 @@ export default {
     mixin
   ],
 
-  mounted() {
-    this.$refs.menu.animateClick = () => {
-      // this.renaming = null
-    }
-  },
-
   template: `
     <v-menu
       ref="menu"
 
       :model-value="source.visible"
-      @update:model-value="source.visible = false"
+      @update:model-value="handleHide()"
 
       :target="source.element"
       :close-on-content-click="false"

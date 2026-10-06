@@ -28,7 +28,7 @@ export default {
   },
 
   template: `
-      <Popup :source>
+      <Popup :source @hide="handleHide()">
         <div class="_tabs_popup_context_popup">
           <component is="style">
             ._tabs_popup_context_popup { 

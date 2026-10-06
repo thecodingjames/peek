@@ -101,7 +101,7 @@ export default {
   },
 
   get(id) {
-    return this.tabs.find( t => t.id == id )
+    return currentTabs.find( t => t.id == id )
   },
 
   select(id) {

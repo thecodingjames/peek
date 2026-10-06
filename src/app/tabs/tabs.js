@@ -43,7 +43,7 @@ export default {
 
     contextActions() {
       const closeMenu = () => {
-        this.context.visible = false
+        this.hidePopup(this.context)
       }
 
       let actions = {
@@ -109,6 +109,14 @@ export default {
       }
     },
 
+    hidePopup(source) {
+      Object.keys(source).forEach((key) => {
+        source[key] = null
+      })
+
+      source.visible = false
+    },
+
     handleRenamePopup(tabId) {
       this.renaming = this.showPopup(tabId)
 
@@ -126,9 +134,9 @@ export default {
     },
 
     handleRename(name, source) {
-      source.visible = false
-
       TabsService.rename(source.id, name)
+
+      this.hidePopup(source)
     },
 
     handleClose(id) {
@@ -258,6 +266,8 @@ export default {
         :source="renaming"
 
         @rename="handleRename($event, renaming)"
+
+        @hide="hidePopup(renaming)"
       />
 
       <PopUpContext
@@ -266,8 +276,9 @@ export default {
 
         @rename="handleRename($event, context)"
         @click="handleContextAction($event)"
-      />
 
+        @hide="hidePopup(context)"
+      />
     </div>
   `
 }

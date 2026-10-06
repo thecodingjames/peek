@@ -128,10 +128,7 @@ export default {
 
       <span v-else-if="response === undefined" style="font-style: italic;">{{ t.response.pending }}</span>
 
-      <details v-else-if="error">
-        <summary class="text-white bg-red rounded-md pa-2" style="cursor: pointer;">{{ t.response.error[error.message] }}</summary>
-        <pre style="overflow: auto;">{{ error.cause.message }}</pre>
-      </details>
+      <span v-else-if="error" class="text-red">{{ t.response.error[error.message] }}</span>
     </div>
   `
 }
