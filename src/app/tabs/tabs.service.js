@@ -57,7 +57,7 @@ let loadedTabs = await (async () => {
 
 let count = 0 // TODO computed dynamically according to existing data?
 
-const tabs = Vue.reactive(loadedTabs)
+const currentTabs = Vue.reactive(loadedTabs)
 const currentTab = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
 
 Vue.watch(
@@ -73,10 +73,10 @@ Vue.watch(
 export default {
   current: Vue.readonly(currentTab),
 
-  tabs: Vue.readonly(tabs),
+  tabs: Vue.readonly(currentTabs),
 
   new(request = new RequestModel()) {
-    const tabNumber = (tabs.length > 1 || count > 0) ? count : 0
+    const tabNumber = (this.tabs.length > 1 || count > 0) ? count : 0
     count++
 
     let titleParts = [t.tabs.newRequest]
@@ -87,15 +87,16 @@ export default {
     const id = crypto.randomUUID()
     const newTab = CreateTab(id, titleParts.join(' '), request)
 
-    tabs.unshift(newTab)
+    currentTabs.unshift(newTab)
 
     Vue.nextTick(() => {
+      // weird concurrency???
       currentTab.value = id
     })
   },
 
   get(id) {
-    return tabs.find( t => t.id == id )
+    return this.tabs.find( t => t.id == id )
   },
 
   select(id) {
@@ -110,16 +111,16 @@ export default {
   },
 
   remove(id) {
-    if (tabs.length == 1) {
+    if (this.tabs.length == 1) {
       return
     }
 
-    const index = tabs.findIndex( t => t.id == id )
-    tabs.splice(index, 1)
+    const index = this.tabs.findIndex( t => t.id == id )
+    currentTabs.splice(index, 1)
 
     if (id == currentTab.value) {
-      const substituteIndex = Math.min(Math.max(index, 0), tabs.length - 1)
-      currentTab.value = tabs[substituteIndex].id
+      const substituteIndex = Math.min(Math.max(index, 0), this.tabs.length - 1)
+      currentTab.value = this.tabs[substituteIndex].id
     }
 
     db[STORE].delete('id', IDBKeyRange.only(id))
@@ -153,11 +154,9 @@ export default {
     count = 0
 
     const keptTab = this.get(id)
-    tabs.splice(0, tabs.length, keptTab)
+    currentTabs.splice(0, this.tabs.length, keptTab)
 
-    Vue.nextTick(() => {
-      currentTab.value = id
-    })
+    currentTab.value = id
   },
 
   removeAll() {
@@ -167,17 +166,17 @@ export default {
     db[STORE].clear()
 
     count = 0
-    tabs.splice(0, tabs.length)
+    currentTabs.splice(0, this.tabs.length)
 
     this.new() 
   },
 
   step(direction) {
-    const currentIndex = tabs.findIndex( t => t.id == currentTab.value )
-    const length = tabs.length
+    const currentIndex = this.tabs.findIndex( t => t.id == currentTab.value )
+    const length = this.tabs.length
     const destinationIndex = Math.max(currentIndex + direction, 0) % length
 
-    currentTab.value = tabs[destinationIndex].id
+    currentTab.value = this.tabs[destinationIndex].id
   },
 
   goNext() {
