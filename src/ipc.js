@@ -18,7 +18,18 @@ function registerHttp() {
         blob,
       }
     } catch(error) {
-      return { error }
+      extras = Object.keys(error.cause).reduce( (result, key) => {
+        result[key] = error.cause[key]
+
+        return result
+      }, {})
+
+      return {
+        error: {
+          extras,
+          message: error.cause.message,
+        }
+      }
     }
 
   })

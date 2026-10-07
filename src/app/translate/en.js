@@ -35,6 +35,12 @@ export default {
   tabs: {
     defaultRequestName: 'Request',
     newRequest: 'New request',
+    context: {
+      duplicate: 'Duplicate',
+      closeOthers: 'Close others',
+      closeAll: 'Close all',
+    },
+    rename: 'Rename',
   },
 
   hotkeys: {
@@ -65,8 +71,24 @@ export default {
         title: 'New tab'
       },
 
+      rename: {
+        title: 'Rename current tab'
+      },
+
       close: {
         title: 'Close current tab'
+      },
+
+      ['close-all']: {
+        title: 'Close all tabs'
+      },
+
+      ['close-others']: {
+        title: 'Close other tabs'
+      },
+
+      duplicate: {
+        title: 'Duplicate current tab'
       },
 
       next: {
@@ -135,7 +157,11 @@ export default {
   response: {
     title: 'Response',
     pending: 'Waiting for request...',
-    error: 'Remote host unavailable',
+    error: {
+      unknown: 'Invalid request or response...',
+      host: 'Host unreachable',
+      status: 'Invalid response status code',
+    },
 
     tabs: {
       raw: {

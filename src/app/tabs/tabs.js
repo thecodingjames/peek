@@ -4,11 +4,14 @@ import TabsService from './tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 import SettingsService from '../drawers/settings/settings.service.js'
 
-import { forceFocus } from '../core/helpers.js'
+import PopUpRename from './popups/popup-rename.js'
+import PopUpContext from './popups/popup-context.js'
 
 export default {
   components: {
-    HttpPage
+    HttpPage,
+    PopUpRename,
+    PopUpContext,
   },
 
   data() {
@@ -16,8 +19,19 @@ export default {
       current: TabsService.current,
       tabs: TabsService.tabs,
 
-      renaming: null,
-      showRenamingPopup: false,
+      renaming: {
+        visible: false,
+        id: null,
+        title: null,
+        element: null,
+      },
+
+      context: {
+        visible: false,
+        id: null,
+        title: null,
+        element: null,
+      },
     }
   },
 
@@ -25,6 +39,44 @@ export default {
 
     showTabs() {
       return SettingsService.ui.alwaysShowTabs || this.tabs.length > 1
+    },
+
+    contextActions() {
+      const closeMenu = () => {
+        this.hidePopup(this.context)
+      }
+
+      let actions = {
+        duplicate: (tabId) => { 
+          TabsService.duplicate(tabId)
+
+          closeMenu()
+        },
+
+        closeOthers: false,
+
+        closeAll: false,
+      }
+
+      if (TabsService.tabs.length > 1) {
+        actions = {
+          ...actions, 
+
+          closeOthers: (tabId) => {
+            TabsService.removeOthers(tabId)
+
+            closeMenu()
+          },
+
+          closeAll: () => {
+            TabsService.removeAll()
+
+            closeMenu()
+          },
+        }
+      }
+
+      return actions
     },
 
   },
@@ -43,32 +95,48 @@ export default {
       }
     },
 
-    handleRenamePopup(event, tabId) {
+    showPopup(tabId) {
       const tab = TabsService.get(tabId)
-
-      if (!tab) {
-        // double clicked on X to delete
-        return
-      }
 
       const {id, title} = tab
 
-      this.renaming = {
-        element: event.currentTarget,
+      return {
+        visible: true,
+
+        element: document.querySelector(`button.v-tab[value="${tabId}"]`),
         id,
         title,
       }
-
-      this.showRenamingPopup = true
-
-      forceFocus( () => this.$refs.renameInput.controlRef )
     },
 
-    handleRenameSubmit() {
-      this.showRenamingPopup = false
-      const { id, title } = this.renaming
+    hidePopup(source) {
+      Object.keys(source).forEach((key) => {
+        source[key] = null
+      })
 
-      TabsService.rename(id, title)
+      source.visible = false
+    },
+
+    handleRenamePopup(tabId) {
+      this.renaming = this.showPopup(tabId)
+
+      this.context.visible = false
+    },
+
+    handleContextMenu(tabId) {
+      this.context = this.showPopup(tabId)
+
+      this.renaming.visible = false
+    },
+
+    handleContextAction({ action, tabId }) {
+      this.contextActions[action](tabId)
+    },
+
+    handleRename(name, source) {
+      TabsService.rename(source.id, name)
+
+      this.hidePopup(source)
     },
 
     handleClose(id) {
@@ -83,8 +151,24 @@ export default {
       TabsService.new()
     })
 
+    HotkeysService.set('tabs.rename', () => {
+      this.handleRenamePopup(this.current)
+    })
+
     HotkeysService.set('tabs.close', () => {
       TabsService.remove(this.current)
+    })
+
+    HotkeysService.set('tabs.close-all', () => {
+      TabsService.removeAll(this.current)
+    })
+
+    HotkeysService.set('tabs.close-others', () => {
+      TabsService.removeOthers(this.current)
+    })
+
+    HotkeysService.set('tabs.duplicate', () => {
+      TabsService.duplicate(this.current)
     })
 
     HotkeysService.set('tabs.next', () => {
@@ -94,10 +178,6 @@ export default {
     HotkeysService.set('tabs.previous', () => {
       TabsService.goPrevious()
     })
-
-    this.$refs.renamePopup.animateClick = () => {
-      this.renaming = null
-    }
   },
 
   template: `
@@ -146,13 +226,18 @@ export default {
           :text="titleEllipsis(item.title)"
           :value="item.id"
 
-          @dblclick="handleRenamePopup($event, item.id)"
+          v-tooltip="{ text: (item.title != titleEllipsis(item.title) ? item.title : ''), location: 'bottom', openDelay: 1000 }"
+
+          @dblclick="handleRenamePopup(item.id)"
+          @contextmenu.prevent="handleContextMenu(item.id)"
         >
 
           <template v-slot:append>
+            <!-- stop propagation on dblclick on delete -->
             <v-btn
               v-if="tabs.length > 1"
-              @click.prevent="handleClose(item.id)"
+              @click="handleClose(item.id)"
+              @dblclick.stop=""
 
               color="error"
               size="x-small"
@@ -177,46 +262,23 @@ export default {
         </v-tabs-window-item>
       </v-window>
 
-      <v-menu
-        ref="renamePopup"
+      <PopUpRename
+        :source="renaming"
 
-        :model-value="showRenamingPopup"
-        @update:model-value="showRenamingPopup = false"
+        @rename="handleRename($event, renaming)"
 
-        :target="renaming?.element"
-        :close-on-content-click="false"
-        location="bottom"
-      >
-        <v-card min-width="300" class="rename-card">
-          <form
-            @submit.prevent="handleRenameSubmit()"
-            style="display: flex; align-items: center;"
-          >
-            <v-text-field
-              ref="renameInput"
+        @hide="hidePopup(renaming)"
+      />
 
-              :model-value="renaming?.title"
-              @update:model-value="renaming ? (renaming.title = $event) : 'no-op'"
+      <PopUpContext
+        :source="context"
+        :actions="contextActions"
 
-              placeholder="Title"
+        @rename="handleRename($event, context)"
+        @click="handleContextAction($event)"
 
-              :hide-details="true"
-              density="comfortable"
-              variant="plain"
-              tile
-            />
-
-            <v-btn
-              type="submit"
-              icon="mdi-check"
-              color="green"
-              variant="tonal"
-              density="compact"
-              style="margin-right: 0.5rem;"
-            />
-          </form>
-        </v-card>
-      </v-menu>
+        @hide="hidePopup(context)"
+      />
     </div>
   `
 }

@@ -147,6 +147,10 @@ class DB {
         return toPromise( async ()=> cursor.delete() )
       },
 
+      async clear() {
+        return toPromise( async ()=> (await this.writer()).clear() )
+      },
+
     }
   }
 

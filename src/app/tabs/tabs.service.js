@@ -57,11 +57,16 @@ let loadedTabs = await (async () => {
 
 let count = 0 // TODO computed dynamically according to existing data?
 
-const tabs = Vue.reactive(loadedTabs)
-const current = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
+const currentTabs = Vue.reactive(loadedTabs)
+const currentTab = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
+
+function getWritableTab(id) {
+  return currentTabs.find( t => t.id == id )
+}
+
 
 Vue.watch(
-  current,
+  currentTab,
   (newCurrent) => {
     localStorage.setItem(KEY, newCurrent)
   },
@@ -71,12 +76,12 @@ Vue.watch(
 )
 
 export default {
-  current: Vue.readonly(current),
+  current: Vue.readonly(currentTab),
 
-  tabs: Vue.readonly(tabs),
+  tabs: Vue.readonly(currentTabs),
 
   new(request = new RequestModel()) {
-    const tabNumber = (tabs.length > 1 || count > 0) ? count : 0
+    const tabNumber = (this.tabs.length > 1 || count > 0) ? count : 0
     count++
 
     let titleParts = [t.tabs.newRequest]
@@ -87,36 +92,40 @@ export default {
     const id = crypto.randomUUID()
     const newTab = CreateTab(id, titleParts.join(' '), request)
 
-    tabs.unshift(newTab)
-    current.value = id
+    currentTabs.unshift(newTab)
+
+    Vue.nextTick(() => {
+      // weird concurrency???
+      currentTab.value = id
+    })
   },
 
   get(id) {
-    return tabs.find( t => t.id == id )
+    return currentTabs.find( t => t.id == id )
   },
 
   select(id) {
     if (id) {
-      current.value = id
+      currentTab.value = id
     }
   },
 
   rename(id, title) {
-    const tab = this.get(id)
+    const tab = getWritableTab(id)
     tab.title = title.trim()
   },
 
   remove(id) {
-    if (tabs.length == 1) {
+    if (this.tabs.length == 1) {
       return
     }
 
-    const index = tabs.findIndex( t => t.id == id )
-    tabs.splice(index, 1)
+    const index = this.tabs.findIndex( t => t.id == id )
+    currentTabs.splice(index, 1)
 
-    if (id == current.value) {
-      const substituteIndex = Math.min(Math.max(index, 0), tabs.length - 1)
-      current.value = tabs[substituteIndex].id
+    if (id == currentTab.value) {
+      const substituteIndex = Math.min(Math.max(index, 0), this.tabs.length - 1)
+      currentTab.value = this.tabs[substituteIndex].id
     }
 
     db[STORE].delete('id', IDBKeyRange.only(id))
@@ -125,12 +134,54 @@ export default {
     tabWatchers.delete(id)
   },
 
+  duplicate(id) {
+    const duplicated = this.get(id)
+
+    this.new(duplicated.request.clone())
+  },
+
+  removeOthers(id) {
+    
+    (async () => {
+      (await db[STORE].writer('id')).openCursor().onsuccess = (event) => {
+        const cursor = event.target.result;
+
+        if (cursor) {
+          if (cursor.value.id != id) {
+            cursor.delete()
+          }
+
+          cursor.continue()
+        }
+      }
+    })()
+
+    count = 0
+
+    const keptTab = getWritableTab(id)
+    currentTabs.splice(0, this.tabs.length, keptTab)
+
+    currentTab.value = id
+  },
+
+  removeAll() {
+    tabWatchers.forEach( (cleanUp) => cleanUp() )
+    tabWatchers.clear()
+    
+    db[STORE].clear()
+
+    count = 0
+    currentTabs.splice(0, this.tabs.length)
+
+    this.new() 
+  },
+
   step(direction) {
-    const currentIndex = tabs.findIndex( t => t.id == current.value )
-    const length = tabs.length
+    const currentIndex = this.tabs.findIndex( t => t.id == currentTab.value )
+    const length = this.tabs.length
     const destinationIndex = Math.max(currentIndex + direction, 0) % length
 
-    current.value = tabs[destinationIndex].id
+    currentTab.value = this.tabs[destinationIndex].id
   },
 
   goNext() {

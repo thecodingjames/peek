@@ -18,6 +18,7 @@ export default {
   data() {
     return {
       response: undefined,
+      error: undefined,
     }
   },
 
@@ -27,10 +28,14 @@ export default {
         const result = await this.http.execute(request)
 
         if (result?.code) {
+          // completed
+          this.error = null
           this.response = ResponseModel.instantiate(result)
         }
+        // else, cancelled or replaced
       } catch (e) {
         this.response = null
+        this.error = e
 
         if (this.app.development) {
           console.error(e)
@@ -90,6 +95,7 @@ export default {
         :tabId
 
         :response
+        :error
       />
     </div>
   `

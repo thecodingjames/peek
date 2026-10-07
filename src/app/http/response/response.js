@@ -20,6 +20,7 @@ export default {
 
   props: [
     'response',
+    'error',
   ],
 
   data() {
@@ -127,7 +128,7 @@ export default {
 
       <span v-else-if="response === undefined" style="font-style: italic;">{{ t.response.pending }}</span>
 
-      <span v-else-if="response === null" class="text-red">{{ t.response.error }}</span>
+      <span v-else-if="error" class="text-red">{{ t.response.error[error.message] }}</span>
     </div>
   `
 }

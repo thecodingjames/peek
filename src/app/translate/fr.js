@@ -35,6 +35,12 @@ export default {
   tabs: {
     defaultRequestName: 'Requête',
     newRequest: 'Nouvelle requête',
+    context: {
+      duplicate: 'Dupliquer',
+      closeOthers: 'Fermer les autres',
+      closeAll: 'Fermer tous',
+    },
+    rename: 'Renommer',
   },
 
   hotkeys: {
@@ -65,8 +71,24 @@ export default {
         title: 'Nouvel onglet'
       },
 
+      rename: {
+        title: 'Renommer l\'onglet courant'
+      },
+
       close: {
         title: 'Fermer l\'onglet courant'
+      },
+
+      ['close-all']: {
+        title: 'Fermer tous les onglets'
+      },
+
+      ['close-others']: {
+        title: 'Fermer les autres onglets'
+      },
+
+      duplicate: {
+        title: 'Dupliquer l\'onglet courant'
       },
 
       next: {
@@ -135,7 +157,11 @@ export default {
   response: {
     title: 'Réponse',
     pending: 'En attente d\'une requête...',
-    error: 'Hôte distant inaccessible',
+    error: {
+      unknown: 'Requête ou réponse invalide...',
+      host: 'Hôte inaccessible',
+      status: 'Code HTTP de la réponse invalide',
+    },
 
     tabs: {
       raw: {
