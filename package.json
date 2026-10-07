@@ -1,6 +1,6 @@
 {
-  "name": "peek",
-  "version": "1.7.0",
+  "name": "peek-http",
+  "version": "1.7.1",
   "description": "A minimal GUI HTTP client",
   "keywords": [
     "gui",
@@ -9,10 +9,10 @@
     "vuejs",
     "vuetify"
   ],
-  "desktopName": "ca.codingjames.peek",
+  "desktopName": "ca.codingjames.peek-http",
   "productName": "Peek",
   "build": {
-    "appId": "ca.codingjames.peek",
+    "appId": "ca.codingjames.peek-http",
     "asar": true,
     "publish": null,
     "win": {
