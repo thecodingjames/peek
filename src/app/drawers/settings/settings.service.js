@@ -33,6 +33,8 @@ const defaultSettings = {
   },
 
   hotkeys,
+
+  checkForUpdates: true,
 }
 
 const loadedSettings = JSON.parse(localStorage.getItem(KEY))

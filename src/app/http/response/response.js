@@ -1,5 +1,4 @@
 import ResponseModel from './response.model.js'
-import SettingsService from '../../drawers/settings/settings.service.js'
 
 import Body from './tabs/body.js'
 import Headers from './tabs/headers.js'

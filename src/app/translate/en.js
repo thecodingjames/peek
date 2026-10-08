@@ -29,6 +29,25 @@ export default {
       dark: 'Dark',
       language: 'Language',
       keyBindings: 'Key-bindings',
+
+      updates: {
+        checkForUpdates: 'Check for updates',
+        checkNow: 'Check now',
+
+        dialog: {
+          title: 'Updates',
+          checking: 'Checking for updates',
+          openDownload: 'Open download page',
+          updateAvailable: 'Update available.',
+          upToDate: 'Latest version already installed.',
+          error: 'Could not check for updates...',
+          close: 'Close',
+        },
+      },
+    },
+
+    update: {
+      title: 'Get latest update',
     },
   },
 

@@ -29,6 +29,25 @@ export default {
       dark: 'Sombre',
       language: 'Langue',
       keyBindings: 'Raccourcis clavier',
+
+      updates: {
+        checkForUpdates: 'Vérifier les mises à jour',
+        checkNow: 'Vérifier maintenant',
+
+        dialog: {
+          title: 'Mises à jour',
+          checking: 'Vérification des mises à jour',
+          openDownload: 'Ouvrir la page de téléchargement',
+          updateAvailable: 'Mise à jour disponible.',
+          upToDate: 'Dernière version déjà installée.',
+          error: 'Impossible de vérifier les mise à jour...',
+          close: 'Fermer',
+        },
+      }
+    },
+
+    update: {
+      title: 'Récupérer la dernière mise à jour',
     },
   },
 
