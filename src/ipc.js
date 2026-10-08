@@ -51,8 +51,6 @@ function registerApp() {
 function registerOpenBrowser() {
 
   ipcMain.handle('openBrowser', (_, url) => {
-    const version = app.getVersion()
-
     shell.openExternal(url)
   })
 

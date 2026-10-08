@@ -63,7 +63,7 @@ export default {
     },
 
     handleUpdate() {
-      alert('update')
+      electron.openBrowser(UpdateService.latestReleaseUrl)
     },
 
     handleHotkeysClick() {
@@ -189,11 +189,13 @@ export default {
           />
 
           <v-list-item
-            v-if="!updateAvailable"
+            v-if="updateAvailable"
 
             @click="handleUpdate"
 
-            prepend-icon="mdi-update"
+            :active="false"
+            prepend-icon="mdi-download-circle-outline"
+            base-color="indigo"
             :title="t.drawers.update.title"
             value="update"
             v-tooltip="{text: t.drawers.update.title, openDelay: 1000}"

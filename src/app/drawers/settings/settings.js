@@ -1,10 +1,12 @@
 import HotkeysDialog from '../../hotkeys/hotkeys-dialog.js'
+import UpdateDialog from './update-dialog.js'
 
 import SettingsService from './settings.service.js'
 
 export default {
   components: {
     HotkeysDialog,
+    UpdateDialog,
   },
 
   emits: [
@@ -38,7 +40,21 @@ export default {
 
     openBrowser(url) {
       electron.openBrowser(url)
-    }
+    },
+
+    handleCheckUpdatesNow() {
+      this.$refs.updateDialog.check()
+    },
+
+  },
+
+  watch: {
+
+    'SettingsService.checkForUpdates'(check) {
+      if (check) {
+        this.handleCheckUpdatesNow()
+      }
+    },
 
   },
 
@@ -124,10 +140,28 @@ export default {
 
         <h2>Application</h2>
 
-        <div style="display: flex; justify-content: space-between;">
+        <div style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; column-gap: 1rem; align-items: center;">
+          <v-switch
+            v-model="SettingsService.checkForUpdates"
+            :label="t.drawers.settings.updates.checkForUpdates"
+            color="primary"
+            :hide-details="true"
+          ></v-switch>
+
           <v-btn
-            @click="openBrowser(app.repoUrl + '/releases')"
-            prepend-icon="mdi-download"
+            @click="handleCheckUpdatesNow()"
+            prepend-icon="mdi-help-circle-outline"
+
+            style="flex-grow: 1;"
+          >
+            {{ t.drawers.settings.updates.checkNow }}
+          </v-btn>
+        </div>
+
+        <div style="display: flex; justify-content: space-evenly;">
+          <v-btn
+            @click="openBrowser(app.repoUrl + '/releases#release-v' + app.version)"
+            prepend-icon="mdi-information-outline"
           >
             {{ app.version }}
           </v-btn>
@@ -141,6 +175,8 @@ export default {
         </div>
       </div>
 
+      <UpdateDialog ref="updateDialog" />
     </div>
+
   `
 }
