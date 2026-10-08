@@ -6,6 +6,8 @@ import TabsService from '../tabs/tabs.service.js'
 import HotkeysService from '../hotkeys/hotkeys.service.js'
 import SettingsService from './settings/settings.service.js'
 
+import UpdateService from './update/update.service.js'
+
 export default {
   components: {
     History,
@@ -21,6 +23,8 @@ export default {
 
       width: SettingsService.ui.drawerWidth,
       origin: null,
+
+      updateAvailable: UpdateService.updateAvailable,
     }
   },
 
@@ -56,6 +60,10 @@ export default {
       } else {
         this.current = name
       }
+    },
+
+    handleUpdate() {
+      alert('update')
     },
 
     handleHotkeysClick() {
@@ -179,6 +187,18 @@ export default {
             :value="name"
             v-tooltip="{text: t.drawers[name].title, openDelay: 1000}"
           />
+
+          <v-list-item
+            v-if="!updateAvailable"
+
+            @click="handleUpdate"
+
+            prepend-icon="mdi-update"
+            :title="t.drawers.update.title"
+            value="update"
+            v-tooltip="{text: t.drawers.update.title, openDelay: 1000}"
+          />
+
         </v-list>
       </v-navigation-drawer>
 
