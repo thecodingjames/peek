@@ -140,7 +140,7 @@ export default {
 
         <h2>Application</h2>
 
-        <div style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; column-gap: 1rem; align-items: center;">
+        <div style="display: flex; flex-wrap: wrap; column-gap: 1rem; align-items: center;">
           <v-switch
             v-model="SettingsService.checkForUpdates"
             :label="t.drawers.settings.updates.checkForUpdates"

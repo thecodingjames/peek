@@ -86,7 +86,7 @@ export default {
         const currentX = e.clientX
         const newWidth = this.origin.width + (currentX - this.origin.x) 
 
-        const min = 256
+        const min = 296
         const max = document.body.getBoundingClientRect().width * 0.5
 
         this.width = Math.min(Math.max(min, newWidth), max)
