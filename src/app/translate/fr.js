@@ -179,8 +179,8 @@ export default {
     error: {
       unknown: 'Requête ou réponse invalide...',
       host: 'Hôte inaccessible',
-      connection: 'Service indisponible pour le port demandé',
-      status: 'Code HTTP de la réponse invalide',
+      connection: 'Service indisponible sur l\'hôte',
+      status: 'Code HTTP invalide',
     },
 
     tabs: {
