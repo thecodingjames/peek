@@ -179,6 +179,7 @@ export default {
     error: {
       unknown: 'Invalid request or response...',
       host: 'Host unreachable',
+      connection: 'Service unavailable for specified port',
       status: 'Invalid response status code',
     },
 

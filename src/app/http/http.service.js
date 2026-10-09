@@ -51,6 +51,8 @@ export default class Http {
           message = 'host'
         } else if (error.message.includes('Invalid status code')) {
           message = 'status'
+        } else if (error.extras.code == 'ECONNREFUSED') {
+          message = 'connection'
         }
 
         let cause = null
