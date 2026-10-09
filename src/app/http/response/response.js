@@ -45,7 +45,7 @@ export default {
   template: `
     <div
       class="_http_response"
-      style="height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 1.5rem;"
+      style="height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 1rem;"
     >
 
       <component is="style">

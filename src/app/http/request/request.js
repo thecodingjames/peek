@@ -34,6 +34,12 @@ export default {
       methodPickerNavIndex: 0,
 
       dialogUrl: null,
+
+      requestPopup: {
+        visible: false,
+        element: null,
+      },
+
     }
   },
 
@@ -41,6 +47,25 @@ export default {
 
     methods() {
       return RequestModel.methods
+    },
+
+    requestActions() {
+      const closeMenu = () => {
+        this.hidePopup(this.context)
+      }
+
+      return {
+        duplicate: () => { 
+          TabsService.duplicate(tabId)
+
+          closeMenu()
+        },
+
+        clear: () => {
+          closeMenu()
+        },
+
+      }
     },
 
   },
@@ -57,6 +82,10 @@ export default {
 
     async refreshRawHttp() {
       this.rawHttp = await this.request.text
+    },
+
+    handlePopup() {
+      console.log('a')
     },
 
     handleOpenUrlDialog() {
@@ -177,12 +206,12 @@ export default {
       style="height: 100%; overflow-y: hidden; display: flex; flex-direction: column; gap: 1rem;"
     >
 
-      <div class="section-title">
+       <div class="section-title" style="display: flex; gap: 0.5rem; align-items: center;">
         {{ t.request.title }}
         <v-btn
           ref="altButton"
           @click="handleTogglePanel()"
-          :icon="rawHttp ? 'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
+          :icon="rawHttp ?'mdi-arrow-left' : 'mdi-text'" rounded="0" density="compact" variant="tonal"
         />
 
         <v-tooltip
@@ -190,6 +219,22 @@ export default {
           :text="t.request.rawHttp"
           :activator="$refs.altButton"
           open-delay="1000"
+        />
+
+        <div style="flex-grow: 1; display: flex; justify-content: end;">
+          <v-btn
+            @click="handlePopup()"
+            icon="mdi-dots-horizontal" rounded="0" density="compact" variant="tonal"
+          />
+        </div>
+
+        <PopupItems 
+          :source="requestPopup"
+          :actions="requestActions"
+
+          @click="handleContextAction($event)"
+
+          @hide="hidePopup(context)"
         />
       </div>
 

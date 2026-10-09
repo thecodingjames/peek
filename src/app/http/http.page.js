@@ -66,6 +66,7 @@ export default {
         grid-template-rows: repeat(2, 1fr);
 
         .section-title {
+          line-height: 1.75rem;
           font-weight: bold !important;
           text-align: start;
           text-transform: uppercase;
