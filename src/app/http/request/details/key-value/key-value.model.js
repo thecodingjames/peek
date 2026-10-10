@@ -43,6 +43,10 @@ export default class KeyValueModel {
     this.pairs = this.pairs.filter(p => p.id != id)
   }
 
+  clear() {
+    this.pairs = []
+  }
+
   sort(oldIndex, newIndex) {
     const moved = this.pairs.splice(oldIndex, 1)[0]
     this.pairs.splice(newIndex, 0, moved)

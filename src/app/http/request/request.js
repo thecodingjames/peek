@@ -8,6 +8,8 @@ import TabMixin from '../../tabs/tab.mixin.js'
 
 import HotkeysService from '../../hotkeys/hotkeys.service.js'
 
+import PopupList from '../../popups/popup-list.js'
+
 export default {
   mixins: [
     TabMixin,
@@ -15,6 +17,7 @@ export default {
 
   components: {
     RequestDetails: Details,
+    PopupList,
   },
 
   emits: [
@@ -50,19 +53,19 @@ export default {
     },
 
     requestActions() {
-      const closeMenu = () => {
-        this.hidePopup(this.context)
-      }
 
       return {
         duplicate: () => { 
-          TabsService.duplicate(tabId)
+          TabsService.duplicate(this.tabId)
 
-          closeMenu()
+          this.handleTogglePopup()
         },
 
         clear: () => {
-          closeMenu()
+          TabsService.clear(this.tabId)
+          this.$refs.urlForm.reset()
+
+          this.handleTogglePopup()
         },
 
       }
@@ -84,8 +87,12 @@ export default {
       this.rawHttp = await this.request.text
     },
 
-    handlePopup() {
-      console.log('a')
+    handleTogglePopup() {
+      this.requestPopup.visible = !this.requestPopup.visible
+    },
+
+    handleRequestAction({ action }) {
+      this.requestActions[action]()
     },
 
     handleOpenUrlDialog() {
@@ -93,7 +100,7 @@ export default {
     },
 
     handleSaveUrl(newUrl) {
-      this.request.url = newUrl.replace(/[\r\n]+/g, '')
+      this.request.url = newUrl?.replace(/[\r\n]+/g, '') ?? ''
 
       this.handleCloseUrlDialog()
     },
@@ -198,6 +205,8 @@ export default {
       this.handleSend()
     })
 
+    this.requestPopup.element = this.$refs.requestActions
+
   },
 
   template: `
@@ -223,18 +232,22 @@ export default {
 
         <div style="flex-grow: 1; display: flex; justify-content: end;">
           <v-btn
-            @click="handlePopup()"
+            ref="requestActions"
+
+            @click="handleTogglePopup()"
             icon="mdi-dots-horizontal" rounded="0" density="compact" variant="tonal"
           />
         </div>
 
-        <PopupItems 
+        <PopupList
           :source="requestPopup"
+
           :actions="requestActions"
+          :translate="t.request.actions"
 
-          @click="handleContextAction($event)"
+          @click="handleRequestAction($event)"
 
-          @hide="hidePopup(context)"
+          @hide="handleTogglePopup()"
         />
       </div>
 
@@ -257,7 +270,7 @@ export default {
           @save="handleSaveUrl($event)"
         />
 
-        <v-form @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
+        <v-form ref="urlForm" @submit.prevent="handleSend" style="display: flex; gap: 1rem;">
           <!-- Needed dependency with request.query to trigger re-render of url... :( -->
           <span v-show="false">{{ request.query }}</span>
 

@@ -2,6 +2,13 @@ import KeyValueModel from './../key-value/key-value.model.js'
 
 export default class BodyModel extends KeyValueModel {
 
+  static get defaults() {
+    return {
+      mode: { name: BodyModel.Modes[0], encoding: 'urlencoded' },
+      raw: '',
+    }
+  }
+
   static get Modes() {
     return ['raw', 'keyValue']
   }
@@ -88,9 +95,20 @@ export default class BodyModel extends KeyValueModel {
   constructor(props = {}) {
     super(props.pairs)
 
-    this.mode = props.mode ?? { name: BodyModel.Modes[0], encoding: 'urlencoded' }
+    props = {
+      ...BodyModel.defaults,
+      ...props,
+    }
 
-    this.raw = props.raw ?? ''
+    this.mode = props.mode
+    this.raw = props.raw
+  }
+
+  clear() {
+    super.clear()
+
+    this.mode = BodyModel.defaults.mode
+    this.raw = BodyModel.defaults.raw
   }
 
   toJSON() {

@@ -60,11 +60,6 @@ let count = 0 // TODO computed dynamically according to existing data?
 const currentTabs = Vue.reactive(loadedTabs)
 const currentTab = Vue.ref(loadedCurrentTab ?? loadedTabs[0].id)
 
-function getWritableTab(id) {
-  return currentTabs.find( t => t.id == id )
-}
-
-
 Vue.watch(
   currentTab,
   (newCurrent) => {
@@ -111,8 +106,14 @@ export default {
   },
 
   rename(id, title) {
-    const tab = getWritableTab(id)
+    const tab = this.get(id)
+
     tab.title = title.trim()
+  },
+
+  clear(id) {
+    const tab = this.get(id)
+    tab.request.clear()
   },
 
   remove(id) {
@@ -158,7 +159,7 @@ export default {
 
     count = 0
 
-    const keptTab = getWritableTab(id)
+    const keptTab = this.get(id)
     currentTabs.splice(0, this.tabs.length, keptTab)
 
     currentTab.value = id

@@ -139,6 +139,11 @@ export default {
     title: 'Request',
     rawHttp: 'Raw HTTP',
 
+    actions: {
+      duplicate: 'Duplicate',
+      clear: 'Clear',
+    },
+
     details: {
       keyValue: {
         empty: 'No items...',

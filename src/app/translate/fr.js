@@ -139,6 +139,11 @@ export default {
     title: 'Requête',
     rawHttp: 'HTTP brut',
 
+    actions: {
+      duplicate: 'Dupliquer',
+      clear: 'Réinitialiser',
+    },
+
     details: {
       keyValue: {
         empty: 'Aucuns items...',

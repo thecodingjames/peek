@@ -10,6 +10,13 @@ import BodyModel from './details/body/body.model.js'
 
 export default class RequestModel extends VestModel {
 
+  static get defaults() {
+    return {
+      method: RequestModel.Method.get,
+      url: '',
+    }
+  }
+
   static get Method() {
     return {
       get:     'GET',
@@ -115,7 +122,10 @@ export default class RequestModel extends VestModel {
     super()
 
     // make sure no references to source object are kept
-    props = raw(props)
+    props = {
+      ...RequestModel.defaults,
+      ...raw(props)
+    }
 
     this.method = props.method ?? RequestModel.Method.get
 
@@ -128,6 +138,17 @@ export default class RequestModel extends VestModel {
     this.headersModel = new HeadersModel(props.headers)
 
     this.bodyModel = new BodyModel(props.body)
+  }
+
+  clear() {
+    this.method = RequestModel.defaults.method
+    this.url = RequestModel.defaults.url
+
+    this.queryModel.clear()
+
+    this.headersModel.clear()
+
+    this.bodyModel.clear()
   }
 
   vestSuite() {
