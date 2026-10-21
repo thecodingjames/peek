@@ -1,9 +1,11 @@
-import Popup, { mixin } from './popup.js'
+import Popup, { mixin } from '../../popups/popup.js'
+import tabMixin from './popup.mixin.js'
 import RenameForm from './rename-form.js'
 
 export default {
   mixins: [
     mixin,
+    tabMixin,
   ],
 
   components: {

@@ -1,13 +1,9 @@
 import Popup, { mixin } from './popup.js'
 
-export default {
+export const listMixin = {
   mixins: [
     mixin,
   ],
-
-  components: {
-    Popup,
-  },
 
   props: [
     'actions',
@@ -24,6 +20,17 @@ export default {
       this.$emit('click', { action })
     },
 
+  },
+
+}
+
+export default {
+  mixins: [
+    listMixin,
+  ],
+
+  components: {
+    Popup,
   },
 
   template: `
