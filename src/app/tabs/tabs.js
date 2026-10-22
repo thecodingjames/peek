@@ -53,6 +53,12 @@ export default {
           closeMenu()
         },
 
+        clear: (tabId) => {
+          TabsService.clear(tabId)
+
+          closeMenu()
+        },
+
         closeOthers: false,
 
         closeAll: false,
@@ -149,6 +155,10 @@ export default {
 
     HotkeysService.set('tabs.new', () => {
       TabsService.new()
+    })
+
+    HotkeysService.set('tabs.clear', () => {
+      TabsService.clear(this.current)
     })
 
     HotkeysService.set('tabs.rename', () => {
@@ -250,7 +260,7 @@ export default {
       </v-tabs>
 
       <v-window
-        v-model="current"
+        :model-value="current"
         style="padding: 1rem; flex-grow: 1;"
       >
         <v-tabs-window-item

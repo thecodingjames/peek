@@ -13,7 +13,7 @@ export default class RequestModel extends VestModel {
   static get defaults() {
     return {
       method: RequestModel.Method.get,
-      url: '',
+      url: undefined, // deliberately undefined to differentiate initial value from user interaction assigning blank value
     }
   }
 

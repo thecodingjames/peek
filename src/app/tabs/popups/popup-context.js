@@ -24,32 +24,69 @@ export default {
   methods: {
 
     handleAction(action) {
-      this.$emit('click', { action, tabId: this.source.id })
+      this.$emit('click', { ...action, tabId: this.source.id })
     },
 
   },
 
   template: `
-    <PopupList
-      :source
+    <div>
+      <component is="style">
+        ._popups_list {
 
-      :actions="actions"
-      :translate="t.request.actions"
+          .v-list {
+            padding-top: 0;
+            padding-bottom: 0.75rem;
+          }
 
-      @click="handleAction($event)"
+          .v-list-item {
+            padding: 0 0.5rem;
+          }
 
-      @hide="handleHide()"
-    >
-      <v-list-item style="padding-top: 0.5rem;">
-        <RenameForm
-          :title="source.title"
+          .v-list-item-title {
+            font-size: 0.9rem !important;
+          }
 
-          variant="underlined"
-          :autofocus="false"
+          ._tabs_popup_rename-form {
 
-          @submit="handleRename"
-        />
-      </v-list-item>
-    </PopupList>
+            align-items: end !important;
+
+            input, button {
+              margin: 0 !important;
+            }
+
+            input {
+              padding-top: 1rem;
+            }
+
+            .v-input {
+              margin-right: 0.5rem;
+            }
+          }
+        }
+      </component>
+
+      <PopupList
+        :source
+
+        :actions="actions"
+        :translate="t.tabs.context"
+
+        @click="handleAction($event)"
+
+        @hide="handleHide()"
+      >
+        <v-list-item style="padding-top: 0.5rem;">
+          <RenameForm
+            :title="source.title"
+
+            variant="underlined"
+            :autofocus="false"
+
+            @submit="handleRename"
+          />
+        </v-list-item>
+      </PopupList>
+    </div>
   `
 }

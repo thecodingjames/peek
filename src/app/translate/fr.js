@@ -56,6 +56,7 @@ export default {
     newRequest: 'Nouvelle requête',
     context: {
       duplicate: 'Dupliquer',
+      clear: 'Réinitialiser',
       closeOthers: 'Fermer les autres',
       closeAll: 'Fermer tous',
     },
@@ -92,6 +93,10 @@ export default {
 
       rename: {
         title: 'Renommer l\'onglet courant'
+      },
+
+      clear: {
+        title: 'Réinitialiser l\'onglet courant'
       },
 
       close: {

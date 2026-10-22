@@ -56,6 +56,7 @@ export default {
     newRequest: 'New request',
     context: {
       duplicate: 'Duplicate',
+      clear: 'Clear',
       closeOthers: 'Close others',
       closeAll: 'Close all',
     },
@@ -92,6 +93,10 @@ export default {
 
       rename: {
         title: 'Rename current tab'
+      },
+
+      clear: {
+        title: 'Clear current tab'
       },
 
       close: {

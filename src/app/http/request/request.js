@@ -63,7 +63,6 @@ export default {
 
         clear: () => {
           TabsService.clear(this.tabId)
-          this.$refs.urlForm.reset()
 
           this.handleTogglePopup()
         },

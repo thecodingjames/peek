@@ -5,6 +5,7 @@ export default {
 
   'tabs.new': 'meta+t',
   'tabs.rename': 'meta+shift+t',
+  'tabs.clear': 'meta+,',
   'tabs.close': 'meta+w',
   'tabs.close-others': 'meta+shift+w',
   'tabs.close-all': 'meta+q',
